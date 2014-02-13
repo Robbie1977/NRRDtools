@@ -13,7 +13,7 @@ else:
     t=200
     s=2
     b = np.append(np.unique(data2),[256]) 
-    bc = np.arange(1,255)
+    bc = np.arange(1,256)
     if (len(sys.argv) > 3):
         t=np.uint8(sys.argv[3])
     print 'Growing index for any template intensity above %s'% str(t)
