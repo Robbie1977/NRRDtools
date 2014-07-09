@@ -25,15 +25,15 @@ def olc(d1,d2):
     Nd1 = np.squeeze(np.asarray(d1.flat,dtype=np.float128))
     Nd2 = np.squeeze(np.asarray(d2.flat,dtype=np.float128))
 
-    th = 0
+    # th = 0
+    #
+    # Ta = np.add(Nd1, Nd2)
+    # Os = len([x for x in Ta if x > th])
+    #
+    # Na1 = np.divide(np.sum(Nd1),Os)
+    # Na2 = np.divide(np.sum(Nd2),Os)
 
-    Ta = np.add(Nd1, Nd2)
-    Os = len([x for x in Ta if x > th])
-
-    Na1 = np.divide(np.sum(Nd1),Os)
-    Na2 = np.divide(np.sum(Nd2),Os)
-
-    r = sum(multiply(Nd1,Nd2))/sqrt(multiply(sum(square(Nd1)),sum(square(Nd2))))
+    r = np.sum(np.multiply(Nd1,Nd2))/np.sqrt(np.multiply(np.sum(np.square(Nd1)),np.sum(np.square(Nd2))))
 
     return r
 
