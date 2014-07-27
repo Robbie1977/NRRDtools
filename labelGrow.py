@@ -12,7 +12,7 @@ else:
     data2, header2 = nrrd.read(str(sys.argv[2]))
     t=200
     s=2
-    reps = 200
+    reps = 400
     b = np.append(np.unique(data2),[256])
     bc = np.arange(1,256)
     if (len(sys.argv) > 3):
