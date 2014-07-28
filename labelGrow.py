@@ -49,6 +49,10 @@ else:
                 r = bc[m]
                 if (subhist[0][m] > (np.sum(subhist[0])-subhist[0][m])):
                     out2[val[0],val[1],val[2]] = r
+        if (np.mod(rep,50) == 0):
+          print "Saving result to " + str(sys.argv[2])
+          nrrd.write(str(sys.argv[2]), np.uint8(out2), options=header2)
+          print np.histogram(out2, bins=b)
       else:
           print "Finishing as no change"
           break
