@@ -10,7 +10,7 @@ else:
     data1, header1 = nrrd.read(str(sys.argv[1]))
     print 'Processing %s...'% (str(sys.argv[2]))
     data2, header2 = nrrd.read(str(sys.argv[2]))
-    t=200
+    t=20
     s=2
     reps = 400
     b = np.append(np.unique(data2),[256])
