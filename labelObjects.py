@@ -24,6 +24,14 @@ else:
     labels, features = ndimage.label(data1, structure=sl)
     print str(features) + ' distinct objects found'
 
+    print 'cleaing noise...'
+    for i in range(1,features+1):
+      count = np.sum(labels==i)
+      if count < 3:
+        labels[labels==i]=0
+        features = features - 1
+    print str(features) + ' distinct objects still indexed'
+
     print "Saving result to " + str(sys.argv[2])
     if features > 255:
       header1['type'] = 'uint16'
