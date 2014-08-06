@@ -10,6 +10,8 @@ else:
     data1, header1 = nrrd.read(str(sys.argv[1]))
     print 'Processing %s...'% (str(sys.argv[2]))
     data2, header2 = nrrd.read(str(sys.argv[2]))
+    header1.pop("endian", None)
+    header2.pop("endian", None)
     t=20
     s=2
     reps = 400

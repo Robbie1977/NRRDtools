@@ -9,6 +9,7 @@ if (len(sys.argv) < 3):
 else:
     print 'Loading image %s...'% (str(sys.argv[1]))
     data1, header1 = nrrd.read(str(sys.argv[1]))
+    header1.pop("endian", None)
     t=20
     ms=1000
     sl = np.ones((3,3,3))
