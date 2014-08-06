@@ -53,6 +53,7 @@ else:
                     out2[val[0],val[1],val[2]] = r
         if (np.mod(rep,50) == 0):
           print "Saving result to " + str(sys.argv[2])
+          header2['encoding'] = 'gzip'
           if np.max(out2) > 256:
             header2['type'] = 'uint16'
             nrrd.write(str(sys.argv[2]), np.uint16(out2), options=header2)
@@ -67,10 +68,13 @@ else:
     print "Saving result to " + str(sys.argv[2])
     print "Saving result to " + str(sys.argv[2])
     if np.max(out2) > 256:
+      header2['encoding'] = 'gzip'
       header2['type'] = 'uint16'
       nrrd.write(str(sys.argv[2]), np.uint16(out2), options=header2)
     else:
+      header2['encoding'] = 'gzip'
       header2['type'] = 'uint8'
       nrrd.write(str(sys.argv[2]), np.uint8(out2), options=header2)
     print np.histogram(out2, bins=b)
-    print 'done.'
+
+print 'done.'
