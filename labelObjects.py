@@ -41,7 +41,7 @@ else:
     print str(v-1) + ' distinct objects still indexed'
 
     print "Saving result to " + str(sys.argv[2])
-    if features > 256:
+    if v > 256:
       header1['type'] = 'uint16'
       nrrd.write(str(sys.argv[2]), np.uint16(data), options=header1)
     else:
