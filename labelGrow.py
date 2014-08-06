@@ -16,7 +16,7 @@ else:
     b = np.append(np.unique(data2),[256])
     bc = np.arange(1,256)
     if (len(sys.argv) > 3):
-        t=np.uint8(sys.argv[3])
+        t=np.uint16(sys.argv[3])
     print 'Growing index for any template intensity above %s'% str(t)
 
     print np.histogram(data2, bins=b)
@@ -51,13 +51,24 @@ else:
                     out2[val[0],val[1],val[2]] = r
         if (np.mod(rep,50) == 0):
           print "Saving result to " + str(sys.argv[2])
-          nrrd.write(str(sys.argv[2]), np.uint8(out2), options=header2)
+          if np.max(out2) > 256:
+            header2['type'] = 'uint16'
+            nrrd.write(str(sys.argv[2]), np.uint16(out2), options=header2)
+          else:
+            header2['type'] = 'uint8'
+            nrrd.write(str(sys.argv[2]), np.uint8(out2), options=header2)
           print np.histogram(out2, bins=b)
       else:
           print "Finishing as no change"
           break
 
     print "Saving result to " + str(sys.argv[2])
-    nrrd.write(str(sys.argv[2]), np.uint8(out2), options=header2)
+    print "Saving result to " + str(sys.argv[2])
+    if np.max(out2) > 256:
+      header2['type'] = 'uint16'
+      nrrd.write(str(sys.argv[2]), np.uint16(out2), options=header2)
+    else:
+      header2['type'] = 'uint8'
+      nrrd.write(str(sys.argv[2]), np.uint8(out2), options=header2)
     print np.histogram(out2, bins=b)
     print 'done.'

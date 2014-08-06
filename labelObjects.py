@@ -13,14 +13,14 @@ else:
     ms=1000
     sl = np.ones((3,3,3))
     if (len(sys.argv) > 3):
-        t=np.uint8(sys.argv[3])
+        t=np.uint16(sys.argv[3])
     print 'Labeling objects with any voxel intensity above %s'% str(t)
 
     if (len(sys.argv) > 4):
-        ms=np.array(sys.argv[4],dtype=np.uint8)
+        ms=np.array(sys.argv[4],dtype=np.uint16)
 
     if (len(sys.argv) > 5):
-        sl=np.array(sys.argv[5],dtype=np.uint8)
+        sl=np.array(sys.argv[5],dtype=np.uint16)
 
     data1[data1<t]=0
 
@@ -40,7 +40,7 @@ else:
     print str(v-1) + ' distinct objects still indexed'
 
     print "Saving result to " + str(sys.argv[2])
-    if features > 255:
+    if features > 256:
       header1['type'] = 'uint16'
       nrrd.write(str(sys.argv[2]), np.uint16(data), options=header1)
     else:
