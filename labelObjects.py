@@ -3,7 +3,7 @@ import sys, os
 import nrrd
 from scipy import ndimage
 
-def labelObj(imagefile, labelfile, ms=1000, t=20, sl=np.ones((3,3,3))):
+def labelObj(imagefile, labelfile, t=20, ms=1000, sl=np.ones((3,3,3))):
     print 'Loading image %s...'% (imagefile)
     data1, header1 = nrrd.read(imagefile)
     header1.pop("endian", None)
