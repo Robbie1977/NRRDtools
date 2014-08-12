@@ -37,7 +37,56 @@ def labelObj(imagefile, labelfile, t=20, ms=1000, sl=np.ones((3,3,3))):
       nrrd.write(labelfile, np.uint8(data), options=header1)
     return np.unique(data)
 
+def cutObj(imagefile, labelfile, labels=None):
+    if labels is None:
+      print 'no labels to be cut'
+    else:
+      print 'Loading image %s...'% (imagefile)
+      data1, header1 = nrrd.read(imagefile)
+      print 'Loading mask %s...'% (labelfile)
+      data2, header2 = nrrd.read(imagefile)
 
+      print 'Cutting objects with label(s) %s'% str(labels)
+
+      for i in labels:
+        data1[data2==i] = 0
+
+      v=np.max(data1)
+      print "Saving result over " + imagefile
+      header1['encoding'] = 'gzip'
+      if v > 256:
+        header1['type'] = 'uint16'
+        nrrd.write(labelfile, np.uint16(data1), options=header1)
+      else:
+        header1['type'] = 'uint8'
+        nrrd.write(labelfile, np.uint8(data1), options=header1)
+
+def cropObj(imagefile, labelfile, labels=None):
+    if labels is None:
+      print 'no labels to crop to'
+    else:
+      print 'Loading image %s...'% (imagefile)
+      data1, header1 = nrrd.read(imagefile)
+      print 'Loading mask %s...'% (labelfile)
+      data2, header2 = nrrd.read(imagefile)
+
+      print 'Croping to objects with label(s) %s'% str(labels)
+
+      mask = np.ones(np.shape(data1))
+      for i in labels:
+        mask[data2==i] = 0
+
+      data1[mask] = 0
+      
+      v=np.max(data1)
+      print "Saving result over " + imagefile
+      header1['encoding'] = 'gzip'
+      if v > 256:
+        header1['type'] = 'uint16'
+        nrrd.write(labelfile, np.uint16(data1), options=header1)
+      else:
+        header1['type'] = 'uint8'
+        nrrd.write(labelfile, np.uint8(data1), options=header1)
 
 if __name__ == "__main__":
   if (len(sys.argv) < 3):
