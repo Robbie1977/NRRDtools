@@ -35,7 +35,7 @@ def labelObj(imagefile, labelfile, t=20, ms=1000, sl=np.ones((3,3,3))):
     else:
       header1['type'] = 'uint8'
       nrrd.write(labelfile, np.uint8(data), options=header1)
-    return np.int(np.unique(data))
+    return np.uint8(np.unique(data))
 
 def cutObj(imagefile, labelfile, labels=None):
     if labels is None:
