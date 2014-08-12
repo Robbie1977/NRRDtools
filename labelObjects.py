@@ -50,7 +50,7 @@ def cutObj(imagefile, labelfile, labels=None):
 
       for i in labels:
         print 'Cutting object ' + str(i)
-        data1[data2==i] = 0
+        data1[data2==int(i)] = 0
 
       v=np.max(data1)
       print "Saving result over " + imagefile
@@ -75,7 +75,7 @@ def cropObj(imagefile, labelfile, labels=None):
 
       mask = np.ones(np.shape(data1))
       for i in labels:
-        mask[np.uint8(data2)==np.uint8(i)] = 0
+        mask[data2==int(i)] = 0
 
       data1[mask] = 0
 
