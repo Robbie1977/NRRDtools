@@ -56,10 +56,10 @@ def cutObj(imagefile, labelfile, labels=None):
       header1['encoding'] = 'gzip'
       if v > 256:
         header1['type'] = 'uint16'
-        nrrd.write(labelfile, np.uint16(data1), options=header1)
+        nrrd.write(imagefile, np.uint16(data1), options=header1)
       else:
         header1['type'] = 'uint8'
-        nrrd.write(labelfile, np.uint8(data1), options=header1)
+        nrrd.write(imagefile, np.uint8(data1), options=header1)
 
 def cropObj(imagefile, labelfile, labels=None):
     if labels is None:
@@ -83,10 +83,10 @@ def cropObj(imagefile, labelfile, labels=None):
       header1['encoding'] = 'gzip'
       if v > 256:
         header1['type'] = 'uint16'
-        nrrd.write(labelfile, np.uint16(data1), options=header1)
+        nrrd.write(imagefile, np.uint16(data1), options=header1)
       else:
         header1['type'] = 'uint8'
-        nrrd.write(labelfile, np.uint8(data1), options=header1)
+        nrrd.write(imagefile, np.uint8(data1), options=header1)
 
 if __name__ == "__main__":
   if (len(sys.argv) < 3):
