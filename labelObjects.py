@@ -44,7 +44,7 @@ def cutObj(imagefile, labelfile, labels=None):
       print 'Loading image %s...'% (imagefile)
       data1, header1 = nrrd.read(imagefile)
       print 'Loading mask %s...'% (labelfile)
-      data2, header2 = nrrd.read(imagefile)
+      data2, header2 = nrrd.read(labelfile)
 
       print 'Cutting objects with label(s) %s'% str(labels)
 
@@ -69,7 +69,7 @@ def cropObj(imagefile, labelfile, labels=None):
       print 'Loading image %s...'% (imagefile)
       data1, header1 = nrrd.read(imagefile)
       print 'Loading mask %s...'% (labelfile)
-      data2, header2 = nrrd.read(imagefile)
+      data2, header2 = nrrd.read(labelfile)
 
       print 'Croping to objects with label(s) %s'% str(labels)
 
