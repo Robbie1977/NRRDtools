@@ -49,8 +49,11 @@ def cutObj(imagefile, labelfile, labels=None):
       print 'Cutting objects with label(s) %s'% str(labels)
 
       for i in labels:
-        print 'Cutting object ' + str(i)
-        data1[data2==int(i)] = 0
+        try:
+          data1[data2==int(i)] = 0
+          print 'Cutting object ' + str(i)
+        except:
+          print '---'
 
       v=np.max(data1)
       print "Saving result over " + imagefile
