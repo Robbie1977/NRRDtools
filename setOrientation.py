@@ -11,6 +11,7 @@ else:
     data1, header1 = nrrd.read(str(sys.argv[1]))
     print header1
     header1['space'] = str(sys.argv[2])
+    header1.pop("space dimension", None)
     print header1
     print 'saving...'
     if (len(sys.argv) == 4):
