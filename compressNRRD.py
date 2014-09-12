@@ -10,6 +10,8 @@ else:
     data1, header1 = nrrd.read(str(sys.argv[1]))
     print header1
     header1['encoding'] = 'gzip'
+    if header1['space directions'] == ['none', 'none', 'none']:
+        header1.pop("space directions", None)
     print header1
     print 'saving...'
     if (len(sys.argv) == 3):
