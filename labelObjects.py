@@ -76,10 +76,10 @@ def cropObj(imagefile, labelfile, labels=None):
 
       print 'Croping to objects with label(s) %s'% str(labels)
 
-      mask = np.ones(np.shape(data1))
+      mask = np.ones(np.shape(data1), dtype=bool)
       for i in labels:
         try:
-          mask[data2==int(i)] = 0
+          mask[data2==int(i)] = False
           print 'Cropping to object ' + str(i)
         except:
           print '---'
