@@ -23,5 +23,5 @@ else:
       shutil.copy2(str(sys.argv[1]), str(sys.argv[1]).replace('.nrrd','_bk.nrrd'))
       nrrd.write(str(sys.argv[1]), data1, options=header1)
       print 'Removing temp backup...' 
-      str(sys.argv[1]).replace('.nrrd','_bk.nrrd')
+      os.remove(str(sys.argv[1]).replace('.nrrd','_bk.nrrd'))
       print 'saved to ' + str(sys.argv[1])
