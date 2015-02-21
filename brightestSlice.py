@@ -11,7 +11,7 @@ else:
     data1, header1 = nrrd.read(Iin)
 
     sh = np.shape(data1)
-    print 'Image Size %s'% (sh)
+    print 'Image Size X:%s,Y:%s,Z:%s'% sh
 
     data1 = data1.sum(axis=0)
     data1 = data1.sum(axis=0)
