@@ -6,10 +6,8 @@ if (len(sys.argv) < 2):
     print '0'
 else:
     Iin = str(sys.argv[1])
-    print 'Processing %s...'% (Iin)
-    data1, header1 = nrrd.read(Iin)
 
-    print 'Image Size X:%s,Y:%s,Z:%s'% sh
+    data1, header1 = nrrd.read(Iin)
 
     data1 = data1.sum(axis=0)
     data1 = data1.sum(axis=0)
