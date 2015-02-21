@@ -18,4 +18,8 @@ else:
 
     sh = np.shape(data1)
 
+    mp = np.argmax(data1)
+
     print 'Number of slice %s'% (sh)
+    
+    print 'Max combined intensity occurs at slice %s'% (mp)
