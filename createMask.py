@@ -8,7 +8,7 @@ bs = 5
 
 if (len(sys.argv) < 2):
     print 'Error: missing arguments!'
-    print 'e.g. python compressNRRD.py imageIn.nrrd [ImageOut.nrrd]'
+    print 'e.g. python createMask.py imageIn.nrrd [ImageOut.nrrd]'
 else:
     Iin = str(sys.argv[1])
     print 'Processing %s...'% (Iin)
