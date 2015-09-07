@@ -24,7 +24,7 @@ else:
     dataMin = np.min(dataSum)
     dataMax = np.max(dataSum)
 
-    normData = np.uint8(np.round(np.mulitply(np.divide(np.subtract(dataSum, dataMin),np.float(dataMax)),255.0)))
+    normData = np.uint8(np.round(np.multiply(np.divide(np.subtract(dataSum, dataMin),np.float(dataMax)),255.0)))
 
     nrrd.write(Iout, data, options=header)
     print 'saved to ' + Iout
