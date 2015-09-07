@@ -11,7 +11,7 @@ else:
         Iin = str(sys.argv[i])
         print 'Processing %s...'% (Iin)
         data, header = nrrd.read(Iin)
-        sh = np.shape(data1)
+        sh = np.shape(data)
         if (i == 2):
             dataSum = np.int64(data);
             shTest = sh;
