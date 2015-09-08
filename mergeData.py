@@ -23,6 +23,9 @@ else:
                     print 'ERROR: %s not the same size!'% (Iin)
         except:
             print "Unexpected error:", sys.exc_info()[0]
+        dataMin = np.min(dataSum)
+        dataMax = np.max(dataSum)
+        dataSum = np.int64(np.round(np.multiply(np.divide(np.subtract(dataSum, dataMin),np.float(dataMax)),255.0)))
 
     dataMin = np.min(dataSum)
     dataMax = np.max(dataSum)
