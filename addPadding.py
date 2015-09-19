@@ -27,4 +27,4 @@ else:
       nrrd.write(Iout, data1, options=header1)
       print 'original saved to ' + Iout
       nrrd.write(Iin, data, options=header1)
-      print 'padded version saved to ' + Iout
+      print 'padded version saved to ' + Iin
