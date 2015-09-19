@@ -14,16 +14,15 @@ else:
             data, header = nrrd.read(Iin)
             sh = np.shape(data)
             if (i == 2):
-                dataSum = np.uint64(data);
-                shTest = sh;
+                dataSum = np.uint64(data)
+                shTest = sh
             else:
                 if (sh == shTest):
-                    dataSum = dataSum + np.uint64(data);
+                    dataSum = dataSum + np.uint64(data)
                 else:
                     print 'ERROR: %s not the same size!'% (Iin)
         except:
             print "Unexpected error:", sys.exc_info()[0]
-        dataSum[dataSum > 255] = np.uint64(255);
 
     dataMin = np.min(dataSum)
     dataMax = np.max(dataSum)
