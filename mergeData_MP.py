@@ -19,6 +19,8 @@ else:
             else:
                 if (sh == shTest):
                     dataSum = dataSum + np.uint64(data)
+                    with open(Iout.replace('.nrrd','').replace('.NRRD','')+".txt", "a") as myfile:
+                        myfile.write(Iin)
                 else:
                     print 'ERROR: %s not the same size!'% (Iin)
         except:
