@@ -19,6 +19,7 @@ else:
             if (i == 2):
                 dataSum = np.uint64(data)
                 shTest = sh
+                brightest = np.sum(data)
             else:
                 if (sh == shTest):
                     dataSum = dataSum + np.uint64(data)
@@ -26,6 +27,7 @@ else:
                         myfile.write(Iin)
                     level = np.sum(data)
                     if (level > brightest):
+                        brightest = level
                         bright = Iin
                         print '%s is brightest so far!'% (Iin)
                 else:
