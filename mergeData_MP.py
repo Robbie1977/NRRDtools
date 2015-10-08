@@ -7,9 +7,10 @@ if (len(sys.argv) < 2):
     print 'e.g. python createMask.py imageOut.nrrd imageIn1.nrrd [ImageIn#.nrrd...]'
 else:
     Iout = str(sys.argv[1])
-    brightest = 0;
+    brightest = 0
     level = 0;
-    bright = "";
+    bright = ""
+    errorOn = ""
     for i in range(2,len(sys.argv)):
         try:
             dataBk = np.copy(dataSum)
@@ -36,6 +37,7 @@ else:
         except:
             print "Unexpected error:", sys.exc_info()[0]
             dataSum = np.uint64(dataBk)
+            errorOn += ', ' + Iin
         dataSum[dataSum > 255] = np.uint64(255)
 
     dataMin = np.min(dataSum)
@@ -46,3 +48,4 @@ else:
     nrrd.write(Iout, normData, options=header)
     print 'saved to ' + Iout
     print 'Brightest image was: %s'% (bright)
+    print 'Error(s) on image(s): %s'% (errorOn)
