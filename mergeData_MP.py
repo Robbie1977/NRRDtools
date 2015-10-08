@@ -12,6 +12,7 @@ else:
     bright = "";
     for i in range(2,len(sys.argv)):
         try:
+            dataBk = np.copy(dataSum)
             Iin = str(sys.argv[i])
             print 'Processing %s...'% (Iin)
             data, header = nrrd.read(Iin)
@@ -34,6 +35,7 @@ else:
                     print 'ERROR: %s not the same size!'% (Iin)
         except:
             print "Unexpected error:", sys.exc_info()[0]
+            dataSum = np.uint64(dataBk)
         dataSum[dataSum > 255] = np.uint64(255)
 
     dataMin = np.min(dataSum)
