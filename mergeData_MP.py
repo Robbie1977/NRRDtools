@@ -7,6 +7,9 @@ if (len(sys.argv) < 2):
     print 'e.g. python createMask.py imageOut.nrrd imageIn1.nrrd [ImageIn#.nrrd...]'
 else:
     Iout = str(sys.argv[1])
+    brightest = 0;
+    level = 0;
+    bright = "";
     for i in range(2,len(sys.argv)):
         try:
             Iin = str(sys.argv[i])
@@ -21,6 +24,10 @@ else:
                     dataSum = dataSum + np.uint64(data)
                     with open(Iout.replace('.nrrd','').replace('.NRRD','')+".txt", "a") as myfile:
                         myfile.write(Iin)
+                    level = np.sum(data)
+                    if (level > brightest):
+                        bright = Iin
+                        print '%s is brightest so far!'% (Iin)
                 else:
                     print 'ERROR: %s not the same size!'% (Iin)
         except:
@@ -34,3 +41,4 @@ else:
 
     nrrd.write(Iout, normData, options=header)
     print 'saved to ' + Iout
+    print 'Brightest image was: %s'% (bright)
