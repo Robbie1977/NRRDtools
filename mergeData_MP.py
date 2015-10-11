@@ -37,7 +37,7 @@ else:
                             bright = Iin
                             print '%s is brightest so far! (%d)'% (Iin, level)
                     else:
-                        print 'not signal!'
+                        print 'not signal! (%d)'% (level)
                 else:
                     print 'ERROR: %s not the same size!'% (Iin)
         except:
