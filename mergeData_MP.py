@@ -26,14 +26,18 @@ else:
                 brightest = np.sum(data)
             else:
                 if (sh == shTest):
-                    dataSum = dataSum + np.uint64(data)
-                    with open(Iout.replace('.nrrd','').replace('.NRRD','')+".txt", "a") as myfile:
-                        myfile.write(Iin)
                     level = np.sum(data)
-                    if (level > brightest):
-                        brightest = level
-                        bright = Iin
-                        print '%s is brightest so far!'% (Iin)
+                    if (level < 2000000000):
+                        dataSum = dataSum + np.uint64(data)
+                        with open(Iout.replace('.nrrd','').replace('.NRRD','')+".txt", "a") as myfile:
+                            myfile.write(Iin)
+
+                        if (level > brightest):
+                            brightest = level
+                            bright = Iin
+                            print '%s is brightest so far! (%d)'% (Iin, level)
+                    else:
+                        print 'not signal!'
                 else:
                     print 'ERROR: %s not the same size!'% (Iin)
         except:
