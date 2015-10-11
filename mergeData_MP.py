@@ -12,8 +12,8 @@ else:
     bright = ""
     errorOn = ""
     for i in range(2,len(sys.argv)):
+        dataBk = np.copy(dataSum)
         try:
-            dataBk = np.copy(dataSum)
             Iin = str(sys.argv[i])
             print 'Processing %s...'% (Iin)
             data, header = nrrd.read(Iin)
