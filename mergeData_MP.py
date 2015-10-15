@@ -40,7 +40,7 @@ else:
                     else:
                         print 'not signal! (%d)'% (level)
                 else:
-                    print 'ERROR: %s not the same size!'% (Iin)
+                    print 'ERROR: %s not the same size!' + str(sh) + ' - ' + str(shTest)
         except:
             print "Unexpected error:", sys.exc_info()[0]
             dataSum = np.uint64(dataBk)
