@@ -27,7 +27,8 @@ else:
             else:
                 if (sh == shTest):
                     level = np.sum(data)
-                    if (level < 1000000000):
+                    print str(level)
+                    if (level < 100000000):
                         dataSum = dataSum + np.uint64(data)
                         with open(Iout.replace('.nrrd','').replace('.NRRD','')+".txt", "a") as myfile:
                             myfile.write(Iin)
