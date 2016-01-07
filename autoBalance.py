@@ -68,7 +68,7 @@ if __name__ == "__main__":
   if (len(sys.argv) < 2):
     print 'Error: missing arguments!' 
     print 'e.g. python autoBalance.py imageIn.nrrd [imageOut.nrrd] [0] [0.0035]'
-    Print '0 = Background level'
+    print '0 = Background level'
     print '0.0035 = adjustment threshold - max percentage of voxels that can be clipped'
   else:
     outFile = str(sys.argv[1])
