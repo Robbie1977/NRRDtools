@@ -1,5 +1,4 @@
 import os, sys, nrrd, json, gc, stat
-from tiffile import TiffFile
 import numpy as np
 import reorientate as ro
 
