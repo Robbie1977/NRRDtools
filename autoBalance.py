@@ -1,6 +1,5 @@
 import os, sys, nrrd, json, gc, stat
 import numpy as np
-import reorientate as ro
 
 adjust_thresh = 0.0035
 
