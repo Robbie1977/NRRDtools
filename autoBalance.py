@@ -82,4 +82,4 @@ if __name__ == "__main__":
     chan, Nbound, hist = AutoBalance(data,threshold=TH,background=BG)
     print 'New boundaries %s'% (str(Nbound))
     print 'Saving result to %s...'% (outFile)
-    nrrd.write(outFile,chan, options=header)
+    nrrd.write(outFile,np.uint8(chan), options=header)
