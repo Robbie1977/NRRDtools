@@ -77,7 +77,7 @@ if __name__ == "__main__":
       BG = int(sys.argv[3])
     TH = adjust_thresh
     if (len(sys.argv) > 4):
-      TH = int(sys.argv[4])
+      TH = float(sys.argv[4])
     data, header = nrrd.read(str(sys.argv[1]))
     chan, Nbound, hist = AutoBalance(data,threshold=TH,background=BG)
     print 'New boundaries %s'% (str(Nbound))
