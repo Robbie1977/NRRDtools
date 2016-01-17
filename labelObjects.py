@@ -103,6 +103,9 @@ if __name__ == "__main__":
   else:
       imagefile = str(sys.argv[1])
       labelfile = str(sys.argv[2])
+      t=20
+      ms=1000
+      sl=np.ones((3,3,3))
 
       if (len(sys.argv) > 3):
           t=np.uint16(sys.argv[3])
@@ -113,6 +116,6 @@ if __name__ == "__main__":
       if (len(sys.argv) > 5):
           sl=np.array(sys.argv[5],dtype=np.uint16)
 
-      labelObj(imagefile, labelfile)
+      labelObj(imagefile, labelfile, t=t, ms=ms, sl=sl)
 
   print 'done.'
