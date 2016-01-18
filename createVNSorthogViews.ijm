@@ -1,0 +1,30 @@
+name = getArgument;
+if (name=="") exit ("No argument!");
+setBatchMode(true);
+sep=lastIndexOf(name, File.separator);
+path = "";
+file = name;
+if (sep>-1) {
+  path = substring(name, 0, sep);
+  file = substring(name, sep);
+}
+run("Nrrd ...", "load=[" + name + "]");
+run("Nrrd ...", "load=[/Volumes/Macintosh HD/Users/robertcourt/GIT/DrosAdultTAGdomains/template/Neuropil_padded_LPS.nrrd]");
+run("Merge Channels...", "c1=Neuropil_padded_LPS.nrrd c2=" + file + " c3=Neuropil_padded_LPS.nrrd create keep ignore");
+run("Z Project...", "projection=[Max Intensity]");
+saveAs("PNG", path+File.separator+replace(file,".nrrd","_zMAX.png"));
+close();
+run("Reslice [/]...", "output=0.460 start=Left rotate avoid");
+run("Z Project...", "projection=[Max Intensity]");
+saveAs("PNG", path+File.separator+replace(file,".nrrd","_xMAX.png"));
+close();
+close();
+run("Reslice [/]...", "output=0.460 start=Top avoid");
+run("Z Project...", "projection=[Max Intensity]");
+saveAs("PNG", path+File.separator+replace(file,".nrrd","_yMAX.png"));
+close();
+close();
+close();
+close();
+close();
+run("Quit");
