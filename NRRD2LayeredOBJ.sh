@@ -21,7 +21,7 @@ do
     # remove thresholded surfaces
     rm ${file/.nrrd/_*.obj}
     # remove any duplicate points
-    awk '!a[$0]++' ${file/.nrrd/.tmp} >> ${file/.nrrd/.obj}
+    awk '!a[$0]++' ${file/.nrrd/.tmp} > ${file/.nrrd/.obj}
     # remove the temp file
     rm ${file/.nrrd/.tmp}
   fi
