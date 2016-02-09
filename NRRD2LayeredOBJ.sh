@@ -4,7 +4,7 @@ echo 'export MACRO=ThisDir/NRRD2LayeredOBJ.ijm'
 echo 'run in the directory above the volume.nrrd files'
 for file in ./*/volume.nrrd
 do
-  if [ -e ${file/.nrrd/.obj} ] && [ '$1' != '-f' ]
+  if [ -e ${file/.nrrd/.obj} ] && [ $1 != '-f' ]
   then
     echo OBJ file already exists! Skipping..
   else
