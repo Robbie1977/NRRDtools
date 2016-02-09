@@ -1,6 +1,5 @@
 name = getArgument;
 if (name=="") exit ("No argument!");
-setBatchMode(true);
 run("Nrrd ...", "load=[" + name + "]");
 run("Wavefront .OBJ ...", "stack=volume.nrrd threshold=250 resampling=2 red green blue save=[" + replace(name, ".nrrd", "_250.obj") + "]");
 
