@@ -9,6 +9,11 @@ do
     echo OBJ file already exists! Skipping..
   else
     echo processing ${file}...
+    # if forcing overwite then delete the old copy
+    if [ $1 == '-f' ] 
+    then
+      rm ${file/.nrrd/.obj}
+    fi
     # generate thresholded surfaces using Fiji/ImageJ
     xvfb-run $FIJI -macro $MACRO $file
     # add basic file header
