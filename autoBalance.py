@@ -10,6 +10,7 @@ adjust_thresh = 0.0035
 
 def AutoBalance(data, threshold=adjust_thresh, background=0):
     try:
+        threshold = float(threshold)
         if np.max(data) == 0:
             data = np.uint8(data)
         else:
