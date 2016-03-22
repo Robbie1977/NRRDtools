@@ -10,9 +10,9 @@ adjust_thresh = 0.0035
 
 def AutoBalance(data, threshold=adjust_thresh, background=0):
     if np.max(data) == 0:
-        hist = np.zeros(255, dtype=long)
-        return data, {'min': int(0), 'max': int(255)}, hist
-    data = np.uint8(np.round(255.0 * (np.double(data) / np.max(data))))  # scale to 8 bit
+        data = np.uint8(data)
+    else:
+        data = np.uint8(np.round(255.0 * (np.double(data) / np.max(data))))  # scale to 8 bit
     bins = np.unique(data)
     binc = np.bincount(data.flat)
     histogram = binc[binc > 0]
