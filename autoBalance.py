@@ -68,6 +68,9 @@ def AutoBalance(data, threshold=adjust_thresh, background=0):
             print 'number of high end voxels cut: ' + str(np.sum(histogram[temp:]))
         del temp
         gc.collect()
+        # if threshold is set to zero then force no BG clipping
+        if threshold == 0:
+            m = np.min(data)
         data[data > M] = M
         data[data < m] = m
         dataA = np.round((data - m) * (255.0 / (M - m)))
