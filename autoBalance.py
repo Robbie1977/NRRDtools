@@ -1,13 +1,17 @@
 import gc
-import nrrd
 import sys
 
 import numpy as np
+
+import nrrd
 
 adjust_thresh = 0.0035
 
 
 def AutoBalance(data, threshold=adjust_thresh, background=0):
+    if np.max(data) == 0:
+        hist = np.zeros(255, dtype=long)
+        return data, {'min': int(0), 'max': int(255)}, hist
     data = np.uint8(np.round(255.0 * (np.double(data) / np.max(data))))  # scale to 8 bit
     bins = np.unique(data)
     binc = np.bincount(data.flat)
@@ -68,7 +72,7 @@ def AutoBalance(data, threshold=adjust_thresh, background=0):
     hist = np.zeros(255, dtype=long)
     for i in range(0, np.shape(bins)[0] - 1):
         hist[bins[i]] = histogram[i]
-    return (dataA, {'min': int(m), 'max': int(M)}, hist)
+    return dataA, {'min': int(m), 'max': int(M)}, hist
 
 
 if __name__ == "__main__":
