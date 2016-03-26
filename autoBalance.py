@@ -70,7 +70,7 @@ def AutoBalance(data, threshold=adjust_thresh, background=0):
         gc.collect()
         # if threshold is set to zero then force no BG clipping
         if threshold == 0:
-            m = np.min(data)
+            m = np.uint8(0)
         data[data > M] = M
         data[data < m] = m
         dataA = np.round((data - m) * (255.0 / (M - m)))
