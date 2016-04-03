@@ -4,13 +4,13 @@ echo 'export MACRO=ThisDir/NRRD2LayeredOBJ.ijm'
 echo 'run in the directory above the volume.nrrd files'
 for file in ./*/volume.nrrd
 do
-  if [ -e ${file/.nrrd/.obj} ] && [ $1 != '-f' ]
+  if [ -e ${file/.nrrd/.obj} ] && [ $1 -ne '-f' ]
   then
     echo OBJ file already exists! Skipping..
   else
     echo processing ${file}...
     # if forcing overwite then delete the old copy
-    if [ $1 == '-f' ] 
+    if [ $1 -eq '-f' ] 
     then
       rm ${file/.nrrd/.obj}
     fi
