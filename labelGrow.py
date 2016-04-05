@@ -4,7 +4,7 @@ import nrrd
 
 if (len(sys.argv) < 3):
     print 'Error: missing arguments!'
-    print 'e.g. python labelGrow.py template.nrrd index.nrrd [intensity_threshold] [iterations]'
+    print 'e.g. python labelGrow.py template.nrrd index.nrrd [intensity_threshold] [iterations] [radius]'
 else:
     print 'Loading template %s...'% (str(sys.argv[1]))
     data1, header1 = nrrd.read(str(sys.argv[1]))
@@ -14,12 +14,15 @@ else:
     header2.pop("endian", None)
     t=20
     s=2
+    if (len(sys.argv) > 5):
+        s= np.uint8(sys.argv[5])
     reps = 400
     b = np.append(np.unique(data2),[256])
     bc = np.arange(1,256)
     if (len(sys.argv) > 3):
         t=np.uint16(sys.argv[3])
-    print 'Growing index for any template intensity above %s'% str(t)
+    print 'Growing index for any template intensity above %s...'% str(t)
+    print 'Using a growth radius of %s...'% str(s)
 
     print np.histogram(data2, bins=b)
     out2 = np.array(data2)
