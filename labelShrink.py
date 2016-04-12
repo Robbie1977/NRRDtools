@@ -19,6 +19,6 @@ else:
         data3=data2
         data3[data1<th]=np.uint8(0)
         print 'Saving result to %s...'% (str(sys.argv[3]))
-        nrrd.write(str(sys.argv[3]), np.uint8(data3), options=header1)    
+        nrrd.write(str(sys.argv[2]), np.uint8(data3), options=header1)    
         print 'done.'
         
