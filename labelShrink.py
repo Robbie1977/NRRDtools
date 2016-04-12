@@ -11,7 +11,7 @@ else:
     data1, header1 = nrrd.read(str(sys.argv[1]))   
     print 'Loading mask: %s...'% (str(sys.argv[2]))
     data2, header2 = nrrd.read(str(sys.argv[2]))  
-    th = np.uint8(sys.argv[2])
+    th = np.uint8(sys.argv[3])
     if (data1.size <> data2.size):
         print '\n\nError: Images must be the same size!!'
     else:
