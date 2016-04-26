@@ -1,11 +1,11 @@
-args = split(getArgument(),","); 
+args = split(getArgument(),",");
 template=args[0];
 signal=args[1];
 //template="/robert/GIT/DrosAdultBRAINdomains/template/JFRCtemplate2010.nrrd"
 //signal="/robert/GIT/DrosAdultBRAINdomains/individualDomainFiles/AdultBrainDomain0002.nrrd"
 if (template=="") exit ("Missing template!");
 if (signal=="") exit ("Missing signal!");
-//setBatchMode(true);
+setBatchMode(true);
 run("Nrrd ...", "load=[" + template + "]");
 run("Nrrd ...", "load=[" + signal + "]");
 ch1=File.getName(template);
@@ -20,4 +20,3 @@ close();
 close();
 close();
 run("Quit");
-
