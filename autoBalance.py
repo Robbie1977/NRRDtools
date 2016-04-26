@@ -65,15 +65,20 @@ def AutoBalance(data, threshold=adjust_thresh, background=0):
                     M = bins[x]
                     temp = x + 1
                     break
+                if (x < 130): # very low or no signal
+                    M = np.uint8(255)
+                    temp = np.uint8(255)
+                    break
             print 'number of high end voxels cut: ' + str(np.sum(histogram[temp:]))
         del temp
         gc.collect()
         # if threshold is set to zero then force no BG clipping
         if threshold == 0:
             m = np.uint8(0)
-        data[data > M] = M
-        data[data < m] = m
-        dataA = np.round((data - m) * (255.0 / (M - m)))
+            M = 255;
+        data[data > M] = M # bring down outlyers to new max value
+        data[data < m] = m # reduce the low noise to zero without reducing the remianing levels
+        dataA = np.round((data) * (255.0 / M)) #scale levels to full 8 bit range
         hist = np.zeros(255, dtype=long)
         for i in range(0, np.shape(bins)[0] - 1):
             hist[bins[i]] = histogram[i]
