@@ -18,5 +18,4 @@ file=replace(signal,ch2,"thumbnail.png");
 saveAs("PNG", file);
 close();
 close();
-close();
 run("Quit");
