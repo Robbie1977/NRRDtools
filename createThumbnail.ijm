@@ -10,7 +10,7 @@ run("Nrrd ...", "load=[" + template + "]");
 run("Nrrd ...", "load=[" + signal + "]");
 ch1=File.getName(template);
 ch2=File.getName(signal);
-title=ch2.replace("ch2","").replace("/","").replace("VFBi","VFB_").replace(" ","_");
+title=replace(replace(replace(replace(ch2,"ch2",""),"/",""),"VFBi","VFB_")," ","_");
 run("Merge Channels...", "c1=" + ch1 + " c2=" + ch2 + " c3=" + ch1 + " create ignore");
 run("Scale...", "x=0.2 y=0.2 z=0.2 width=204 height=102 depth=43 interpolation=Bicubic average create title="+title);
 run("Z Project...", "projection=[Max Intensity]");
