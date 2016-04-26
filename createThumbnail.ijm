@@ -16,6 +16,5 @@ run("Scale...", "x=0.2 y=0.2 z=0.2 width=204 height=102 depth=43 interpolation=B
 run("Z Project...", "projection=[Max Intensity]");
 file=replace(signal,ch2,"thumbnail.png");
 saveAs("PNG", file);
-close();
-close();
 run("Quit");
+eval("script", "System.exit(0);"); 
