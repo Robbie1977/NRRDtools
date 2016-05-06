@@ -12,7 +12,7 @@ do
     then
       echo recent OBJ file already exists! Skipping..
     else
-      echo processing ${file}...
+      echo processing $(pwd)${file/.\//\/}...
       # if forcing overwite then delete the old copy
       if [ "$1" == "-f" ] 
       then
@@ -21,9 +21,9 @@ do
       # generate thresholded surfaces using Fiji/ImageJ
       if [[ $1 == *"h"* ]]
       then
-        xvfb-run -w 10 timeout 2m $FIJI -macro $MACRO $file
+        xvfb-run -w 10 $FIJI -macro $MACRO $file
       else
-        timeout 2m $FIJI -macro $MACRO $file
+        $FIJI -macro $MACRO $file
       fi
       # add basic file header
       echo '# Merge of thresholded surface wavefront .obj without sufaces at 1, 150 and 250 for VirtualFlyBrain.org.' > ${file/.nrrd/.tmp}
