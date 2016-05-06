@@ -13,7 +13,7 @@ do
     then
       echo PNG file already exists! Skipping..
     else
-      echo processing ${file}...
+      echo processing $(pwd)${file/.\//\/}...
       # if forcing overwite then delete the old copy
       if [[ $1 == *"f"* ]]
       then
