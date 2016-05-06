@@ -9,7 +9,7 @@ for file in ./*/volume.nrrd
 do
   if [ -f $file ]
   then
-    if [ -e ${file/volume.nrrd/thumbnail.png} ] && [[ $1 != *"f"* ]] && [ $MACRO -ot ${file/volume.nrrd/thumbnail.png} ]
+    if [ -e ${file/volume.nrrd/thumbnail.png} ] && [[ $1 != *"f"* ]] # && [ $MACRO -ot ${file/volume.nrrd/thumbnail.png} ]
     then
       echo PNG file already exists! Skipping..
     else
