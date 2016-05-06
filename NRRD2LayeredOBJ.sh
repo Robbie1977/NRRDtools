@@ -6,9 +6,9 @@ for file in ./*/volume.nrrd
 do
   if [ -f $file ]
   then
-    if [ -e ${file/.nrrd/.obj} ] && [ "$1" != "-f" ]
+    if [ -e ${file/.nrrd/.obj} ] && [ "$1" != "-f" ] && [ $MACRO -ot $ ${file/.nrrd/.obj} ] && [ ${MACRO/.ijm/.sh} -ot $ ${file/.nrrd/.obj} ]
     then
-      echo OBJ file already exists! Skipping..
+      echo recent OBJ file already exists! Skipping..
     else
       echo processing ${file}...
       # if forcing overwite then delete the old copy
