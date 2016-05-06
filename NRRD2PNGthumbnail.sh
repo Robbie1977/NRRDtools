@@ -20,5 +20,7 @@ do
       # generate thresholded surfaces using Fiji/ImageJ
       xvfb-run $FIJI -macro $MACRO "$TEMPLATE,$file"
     fi
+  else
+    echo Broken link for ${file}! Skipping..
   fi
 done
