@@ -23,9 +23,9 @@ do
        # generate thumbnail using Fiji/ImageJ
       if [[ $1 == *"h"* ]]
       then
-        xvfb-run -w 10 timeout 2m -k $FIJI -macro $MACRO "$TEMPLATE,$file"
+        xvfb-run -w 10 timeout 120 $FIJI -macro $MACRO "$TEMPLATE,$file"
       else
-        timeout -k 2m $FIJI -macro $MACRO "$TEMPLATE,$file"
+        timeout 120 $FIJI -macro $MACRO "$TEMPLATE,$file"
       fi
       
     fi
