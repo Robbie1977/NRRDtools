@@ -17,5 +17,6 @@ for line in lines:
         zh = int(np.ceil(np.ceil(np.float(values[4])) / np.float(header['space directions'][2][2]))+1)
         value = data[xl:xh, yl:yh, zl:zh]
         if np.sum(value) < 1:
+            print(str(sys.argv[1]))
             print(line)
             print(value)
