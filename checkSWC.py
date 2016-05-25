@@ -10,8 +10,8 @@ for line in lines:
     if '#' not in line:
         values = line.split(' ')
         value = data[
-            np.float(values[2]) / np.float(header['space directions'][0][0])][
-            np.float(values[3]) / np.float(header['space directions'][1][1])][
-            np.float(values[4]) / np.float(header['space directions'][2][2])]
+            np.int(np.float(values[2]) / np.float(header['space directions'][0][0]))][
+            np.int(np.float(values[3]) / np.float(header['space directions'][1][1]))][
+            np.int(np.float(values[4]) / np.float(header['space directions'][2][2]))]
         if value < 1:
-            print(values.join(',') + ' = ' + str(value))
+            print(line + ' = ' + str(value))
