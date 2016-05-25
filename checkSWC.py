@@ -20,7 +20,8 @@ for line in lines:
             np.floor(yl):np.ceil(yh)+1][
             np.floor(zl):np.ceil(zh)+1]
         if np.sum(value) < 1:
-            print(line + ' = ' + str(value))
+            print(line)
+            print(value)
             print(str(xl) + ',' + str(xh))
             print(str(yl) + ',' + str(yh))
             print(str(zl) + ',' + str(zh))
