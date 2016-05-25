@@ -15,9 +15,9 @@ for line in lines:
         xh = np.ceil(np.float(values[2])) / np.float(header['space directions'][0][0])
         yh = np.ceil(np.float(values[3])) / np.float(header['space directions'][1][1])
         zh = np.ceil(np.float(values[4])) / np.float(header['space directions'][2][2])
-        value = np.sum(data[
+        value = data[
             np.floor(xl):np.ceil(xh)][
             np.floor(yl):np.ceil(yh)][
-            np.floor(zl):np.ceil(zh)])
-        if value < 1:
+            np.floor(zl):np.ceil(zh)]
+        if np.sum(value) < 1:
             print(line + ' = ' + str(value))
