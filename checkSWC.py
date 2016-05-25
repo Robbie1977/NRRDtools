@@ -25,3 +25,4 @@ for line in lines:
             print(str(xl) + ',' + str(xh))
             print(str(yl) + ',' + str(yh))
             print(str(zl) + ',' + str(zh))
+            print(np.shape(data))
