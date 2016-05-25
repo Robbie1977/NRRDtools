@@ -12,6 +12,9 @@ else:
 
     lines = [line.strip() for line in open(str(sys.argv[1]))]
 
+    name = True
+    count = 0
+
     for line in lines:
         if '#' not in line:
             values = line.split(' ')
@@ -23,6 +26,10 @@ else:
             zh = int(np.ceil(np.ceil(np.float(values[4])) / np.float(header['space directions'][2][2]))+1)
             value = data[xl:xh, yl:yh, zl:zh]
             if np.sum(value) < 1:
-                print(str(sys.argv[1]))
+                if name:
+                    print(str(sys.argv[1]))
+                    name = False
                 print(line)
-                print(value)
+                count += 1
+    if count > 0:
+        print(count)
