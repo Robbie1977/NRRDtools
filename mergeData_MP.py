@@ -4,11 +4,11 @@ import nrrd
 
 if (len(sys.argv) < 2):
     print 'Error: missing arguments!'
-    print 'e.g. python createMask.py imageOut.nrrd imageIn1.nrrd [ImageIn#.nrrd...]'
+    print 'e.g. python mergeData_MP.py imageOut.nrrd imageIn1.nrrd [ImageIn#.nrrd...]'
 else:
     Iout = str(sys.argv[1])
     brightest = 0
-    level = 0;
+    level = 255;
     bright = ""
     errorOn = ""
     dataSum = 0
@@ -26,19 +26,10 @@ else:
                 brightest = np.sum(data)
             else:
                 if (sh == shTest):
-                    level = np.sum(data)
-                    print str(level)
-                    if (level < 3000000000):
-                        dataSum = dataSum + np.uint64(np.divide(data,4))
-                        with open(Iout.replace('.nrrd','').replace('.NRRD','')+".txt", "a") as myfile:
-                            myfile.write(Iin)
-
-                        if (level > brightest):
-                            brightest = level
-                            bright = Iin
-                            print '%s is brightest so far! (%d)'% (Iin, level)
-                    else:
-                        print 'not signal! (%d)'% (level)
+                    if (np.max(data) > level):
+                        level = np.max(data)
+                    print str(np.max(data))
+                    dataSum = dataSum + np.uint64(data)
                 else:
                     print 'ERROR: %s not the same size!' + str(sh) + ' - ' + str(shTest)
         except:
@@ -50,9 +41,7 @@ else:
     dataMin = np.min(dataSum)
     dataMax = np.max(dataSum)
 
-    normData = np.uint8(np.round(np.multiply(np.divide(np.subtract(dataSum, dataMin),np.float(dataMax)),255.0)))
+    normData = np.uint8(dataSum)
 
     nrrd.write(Iout, normData, options=header)
     print 'saved to ' + Iout
-    print 'Brightest image was: %s'% (bright)
-    print 'Error(s) on image(s): %s'% (errorOn)
