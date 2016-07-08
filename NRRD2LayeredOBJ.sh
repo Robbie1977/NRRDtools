@@ -8,7 +8,7 @@ for file in ./*/volume.nrrd
 do
   if [ -f $file ]
   then
-    if [ -e ${file/.nrrd/.obj} ] && { { [ "$1" != "-f" ] && [ $MACRO -ot ${file/.nrrd/.obj} ] && [ ${MACRO/.ijm/.sh} -ot ${file/.nrrd/.obj} ] ; }; || { [ `head ${file/.nrrd/.obj} | grep VirtualFlyBrain.org | wc -l` -lt 1 ] ; }; };
+    if [ -e ${file/.nrrd/.obj} ] && { { [ "$1" != "-f" ] && [ $MACRO -ot ${file/.nrrd/.obj} ] && [ ${MACRO/.ijm/.sh} -ot ${file/.nrrd/.obj} ]} || { [ `head ${file/.nrrd/.obj} | grep VirtualFlyBrain.org | wc -l` -lt 1 ] }};
     then
       echo recent OBJ file already exists! Skipping..
     else
