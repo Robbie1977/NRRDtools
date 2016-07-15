@@ -4,7 +4,7 @@ echo 'export MACRO=ThisDir/NRRD2LayeredOBJ.ijm'
 echo 'run in the directory above the volume.nrrd files'
 echo '-f forces recreation'
 echo '-h runs in headless mode using xvfb-run'
-for file in ./*/volume.nrrd
+for file in {./*/volume.nrrd,./*/domain*.nrrd}
 do
   if [ -f $file ]
   then
