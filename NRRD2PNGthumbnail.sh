@@ -19,17 +19,28 @@ do
       then
         rm ${file/volume.nrrd/thumbnail.png}
       fi
-      
-       # generate thumbnail using Fiji/ImageJ
-      if [[ $1 == *"h"* ]]
+      export MatchTP=$TEMPLATE
+      for background in ${TEMPLATE/001/00*}
+      do 
+        if [ "$(head $file | grep sizes)" == "$(head $background | grep sizes)" ]
+        then 
+          export MatchTP=$background
+        fi
+      done
+      if [ "$(head $file | grep sizes)" == "$(head $MatchTP | grep sizes)" ]
       then
-        xvfb-run -w 10 $FIJI -macro $MACRO "$TEMPLATE,$file"
-      else
-        $FIJI -macro $MACRO "$TEMPLATE,$file"
-      fi
-      
+         # generate thumbnail using Fiji/ImageJ
+        if [[ $1 == *"h"* ]]
+        then
+          xvfb-run -w 10 $FIJI -macro $MACRO "$MatchTP,$file"
+        else
+          $FIJI -macro $MACRO "$MatchTP,$file"
+        fi
+      else 
+        echo "Template not found for ${file}! Skipping.."
+      fi  
     fi
   else
-    echo Broken link for ${file}! Skipping..
+    echo "Broken link for ${file}! Skipping.."
   fi
 done
