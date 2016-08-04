@@ -38,10 +38,9 @@ else:
                     except (RuntimeError, ValueError):
                         data2[x, y, z] = np.uint8(0)
                         print [x, y, z]
-                        print np.median(data1[x - 1:x + 1][y - 1:y + 1][z - 1:z + 1])
                     except IndexError:
                         print [x, y, z]
-        print str(c) + ' points found with theshold of ' + str(th)
+        print str(c) + ' points found with threshold of ' + str(th)
         p += 1.0
     if len(sys.argv) > 2:
         print "Saving result to nrrd " + out.replace('.nrrd', '').replace('.obj', '')
