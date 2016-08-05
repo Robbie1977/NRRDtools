@@ -18,7 +18,7 @@ else:
     print 'Creating 3D max projection...'
     c = 0
     p = 1.0
-    while (c < 15000 and p < 10 and th > 10) or (p < 10 and c < 250000 and th > 10):
+    while (c < 15000 and th > 10) or (p < 10 and c < 250000):
         th = max / p
         for x in [j for (i, j) in zip(np.max(np.max(data1, axis=2), axis=1), range(0, shape[0])) if i >= th]:
             # print str('{0:.1f}'.format((np.float(x) / shape[0]) * 100.0)) + '%'
