@@ -5,8 +5,9 @@ if (len(sys.argv) < 2):
     print 'Error: missing arguments!'
     print 'e.g. python maxProjVol.py file.nrrd [outfile.nrrd]'
 else:
-    print 'Loading %s...' % (str(sys.argv[1]))
-    data1, header1 = nrrd.read(str(sys.argv[1]))
+    in = str(sys.argv[1]).replace('.obj', '.nrrd')
+    print 'Loading %s...' % (in)
+    data1, header1 = nrrd.read(in)
     out = str(sys.argv[1])
     shape = np.shape(data1)
     if len(sys.argv) > 2:
