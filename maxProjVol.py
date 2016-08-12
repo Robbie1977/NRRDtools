@@ -19,6 +19,8 @@ else:
     print 'Creating 3D max projection...'
     c = 0
     p = 1.0
+    hist, bin = np.histogram(data1.flatten())
+    nbin = np.shape(bin)[0]
     while (c < 15000 and th > 10) or (p < 10 and c < 250000):
         th = max / p
         for x in [j for (i, j) in zip(np.max(np.max(data1, axis=2), axis=1), range(0, shape[0])) if i >= th]:
@@ -44,6 +46,8 @@ else:
                         print [x, y, z]
         print str(c) + ' points found with threshold of ' + str(th)
         p += 1.0
+        if (nbin < 3):
+            break
     if len(sys.argv) > 2:
         print "Saving result to nrrd " + out.replace('.nrrd', '').replace('.obj', '')
         nrrd.write(out.replace('.obj', '.nrrd').replace('.nrrd', '_max.nrrd'), np.uint8(data2), options=header1)
