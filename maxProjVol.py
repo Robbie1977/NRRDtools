@@ -19,8 +19,7 @@ else:
     print 'Creating 3D max projection...'
     c = 0
     p = 1.0
-    hist, bins = np.histogram(data1.flatten())
-    binCount = np.shape(bins)[0]
+    binCount = np.nonzero(np.bincount(data1.flatten()))[0].size
     print binCount
     while ((c < 15000 and th > 10) or (p < 10 and c < 250000)) and (binCount > 3 or p == 1.0):
         th = max / p
