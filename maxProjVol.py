@@ -38,7 +38,10 @@ else:
                             vertices += 'v ' + str((x * np.float(header1['space directions'][0][0]))+(random.uniform(-1, 1)*np.float(header1['space directions'][0][0]))) + ' '
                             vertices += str((y * np.float(header1['space directions'][1][1]))+(random.uniform(-1, 1)*np.float(header1['space directions'][1][1]))) + ' '
                             vertices += str((z * np.float(header1['space directions'][2][2]))+(random.uniform(-1, 1)*np.float(header1['space directions'][2][2]))) + ' ' + str(radius) + '\n'
-                            data1[x:x+1, y:y+1, z:z+1] = np.uint(0)
+                            if binCount < 4:
+                                data1[x:x+1, y:y+1, z:z+1] = np.uint(0)
+                            else:
+                                data2[x, y, z] = np.uint8(0)
                     except (RuntimeError, ValueError):
                         data2[x, y, z] = np.uint8(0)
                         print [x, y, z]
