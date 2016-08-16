@@ -20,7 +20,7 @@ else:
     c = 0
     p = 1.0
     hist, bins = np.histogram(data1.flatten())
-    binCount = np.shape(bin)[0]
+    binCount = np.shape(bins)[0]
     while ((c < 15000 and th > 10) or (p < 10 and c < 250000)) and (binCount > 3 or p == 1.0):
         th = max / p
         for x in [j for (i, j) in zip(np.max(np.max(data1, axis=2), axis=1), range(0, shape[0])) if i >= th]:
