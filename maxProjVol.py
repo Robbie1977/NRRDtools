@@ -18,7 +18,9 @@ else:
     print 'Creating 3D max projection...'
     c = 0
     p = 1.0
-    while (c < 15000 and th > 10) or (p < 10 and c < 250000):
+    hist, bins = np.histogram(data1.flatten())
+    binCount = np.shape(bin)[0]
+    while ((c < 15000 and th > 10) or (p < 10 and c < 250000)) and (binCount > 3 or p == 1.0):
         th = max / p
         for x in [j for (i, j) in zip(np.max(np.max(data1, axis=2), axis=1), range(0, shape[0])) if i >= th]:
             # print str('{0:.1f}'.format((np.float(x) / shape[0]) * 100.0)) + '%'
@@ -43,6 +45,48 @@ else:
                         print [x, y, z]
         print str(c) + ' points found with threshold of ' + str(th)
         p += 1.0
+    # adding full surface for binary images (3 due to potential boundary markers)
+    if binCount < 4:
+        for z in [j for (i, j) in zip(np.max(np.max(data1, axis=0), axis=1), range(0, shape[2])) if i >= th]:
+            for y in [j for (i, j) in zip(np.max(data1[:, :, z], axis=1), range(0, shape[1])) if i >= th]:
+                l = [data1[:, y, z].argmax()]
+                if l[0] < shape[0] - 2:
+                    l += [shape[0] - 1 - (data1[:l[0] + 1:-1, y, z].argmax())]
+                for x in l:
+                    try:
+                        if data1[x, y, z] > th:
+                            c += 1
+                            data2[x, y, z] = data1[x, y, z]
+                            radius = data1[x, y, z] / 256.0
+                            vertices += 'v ' + str((x * np.float(header1['space directions'][0][0]))+(random.uniform(-1, 1)*np.float(header1['space directions'][0][0]))) + ' '
+                            vertices += str((y * np.float(header1['space directions'][1][1]))+(random.uniform(-1, 1)*np.float(header1['space directions'][1][1]))) + ' '
+                            vertices += str((z * np.float(header1['space directions'][2][2]))+(random.uniform(-1, 1)*np.float(header1['space directions'][2][2]))) + ' ' + str(radius) + '\n'
+                            data1[x, y, z] = np.uint(0)
+                    except (RuntimeError, ValueError):
+                        data2[x, y, z] = np.uint8(0)
+                        print [x, y, z]
+                    except IndexError:
+                        print [x, y, z]
+        for z in [j for (i, j) in zip(np.max(np.max(data1, axis=0), axis=1), range(0, shape[2])) if i >= th]:
+            for x in [j for (i, j) in zip(np.max(data1[:, :, z], axis=0), range(0, shape[0])) if i >= th]:
+                l = [data1[x, :, z].argmax()]
+                if l[0] < shape[1] - 2:
+                    l += [shape[1] - 1 - (data1[x, :l[0] + 1:-1, z].argmax())]
+                for y in l:
+                    try:
+                        if data1[x, y, z] > th:
+                            c += 1
+                            data2[x, y, z] = data1[x, y, z]
+                            radius = data1[x, y, z] / 256.0
+                            vertices += 'v ' + str((x * np.float(header1['space directions'][0][0]))+(random.uniform(-1, 1)*np.float(header1['space directions'][0][0]))) + ' '
+                            vertices += str((y * np.float(header1['space directions'][1][1]))+(random.uniform(-1, 1)*np.float(header1['space directions'][1][1]))) + ' '
+                            vertices += str((z * np.float(header1['space directions'][2][2]))+(random.uniform(-1, 1)*np.float(header1['space directions'][2][2]))) + ' ' + str(radius) + '\n'
+                            data1[x, y, z] = np.uint(0)
+                    except (RuntimeError, ValueError):
+                        data2[x, y, z] = np.uint8(0)
+                        print [x, y, z]
+                    except IndexError:
+                        print [x, y, z]
     if len(sys.argv) > 2:
         print "Saving result to nrrd " + out.replace('.nrrd', '').replace('.obj', '')
         nrrd.write(out.replace('.obj', '.nrrd').replace('.nrrd', '_max.nrrd'), np.uint8(data2), options=header1)
