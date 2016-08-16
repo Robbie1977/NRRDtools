@@ -68,6 +68,7 @@ else:
                         print [x, y, z]
                     except IndexError:
                         print [x, y, z]
+        print str(c) + ' points found with threshold of ' + str(th)
         for z in [j for (i, j) in zip(np.max(np.max(data1, axis=0), axis=1), range(0, shape[2])) if i >= th]:
             for x in [j for (i, j) in zip(np.max(data1[:, :, z], axis=0), range(0, shape[0])) if i >= th]:
                 l = [data1[x, :, z].argmax()]
@@ -88,6 +89,7 @@ else:
                         print [x, y, z]
                     except IndexError:
                         print [x, y, z]
+        print str(c) + ' points found with threshold of ' + str(th)
     if len(sys.argv) > 2:
         print "Saving result to nrrd " + out.replace('.nrrd', '').replace('.obj', '')
         nrrd.write(out.replace('.obj', '.nrrd').replace('.nrrd', '_max.nrrd'), np.uint8(data2), options=header1)
