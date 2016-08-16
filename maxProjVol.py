@@ -48,8 +48,8 @@ else:
         p += 1.0
     # adding full surface for binary images (3 due to potential boundary markers)
     if binCount < 4:
-        for z in [j for (i, j) in zip(np.max(np.max(data1, axis=0), axis=1), range(0, shape[2])) if i >= th]:
-            for y in [j for (i, j) in zip(np.max(data1[:, :, z], axis=1), range(0, shape[1])) if i >= th]:
+        for z in [j for (i, j) in zip(np.max(np.max(data1, axis=1), axis=0), range(0, shape[2])) if i >= th]:
+            for y in [j for (i, j) in zip(np.max(data1[:, :, z], axis=0), range(0, shape[1])) if i >= th]:
                 l = [data1[:, y, z].argmax()]
                 if l[0] < shape[0] - 2:
                     l += [shape[0] - 1 - (data1[:l[0] + 1:-1, y, z].argmax())]
@@ -69,8 +69,8 @@ else:
                     except IndexError:
                         print [x, y, z]
         print str(c) + ' points found with threshold of ' + str(th)
-        for z in [j for (i, j) in zip(np.max(np.max(data1, axis=0), axis=1), range(0, shape[2])) if i >= th]:
-            for x in [j for (i, j) in zip(np.max(data1[:, :, z], axis=0), range(0, shape[0])) if i >= th]:
+        for z in [j for (i, j) in zip(np.max(np.max(data1, axis=1), axis=0), range(0, shape[2])) if i >= th]:
+            for x in [j for (i, j) in zip(np.max(data1[:, :, z], axis=1), range(0, shape[0])) if i >= th]:
                 l = [data1[x, :, z].argmax()]
                 if l[0] < shape[1] - 2:
                     l += [shape[1] - 1 - (data1[x, :l[0] + 1:-1, z].argmax())]
