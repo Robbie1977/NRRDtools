@@ -21,7 +21,7 @@ run("Scale...", "x=0.2 y=0.2 width=&width height=&height interpolation=Bicubic c
 file=replace(signal,ch2,"thumbnail.png");
 imp = IJ.getImage(); 
 final BufferedImage bi = create(imp); 
-ImageIO.write(bi, "PNG", new File(file)); 
+ImageIO.write(bi, "PNG", new File("transparent-image.png")); 
 // saveAs("PNG", file);
 run("Quit");
 eval("script", "System.exit(0);"); 
