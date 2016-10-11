@@ -19,7 +19,7 @@ run("Z Project...", "projection=[Max Intensity]");
 getDimensions(width, height, channels, slices, frames); 
 run("Scale...", "x=0.2 y=0.2 width=&width height=&height interpolation=Bicubic create title="+title);
 file=replace(signal,ch2,"thumbnail.png");
-// call("ij.Prefs.setTransparentIndex", index); 
+call("ij.Prefs.setTransparentIndex", index); 
 saveAs("PNG", file);
 run("Quit");
 eval("script", "System.exit(0);"); 
