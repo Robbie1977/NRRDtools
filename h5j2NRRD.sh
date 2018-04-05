@@ -4,7 +4,7 @@ echo 'export MACRO=ThisDir/h5j2NRRD.ijm'
 echo 'run in the directory above the volume.nrrd files'
 echo '-f forces recreation'
 echo '-h runs in headless mode using xvfb-run'
-for file in ./*/*.h5j
+for file in $(pwd)/*/*.h5j
 do
   echo $file
   if [ -f $file ]
