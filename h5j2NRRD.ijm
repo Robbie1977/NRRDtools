@@ -8,12 +8,10 @@ run("Split Channels");
 test = isOpen(1)+isOpen(2)+isOpen(3);
 
 while(test>0) {
-	getTitle();
 	ntitle = getTitle();
 	run("Nrrd ... ", "nrrd=" + replace(replace(name,otitle,ntitle), ".h5j", ".nrrd"));
 	close();
-	wait(500);
+	wait(100);
 	test=test-1;
-	print(test);
 }
 eval("script", "System.exit(0);");
