@@ -2,7 +2,7 @@ name = getArgument;
 if (name=="") exit ("No argument!");
 setBatchMode(true);
 open(name);
-wait(500);
+wait(100);
 otitle = getTitle();
 run("Split Channels");
 test = isOpen(1)+isOpen(2)+isOpen(3);
