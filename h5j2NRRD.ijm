@@ -16,4 +16,4 @@ while(test>0) {
 	test=test-1;
 	print(test);
 }
-run("Quit");
+eval("script", "System.exit(0);");
