@@ -2,6 +2,7 @@ name = getArgument;
 if (name=="") exit ("No argument!");
 setBatchMode(true);
 open(name);
+wait(500);
 run("Split Channels");
 close();
 run("Nrrd ... ", "nrrd=" + replace(name, ".h5j", ".nrrd"));
