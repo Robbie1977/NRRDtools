@@ -5,10 +5,15 @@ open(name);
 wait(500);
 otitle = getTitle();
 run("Split Channels");
-while(isOpen(1)) {
+test = isOpen(1)+isOpen(2)+isOpen(3);
+
+while(test>0) {
+	getTitle();
 	ntitle = getTitle();
 	run("Nrrd ... ", "nrrd=" + replace(replace(name,otitle,ntitle), ".h5j", ".nrrd"));
 	close();
-	wait(10);
+	wait(500);
+	test=test-1;
+	print(test);
 }
 run("Quit");
