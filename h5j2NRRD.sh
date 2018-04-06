@@ -26,6 +26,7 @@ do
       if [[ $1 == *"h"* ]]
       then
         xvfb-run -w 10 $FIJI -macro $MACRO $file
+        pkill Xvfb
       else
         $FIJI -macro $MACRO $file
       fi
