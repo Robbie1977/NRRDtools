@@ -8,8 +8,11 @@ for file in $(pwd)/*/*.h5j
 do
   echo $file
   if [ -f $file ]
+  output=${file/.h5j/.nrrd}
+  output=$(echo $output|sed 's|\(.*\)/|\1/C1-|')
+  echo $output
   then
-    if [ -e ${file/.h5j/.nrrd} ] && [ "$1" != "-f" ] 
+    if [ -e ${output} ] && [ "$1" != "-f" ] 
     then
       echo recent nrrd file already exists! Skipping..
     else
