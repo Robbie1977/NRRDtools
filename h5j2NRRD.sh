@@ -30,6 +30,7 @@ do
       else
         $FIJI -macro $MACRO $file
       fi
+      sleep 5s
     fi
   else
     echo Broken file ${file}! Skipping...
