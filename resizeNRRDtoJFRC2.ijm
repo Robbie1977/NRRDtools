@@ -4,7 +4,7 @@ setBatchMode(true);
 run("Nrrd ...", "load=[" + name + "]");
 wait(500);
 run("Canvas Size...", "width=1024 height=512 position=Top-Left zero”);
-run("Nrrd ... ", "nrrd=" + name));
+run("Nrrd ... ", "nrrd=" + name);
 close();
 run("Quit");
 eval("script", "System.exit(0);");
