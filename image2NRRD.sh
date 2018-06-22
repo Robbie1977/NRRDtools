@@ -9,7 +9,7 @@ for file in $(pwd)/*/*.${EXT}
 do
   echo $file
   if [ -f $file ]
-  output=${file/${EXT}/.nrrd}
+  output=${file/.${EXT}/.nrrd}
   output=$(echo $output|sed 's|\(.*\)/|\1/C1-|')
   echo $output
   then
