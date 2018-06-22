@@ -4,12 +4,14 @@ setBatchMode(true);
 open(name);
 wait(500);
 otitle = getTitle();
+dotIndex = indexOf(otitle, "."); 
+oExt = substring(otitle, dotIndex); 
 run("Split Channels");
 test = isOpen(1)+isOpen(2)+isOpen(3);
 
 while(test>0) {
 	ntitle = getTitle();
-	run("Nrrd ... ", "nrrd=" + replace(replace(name,otitle,ntitle), ".h5j", ".nrrd"));
+	run("Nrrd ... ", "nrrd=" + replace(replace(name,otitle,ntitle), oExt, ".nrrd"));
 	close();
 	wait(500);
 	test=test-1;
