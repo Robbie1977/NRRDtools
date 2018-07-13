@@ -10,8 +10,9 @@ do
   echo $file
   if [ -f $file ]
   output=${file/.${EXT}/*.nrrd}
+  output=$(echo $output|sed 's|\(.*\)/|\1/C1-|')
   then
-    if [ -e *${output} ] && [ "$1" != "-f" ] 
+    if [ -e ${output} ] && [ "$1" != "-f" ] 
     then
       echo recent nrrd file already exists! Skipping..
     else
@@ -19,7 +20,7 @@ do
       # if forcing overwite then delete the old copy
       if [ "$1" == "-f" ] 
       then
-        rm *${file/.h5j/*.nrrd}
+        rm ${output/C1-/C*-}
       fi
       # convert n5j into nrrd
       if [[ $1 == *"h"* ]]
