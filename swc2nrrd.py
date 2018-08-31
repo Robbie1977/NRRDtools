@@ -29,6 +29,7 @@ else:
             lineDict[int(splitLine[0])] = {'position':np.array([splitLine[2],splitLine[3],splitLine[4]],dtype=np.float),
                                       'radius':splitLine[5],
                                       'parent':int(splitLine[6])}
+    extent=[1000,1000,1000]
     
     for i in range(3):
         extent[i] = np.max([(np.max([x['position'][i] for x in lineDict.values()])/100).astype(np.int),np.shape(tempData1)[i]])
