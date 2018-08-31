@@ -43,5 +43,5 @@ else:
         p = np.round(np.divide(thisDict['position'],100)).astype(np.int)
         outputImg[p[0]-w:p[0]+w+1,p[1]-w:p[1]+w+1,p[2]-w:p[2]+w+1]=255
 
-    nrrd.write(Iout, outputImg, options=tempHeader1)
+    nrrd.write(Iout, outputImg, header=tempHeader1)
     print('saved to ' + Iout)
