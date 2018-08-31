@@ -31,7 +31,7 @@ else:
                                       'parent':int(splitLine[6])}
     
     for i in range(3):
-        extent[i] = np.max([(np.max([x['position'][i] for x in lineDict.values()])/100).astype(np.int),np.size(tempData1)[i]])
+        extent[i] = np.max([(np.max([x['position'][i] for x in lineDict.values()])/100).astype(np.int),np.shape(tempData1)[i]])
         
     print(extent)
     
