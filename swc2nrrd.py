@@ -36,12 +36,12 @@ else:
         
     print(extent)
     
-    outputImg = np.zeros(extent)
+    outputImg = np.zeros(extent,dtype=np.uint8)
 
     w = 3
     for thisDict in lineDict.values():
         p = np.round(np.divide(thisDict['position'],100)).astype(np.int)
-        outputImg[p[0]-w:p[0]+w+1,p[1]-w:p[1]+w+1,p[2]-w:p[2]+w+1]=255
+        outputImg[p[0]-w:p[0]+w+1,p[1]-w:p[1]+w+1,p[2]-w:p[2]+w+1]=np.uint8(255)
 
-    nrrd.write(Iout, outputImg, header=tempHeader1)
+    nrrd.write(Iout, np.uint8(outputImg), header=tempHeader1)
     print('saved to ' + Iout)
