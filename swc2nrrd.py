@@ -5,8 +5,8 @@ import nrrd
 scale=1
 
 if (len(sys.argv) < 2):
-    print 'Error: missing arguments!'
-    print 'e.g. python swc2nrrd.py template.nrrd neuron.swc Image.nrrd [scale]'
+    print('Error: missing arguments!')
+    print('e.g. python swc2nrrd.py template.nrrd neuron.swc Image.nrrd [scale]')
 else:
     Itemp = str(sys.argv[1])
     Iswc = str(sys.argv[2])
@@ -15,10 +15,10 @@ else:
     if (len(sys.argv) < 3):    
       scale=np.int32(sys.argv[4])
     
-    print 'Loading %s...'% (Itemp)
+    print('Loading %s...'% (Itemp))
     tempData1, tempHeader1 = nrrd.read(Itemp)   
     
-    print 'Loading %s...'% (Iswc)
+    print('Loading %s...'% (Iswc))
     with open(Iswc) as fI:
         swcIn = fI.readlines()
     
@@ -43,4 +43,4 @@ else:
         outputImg[p[0]-w:p[0]+w+1,p[1]-w:p[1]+w+1,p[2]-w:p[2]+w+1]=255
 
     nrrd.write(Iout, outputImg, options=tempHeader1)
-    print 'saved to ' + Iout
+    print('saved to ' + Iout)
