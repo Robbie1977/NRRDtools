@@ -30,12 +30,12 @@ else:
     maxExtent=[1000,1000,1000]
     
     for i in range(3):
-            maxExtent[i] = (np.max([x['position'][i] for x in lineDict.values()])/scale).astype(np.int)
+            maxExtent[i] = np.max([(np.max([x['position'][i] for x in lineDict.values()])/scale).astype(np.int)])
             
     minExtent=[0,0,0]
     
     for i in range(3):
-            minExtent[i] = (np.min([x['position'][i] for x in lineDict.values()])/scale).astype(np.int)
+            minExtent[i] = np.min([(np.min([x['position'][i] for x in lineDict.values()])/scale).astype(np.int)])
     
     print(minExtent)
     print(maxExtent)
