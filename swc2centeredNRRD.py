@@ -47,5 +47,5 @@ else:
         p = np.round(np.divide(thisDict['position'],scale)).astype(np.int)
         outputImg[p[0]-w:p[0]+w+1,p[1]-w:p[1]+w+1,p[2]-w:p[2]+w+1]=np.uint8(255)    
     
-    nrrd.write(Iout, np.uint8(outputImg[minExtent[0]:,minExtent[1]:,minExtent[2]:]))
+    nrrd.write(Iout, np.uint8(outputImg[minExtent[0]:maxExtent[0],minExtent[1]:maxExtent[1],minExtent[2]:maxExtent[2]]))
     print('saved to ' + Iout)
