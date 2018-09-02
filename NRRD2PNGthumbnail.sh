@@ -19,7 +19,7 @@ do
       then
         rm ${file/volume.nrrd/thumbnail.png}
       fi
-      export MatchTP=$TEMPLATE
+      export MatchTP=$file
       for background in ${TEMPLATE/001/00*}
       do 
         if [ "$(head $file | grep sizes)" == "$(head $background | grep sizes)" ]
