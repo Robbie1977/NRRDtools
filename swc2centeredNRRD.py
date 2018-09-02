@@ -2,7 +2,7 @@ import numpy as np
 import sys, os
 import nrrd
 
-scale=1
+scale=100
 
 if (len(sys.argv) < 1):
     print('Error: missing arguments!')
