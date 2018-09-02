@@ -1,5 +1,5 @@
 arg = getArgument();
-if (srg=="") exit ("Missing signal!");
+if (arg=="") exit ("Missing signal!");
 setBatchMode(true);
 run("Nrrd ...", "load=[" + arg + "]");
 run("Multiply...", "value=2 stack");
