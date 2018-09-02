@@ -33,7 +33,7 @@ do
          # generate thumbnail using Fiji/ImageJ
         if [[ $1 == *"h"* ]]
         then
-          xvfb-run -w 10 $FIJI -macro $MACRO "$MatchTP,$file"
+          xvfb-run -w 20 $FIJI -macro $MACRO "$MatchTP,$file"
         else
           $FIJI -macro $MACRO "$MatchTP,$file"
         fi
