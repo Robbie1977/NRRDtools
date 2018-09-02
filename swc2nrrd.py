@@ -36,10 +36,10 @@ else:
     
     if bounded:
         for i in range(3):
-            extent[i] = np.max([(np.max([x['position'][i] for x in lineDict.values()])/100).astype(np.int),np.shape(tempData1)[i]])
+            extent[i] = np.max([(np.max([x['position'][i] for x in lineDict.values()])/scale).astype(np.int),np.shape(tempData1)[i]])
     else:
         for i in range(3):
-            extent[i] = (np.max([x['position'][i] for x in lineDict.values()])/100).astype(np.int)
+            extent[i] = (np.max([x['position'][i] for x in lineDict.values()])/scale).astype(np.int)
             
     print(extent)
     
@@ -47,7 +47,7 @@ else:
 
     w = 3
     for thisDict in lineDict.values():
-        p = np.round(np.divide(thisDict['position'],100)).astype(np.int)
+        p = np.round(np.divide(thisDict['position'],scale)).astype(np.int)
         outputImg[p[0]-w:p[0]+w+1,p[1]-w:p[1]+w+1,p[2]-w:p[2]+w+1]=np.uint8(255)
 
     nrrd.write(Iout, np.uint8(outputImg), header=tempHeader1)
