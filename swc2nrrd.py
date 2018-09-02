@@ -11,11 +11,11 @@ else:
     Itemp = str(sys.argv[1])
     Iswc = str(sys.argv[2])
     Iout = str(sys.argv[3])
-    bounded = true
+    bounded = True
     
     if (len(sys.argv) < 3):    
       scale=np.int32(sys.argv[4])
-      bounded = false
+      bounded = False
       
     
     print('Loading %s...'% (Itemp))
