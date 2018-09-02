@@ -7,6 +7,7 @@ echo '-f forces thumbnail recreation'
 echo '-h runs in headless mode using xvfb-run'
 for file in ./*/volume.nrrd
 do
+  echo "Checking $file"
   if [ -f $file ]
   then
     if [ -f ${file/volume.nrrd/thumbnail.png} ] && [[ $1 != *"f"* ]] && [ $MACRO -ot ${file/volume.nrrd/thumbnail.png} ]
