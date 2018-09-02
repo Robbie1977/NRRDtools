@@ -13,7 +13,7 @@ else:
     
     if (len(sys.argv) < 2):    
       scale=np.int32(sys.argv[3])
-      
+      print(scale)
     
   
     print('Loading %s...'% (Iswc))
