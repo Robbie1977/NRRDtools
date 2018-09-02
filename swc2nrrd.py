@@ -11,9 +11,12 @@ else:
     Itemp = str(sys.argv[1])
     Iswc = str(sys.argv[2])
     Iout = str(sys.argv[3])
+    bounded = true
     
     if (len(sys.argv) < 3):    
       scale=np.int32(sys.argv[4])
+      bounded = false
+      
     
     print('Loading %s...'% (Itemp))
     tempData1, tempHeader1 = nrrd.read(Itemp)   
@@ -31,9 +34,13 @@ else:
                                       'parent':int(splitLine[6])}
     extent=[1000,1000,1000]
     
-    for i in range(3):
-        extent[i] = np.max([(np.max([x['position'][i] for x in lineDict.values()])/100).astype(np.int),np.shape(tempData1)[i]])
-        
+    if bounded:
+        for i in range(3):
+            extent[i] = np.max([(np.max([x['position'][i] for x in lineDict.values()])/100).astype(np.int),np.shape(tempData1)[i]])
+    else:
+        for i in range(3):
+            extent[i] = (np.max([x['position'][i] for x in lineDict.values()])/100).astype(np.int)
+            
     print(extent)
     
     outputImg = np.zeros(extent,dtype=np.uint8)
