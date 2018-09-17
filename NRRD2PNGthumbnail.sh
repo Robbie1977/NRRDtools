@@ -10,13 +10,13 @@ do
   echo "Checking $file"
   if [ -f $file ]
   then
-    if [ -f ${file/volume.nrrd/thumbnail.png} ] && [[ $1 != *"f"* ]] && [ $MACRO -ot ${file/volume.nrrd/thumbnail.png} ]
+    if [ -f ${file/volume.nrrd/thumbnail.png} ] && [[ "$1" != *"f"* ]] && [ $MACRO -ot ${file/volume.nrrd/thumbnail.png} ]
     then
       echo PNG file already exists! Skipping..
     else
       echo processing $(pwd)${file/.\//\/}...
       # if forcing overwite then delete the old copy
-      if [[ $1 == *"f"* ]]
+      if [[ "$1" = *"f"* ]]
       then
         rm ${file/volume.nrrd/thumbnail.png}
       fi
@@ -31,7 +31,7 @@ do
       if [ "$(head $file | grep sizes)" == "$(head $MatchTP | grep sizes)" ]
       then
          # generate thumbnail using Fiji/ImageJ
-        if [[ $1 == *"h"* ]]
+        if [[ "$1" = *"h"* ]]
         then
           xvfb-run -w 20 $FIJI -macro $MACRO "$MatchTP,$file"
         else
