@@ -5,7 +5,7 @@ export FILE=$1
 export TEMPLATE=$2
 export OUTPUT=$3
 
-EXPORT NAME=${FILE/\//_}-${TEMPLATE/\//_}
+export NAME=${FILE/\//_}-${TEMPLATE/\//_}
 
 cmtk make_initial_affine --principal-axes $TEMPLATE $FILE /tmp/initial.xform
 
