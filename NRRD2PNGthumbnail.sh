@@ -6,7 +6,7 @@ echo 'run in the directory above the volume.nrrd files'
 echo '-f forces thumbnail recreation'
 echo '-h runs in headless mode using xvfb-run'
 OPTIONS=$1
-for file in ./*/volume.nrrd
+for file in $(pwd)/*/volume.nrrd
 do
   echo "Checking $file"
   if [ -f $file ]
