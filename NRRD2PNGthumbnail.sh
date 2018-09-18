@@ -15,7 +15,7 @@ do
     then
       echo PNG file already exists! Skipping..
     else
-      echo processing $(pwd)${file/.\//\/}...
+      echo processing ${file}...
       # if forcing overwite then delete the old copy
       if [[ "$OPTIONS" = *"f"* ]]
       then
