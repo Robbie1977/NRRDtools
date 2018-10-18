@@ -10,5 +10,5 @@ else:
     Iin = str(sys.argv[1])
     data1, header1 = nrrd.read(Iin)
 
-    print(list(ndimage.measurements.center_of_mass(Iin)))
+    print(list(np.array(ndimage.measurements.center_of_mass(Iin),dtype=np.int)))
     
