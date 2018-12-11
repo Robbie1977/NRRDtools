@@ -27,11 +27,13 @@ do
         if [ "$(head $file | grep sizes)" == "$(head $background | grep sizes)" ]
         then 
           export MatchTP=$background
+          echo "$file = $MatchTP"
         fi
       done
       if [ "$(head $file | grep sizes)" == "$(head $MatchTP | grep sizes)" ]
       then
          # generate thumbnail using Fiji/ImageJ
+         echo "Generating thumbnail from $MatchTP,$file"
         if [[ "$OPTIONS" = *"h"* ]]
         then
           xvfb-run -w 20 $FIJI -macro $MACRO "$MatchTP,$file"
