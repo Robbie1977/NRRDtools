@@ -19,7 +19,7 @@ do
       # if forcing overwite then delete the old copy
       if [[ "$OPTIONS" = *"f"* ]]
       then
-        rm "${file/volume.nrrd/thumbnail.png}"
+        rm -v "${file/volume.nrrd/thumbnail.png}"
       fi
       export MatchTP=$file
       for background in ${TEMPLATE/001/00*}
