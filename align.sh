@@ -5,8 +5,8 @@ export FILE=$1
 export TEMPLATE=$2
 export OUTPUT=$3
 
-export NAME=${FILE/\//_}-${TEMPLATE/\//_}
-export NAME=${NAME/.nrrd/}
+export NAME=${FILE//\//_}-${TEMPLATE//\//_}
+export NAME=${NAME//.nrrd/}
 
 echo "Aligning $NAME"
 
@@ -26,5 +26,5 @@ export OTHERS=${@/$1 $2 $3 /}
 
 for OTHER in $OTHERS;
 do
-  cmtk reformatx -o $OUTPUT/${OTHER/\//_}-${TEMPLATE/\//_}.nrrd --floating $OTHER $TEMPLATE $OUTPUT/$NAME-warp.xform
+  cmtk reformatx -o $OUTPUT/${OTHER//\//_}-${TEMPLATE//\//_}.nrrd --floating $OTHER $TEMPLATE $OUTPUT/$NAME-warp.xform
 done
