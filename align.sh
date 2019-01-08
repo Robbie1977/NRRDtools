@@ -6,6 +6,7 @@ export TEMPLATE=$2
 export OUTPUT=$3
 
 export NAME=${FILE/\//_}-${TEMPLATE/\//_}
+export NAME=${NAME/.nrrd/}
 
 echo "Aligning $NAME"
 
