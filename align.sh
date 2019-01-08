@@ -7,15 +7,17 @@ export OUTPUT=$3
 
 export NAME=${FILE/\//_}-${TEMPLATE/\//_}
 
-cmtk make_initial_affine --principal-axes $TEMPLATE $FILE /tmp/initial.xform
+echo "Aligning $NAME"
 
-cmtk registration --initial /tmp/initial.xform --dofs 6,9 --auto-multi-levels 4 --outlist /tmp/affine.xform $TEMPLATE $FILE
+cmtk make_initial_affine --principal-axes $TEMPLATE $FILE /tmp/$NAME-initial.xform
 
-rm -rf /tmp/initial.xform
+cmtk registration --initial /tmp/$NAME-initial.xform --dofs 6,9 --auto-multi-levels 4 --outlist /tmp/$NAME-affine.xform $TEMPLATE $FILE
 
-cmtk warp -o $OUTPUT/$NAME-warp.xform --grid-spacing 80 --exploration 30 --coarsest 4 --accuracy 0.4 --refine 4 --energy-weight 1e-1 $TEMPLATE $FILE /tmp/affine.xform
+rm -rf /tmp/$NAME-initial.xform
 
-rm -rf /tmp/affine.xform
+cmtk warp -o $OUTPUT/$NAME-warp.xform --grid-spacing 80 --exploration 30 --coarsest 4 --accuracy 0.4 --refine 4 --energy-weight 1e-1 $TEMPLATE $FILE /tmp/$NAME-affine.xform
+
+rm -rf /tmp/$NAME-affine.xform
 
 cmtk reformatx -o $OUTPUT/$NAME.nrrd --floating $FILE $TEMPLATE $OUTPUT/$NAME-warp.xform
 
