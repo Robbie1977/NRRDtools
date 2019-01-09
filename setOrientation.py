@@ -15,8 +15,8 @@ else:
     print header1
     print 'saving...'
     if (len(sys.argv) == 4):
-      nrrd.write(str(sys.argv[3]), data1, options=header1)
+      nrrd.write(str(sys.argv[3]), data1, header1)
       print 'saved to ' + str(sys.argv[3])
     else:
-      nrrd.write(str(sys.argv[1]), data1, options=header1)
+      nrrd.write(str(sys.argv[1]), data1, header1)
       print 'saved to ' + str(sys.argv[1])
