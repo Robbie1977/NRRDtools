@@ -5,7 +5,7 @@ import nrrd
 if (len(sys.argv) < 2):
     print 'Error: missing arguments!'
     print 'e.g. python rotateRPI2LPS.py imageIn.nrrd [ImageOut.nrrd]'
-    print 'rotate RPI to LPS orientation for CMTK (as it doesn't like RPI)'
+    print 'rotate RPI to LPS orientation for CMTK (as it doesn`t like RPI)'
 else:
     print 'Processing %s...'% (str(sys.argv[1]))
     data1, header1 = nrrd.read(str(sys.argv[1]))
