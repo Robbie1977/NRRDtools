@@ -8,7 +8,7 @@ if (len(sys.argv) < 2):
     print 'rotate RPI to LPS orientation for CMTK (as it doesn`t like RPI)'
 else:
     print 'Processing %s...'% (str(sys.argv[1]))
-    ext = "_LPS"
+    ext = '_LPS'
     data1, header1 = nrrd.read(str(sys.argv[1]))
     print header1
     header1['space'] = 'left-posterior-superior'
@@ -18,7 +18,7 @@ else:
       print 'RPI orientation detected so rotating to LPS...'
       data2 = np.flip(data1, (0, 2))
       data1 = data2
-      ext = "_RPI->LPS"
+      ext = '_RPI->LPS'
     print 'saving...'
     if (len(sys.argv) == 3):
       nrrd.write(str(sys.argv[2]), data1, header1)
