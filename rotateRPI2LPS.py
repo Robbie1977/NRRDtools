@@ -17,7 +17,7 @@ else:
     print 'saving...'
     if (len(sys.argv) == 3):
       nrrd.write(str(sys.argv[2]), data2, header1)
-      print 'saved to ' + str(sys.argv[3])
+      print 'saved to ' + str(sys.argv[2])
     else:
-      nrrd.write(str(sys.argv[1]), data2, header1)
-      print 'saved to ' + str(sys.argv[1])
+      nrrd.write(str(sys.argv[1]).replace('.nrrd','_LPS.nrrd'), data2, header1)
+      print 'saved to ' + str(sys.argv[1]).replace('.nrrd','_LPS.nrrd')
