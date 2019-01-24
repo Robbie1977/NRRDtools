@@ -20,11 +20,11 @@ cmtk warp -o $OUTPUT/$NAME-warp.xform --grid-spacing 80 --exploration 30 --coars
 
 rm -rf /tmp/$NAME-affine.xform
 
-cmtk reformatx -o $OUTPUT/$NAME.nrrd --floating $FILE $TEMPLATE $OUTPUT/$NAME-warp.xform
-
 export OTHERS=${@/$1 $2 $3 /}
 
 for OTHER in $OTHERS;
 do
-  cmtk reformatx -o $OUTPUT/${OTHER//\//_}-${TEMPLATE//\//_}.nrrd --floating $OTHER $TEMPLATE $OUTPUT/$NAME-warp.xform
+  export FILE=${OTHER//\//_}-${TEMPLATE//\//_}
+  export FILE=${FILE//.nrrd/}
+  cmtk reformatx -o $OUTPUT/${FILE}.nrrd --floating $OTHER $TEMPLATE $OUTPUT/$NAME-warp.xform
 done
