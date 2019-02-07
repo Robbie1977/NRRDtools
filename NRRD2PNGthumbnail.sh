@@ -28,10 +28,7 @@ do
         then 
           export MatchTP=$background
           echo "$file = $MatchTP"
-          if [ "$(head $file | grep 'space directions')" == "$(head $background | grep 'space directions')" ]
-          then
-            break
-          fi
+          break
         fi
       done
       if [ "$(head $file | grep sizes)" == "$(head $MatchTP | grep sizes)" ]
