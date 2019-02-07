@@ -40,9 +40,9 @@ do
          echo "Generating thumbnail from $MatchTP,$file"
         if [[ "$OPTIONS" = *"h"* ]]
         then
-          xvfb-run -w 20 $FIJI -macro $MACRO "$MatchTP,$file"
+          xvfb-run -w 20 timeout 20m $FIJI -macro $MACRO "$MatchTP,$file"
         else
-          $FIJI -macro $MACRO "$MatchTP,$file"
+          timeout 20m $FIJI -macro $MACRO "$MatchTP,$file"
         fi
       else 
         echo "Template not found for ${file}! Skipping.."
