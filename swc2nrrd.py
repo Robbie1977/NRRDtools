@@ -51,7 +51,7 @@ else:
 
     
     for thisDict in lineDict.values():
-        p = np.round(np.divide(np.divide(thisDict['position'],[tempHeader1['space directions'][0][0],tempHeader1['space directions'][1][1],tempHeader1['space directions'][2][2]])),scale).astype(np.int)
+        p = np.round(np.divide(np.divide(thisDict['position'],[tempHeader1['space directions'][0][0],tempHeader1['space directions'][1][1],tempHeader1['space directions'][2][2]]),scale)).astype(np.int)
         outputImg[p[0]-w:p[0]+w+1,p[1]-w:p[1]+w+1,p[2]-w:p[2]+w+1]=np.uint8(255)
 
     nrrd.write(Iout, np.uint8(outputImg), header=tempHeader1)
