@@ -6,17 +6,21 @@ scale=1
 
 if (len(sys.argv) < 2):
     print('Error: missing arguments!')
-    print('e.g. python swc2nrrd.py template.nrrd neuron.swc Image.nrrd [scale]')
+    print('e.g. python swc2nrrd.py template.nrrd neuron.swc Image.nrrd [width] [scale]')
 else:
     Itemp = str(sys.argv[1])
     Iswc = str(sys.argv[2])
     Iout = str(sys.argv[3])
     bounded = True
     
-    if (len(sys.argv) < 3):    
-      scale=np.int32(sys.argv[4])
+    w = 0
+    if (len(sys.argv) > 4):    
+      w=np.int32(sys.argv[4])
+     
+    if (len(sys.argv) > 5):    
+      scale=np.int32(sys.argv[5])
       bounded = False
-      
+     
     
     print('Loading %s...'% (Itemp))
     tempData1, tempHeader1 = nrrd.read(Itemp)   
@@ -45,9 +49,9 @@ else:
     
     outputImg = np.zeros(extent,dtype=np.uint8)
 
-    w = 3
+    
     for thisDict in lineDict.values():
-        p = np.round(np.divide(thisDict['position'],scale)).astype(np.int)
+        p = np.round(np.divide(np.divide(thisDict['position'],[tempHeader1['space directions'][0][0],tempHeader1['space directions'][1][1],tempHeader1['space directions'][2][2]])),scale).astype(np.int)
         outputImg[p[0]-w:p[0]+w+1,p[1]-w:p[1]+w+1,p[2]-w:p[2]+w+1]=np.uint8(255)
 
     nrrd.write(Iout, np.uint8(outputImg), header=tempHeader1)
