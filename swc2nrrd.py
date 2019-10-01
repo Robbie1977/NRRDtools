@@ -77,7 +77,7 @@ else:
     for thisDict in lineDict.values():
         p = np.round(np.divide(np.divide(thisDict['position'],[tempHeader1['space directions'][0][0],tempHeader1['space directions'][1][1],tempHeader1['space directions'][2][2]]),scale)).astype(np.int)
         
-        if w==0 and float(thisDict['radius'])>0:
+        if w<1 and float(thisDict['radius'])>0:
             r=float(thisDict['radius'])
         else:
             r=w
