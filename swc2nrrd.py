@@ -81,8 +81,11 @@ else:
             r=float(thisDict['radius'])
         else:
             r=w
-        point = np.multiply(sphere(extent, r, p),np.uint8(255)).astype(np.uint8)
-        outputImg = np.maximum(outputImg, point).astype(np.uint8)
+        if r==0:
+            outputImg[p]=np.uint8(255)
+        else:
+            point = np.multiply(sphere(extent, r, p),np.uint8(255)).astype(np.uint8)
+            outputImg = np.maximum(outputImg, point).astype(np.uint8)
 
     nrrd.write(Iout, np.uint8(outputImg), header=tempHeader1)
     print('saved to ' + Iout)
