@@ -8,6 +8,9 @@ def sphere(shape, radius, position):
     # radius is a int or float in px
     semisizes = (radius,) * 3
 
+    #ignore divide by zero
+    np.seterr(divide='ignore', invalid='ignore') 
+    
     # genereate the grid for the support points
     # centered at the position indicated by position
     grid = [slice(-x0, dim - x0) for x0, dim in zip(position, shape)]
@@ -19,6 +22,7 @@ def sphere(shape, radius, position):
         arr += (np.abs(x_i / semisize) ** 2)
     # the inner part of the sphere will have distance below 1
     return arr <= 1.0
+
 
 
 scale=1
