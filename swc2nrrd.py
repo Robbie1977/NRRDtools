@@ -73,8 +73,8 @@ else:
     for thisDict in lineDict.values():
         p = np.round(np.divide(np.divide(thisDict['position'],[tempHeader1['space directions'][0][0],tempHeader1['space directions'][1][1],tempHeader1['space directions'][2][2]]),scale)).astype(np.int)
         
-        if w==0 and thisDict['radius']>0:
-            r=thisDict['radius']
+        if w==0 and float(thisDict['radius'])>0:
+            r=float(thisDict['radius'])
         else:
             r=w
         point = np.multiply(sphere(extent, r, p),np.uint8(255)).astype(np.uint8)
