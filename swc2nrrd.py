@@ -2,6 +2,25 @@ import numpy as np
 import sys, os
 import nrrd
 
+def sphere(shape, radius, position):
+    # assume shape and position are both a 3-tuple of int or float
+    # the units are pixels / voxels (px for short)
+    # radius is a int or float in px
+    semisizes = (radius,) * 3
+
+    # genereate the grid for the support points
+    # centered at the position indicated by position
+    grid = [slice(-x0, dim - x0) for x0, dim in zip(position, shape)]
+    position = np.ogrid[grid]
+    # calculate the distance of all points from `position` center
+    # scaled by the radius
+    arr = np.zeros(shape, dtype=float)
+    for x_i, semisize in zip(position, semisizes):
+        arr += (np.abs(x_i / semisize) ** 2)
+    # the inner part of the sphere will have distance below 1
+    return arr <= 1.0
+
+
 scale=1
 
 if (len(sys.argv) < 2):
@@ -49,10 +68,17 @@ else:
     
     outputImg = np.zeros(extent,dtype=np.uint8)
 
+    r=0
     
     for thisDict in lineDict.values():
         p = np.round(np.divide(np.divide(thisDict['position'],[tempHeader1['space directions'][0][0],tempHeader1['space directions'][1][1],tempHeader1['space directions'][2][2]]),scale)).astype(np.int)
-        outputImg[p[0]-w:p[0]+w+1,p[1]-w:p[1]+w+1,p[2]-w:p[2]+w+1]=np.uint8(255)
+        
+        if w==0 AND thisDict['radius']>0:
+            r=thisDict['radius']
+        else:
+            r=w
+        point = np.multiply(sphere(extent, r, p),np.uint8(255)).astype(np.uint8)
+        outputImg = np.maximum(outputImg, point).astype(np.uint8)
 
     nrrd.write(Iout, np.uint8(outputImg), header=tempHeader1)
     print('saved to ' + Iout)
