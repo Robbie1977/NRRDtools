@@ -76,7 +76,7 @@ else:
     
     for thisDict in lineDict.values():
         r=w
-        p = np.clip(np.floor(np.divide(np.divide(thisDict['position'],[tempHeader1['space directions'][0][0],tempHeader1['space directions'][1][1],tempHeader1['space directions'][2][2]]),scale)),[0,0,0],extent).astype(np.int)
+        p = np.clip(np.floor(np.divide(np.divide(thisDict['position'],[tempHeader1['space directions'][0][0],tempHeader1['space directions'][1][1],tempHeader1['space directions'][2][2]]),scale)),[0,0,0],np.subtract(extent,1)).astype(np.int)
         if float(thisDict['radius'])>r:
             r=float(thisDict['radius'])
         if r<1:
