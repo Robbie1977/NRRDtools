@@ -81,7 +81,7 @@ else:
             r=float(thisDict['radius'])
         else:
             r=w
-        if r==0:
+        if r<1:
             outputImg[p]=np.uint8(255)
         else:
             point = np.multiply(sphere(extent, r, p),np.uint8(255)).astype(np.uint8)
