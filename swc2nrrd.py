@@ -82,7 +82,7 @@ else:
         else:
             r=w
         if r<1:
-            outputImg[p]=np.uint8(255)
+            outputImg[p[0],p[1],p[2]]=np.uint8(255)
         else:
             point = np.multiply(sphere(extent, r, p),np.uint8(255)).astype(np.uint8)
             outputImg = np.maximum(outputImg, point).astype(np.uint8)
