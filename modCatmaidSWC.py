@@ -14,7 +14,6 @@ else:
     out = []
 
     name = True
-    count = 0
 
     for line in lines:
         if '#' not in line:
@@ -27,13 +26,12 @@ else:
                 values[5] = np.divide(np.double(values[5]),1000.0)
                 if np.int(values[0]) == 1 and np.int(values[1]) == 0:
                   values[1] = np.int(1)
-            out[count] = values.join(' ')
+            out.append(values.join(' '))
         else:
             if 'Created by' not in line:
-              out[count] = line
+              out.append(line)
             else:
-              out[count] = line + '; Scaled to microns (1/1000) by https://github.com/Robbie1977/NRRDtools/blob/master/modCatmaidSWC.py'
-        count += 1
+              out.append(line + '; Scaled to microns (1/1000) by https://github.com/Robbie1977/NRRDtools/blob/master/modCatmaidSWC.py')
     File_object = open(str(sys.argv[1]),"w")
     File_object.writelines(out) 
     File_object.close() 
