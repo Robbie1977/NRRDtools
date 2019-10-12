@@ -33,6 +33,6 @@ else:
             else:
               out.append(line + '; Scaled to microns (1/1000) by https://github.com/Robbie1977/NRRDtools/blob/master/modCatmaidSWC.py')
     File_object = open(str(sys.argv[1]),"w")
-    File_object.writelines(out) 
+    File_object.writelines('\n'.join(out)) 
     File_object.close() 
     print('Converted ' + str(sys.argv[1]))
