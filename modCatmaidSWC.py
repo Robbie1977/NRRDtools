@@ -25,7 +25,7 @@ else:
             
             if np.double(values[5]) > 0:
                 values[5] = np.divide(np.double(values[5]),1000.0)
-                if np.int(values[0]) == 1 && np.int(values[1]) == 0:
+                if np.int(values[0]) == 1 and np.int(values[1]) == 0:
                   values[1] = np.int(1)
             out[count] = values.join(' ')
         else:
