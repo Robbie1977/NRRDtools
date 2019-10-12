@@ -1,4 +1,4 @@
-# Script for converting units to microns (/1000) also add swc soma label.  
+# Script for converting nanometer units to microns also adding swc soma label.  
 
 import sys
 import numpy as np
