@@ -18,14 +18,14 @@ else:
     for line in lines:
         if '#' not in line:
             values = line.split(' ')
-            values[2] = np.divide(np.double(values[2]),1000.0)
-            values[3] = np.divide(np.double(values[3]),1000.0)
-            values[4] = np.divide(np.double(values[4]),1000.0)
+            values[2] = str(np.divide(np.double(values[2]),1000.0))
+            values[3] = str(np.divide(np.double(values[3]),1000.0))
+            values[4] = str(np.divide(np.double(values[4]),1000.0))
             
             if np.double(values[5]) > 0:
-                values[5] = np.divide(np.double(values[5]),1000.0)
+                values[5] = str(np.divide(np.double(values[5]),1000.0))
                 if np.int(values[0]) == 1 and np.int(values[1]) == 0:
-                  values[1] = np.int(1)
+                  values[1] = str(np.int(1))
             out.append(' '.join(values))
         else:
             if 'Created by' not in line:
