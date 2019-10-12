@@ -37,3 +37,4 @@ else:
     File_object = open(str(sys.argv[1]),"w")
     File_object.writelines(L) for L = out
     File_object.close() 
+    print('Converted ' + str(sys.argv[1]))
