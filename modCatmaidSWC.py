@@ -35,6 +35,6 @@ else:
               out[count] = line + '; Scaled to microns (1/1000) by https://github.com/Robbie1977/NRRDtools/blob/master/modCatmaidSWC.py'
         count += 1
     File_object = open(str(sys.argv[1]),"w")
-    File_object.writelines(L) for L = out
+    File_object.writelines(L) for L in out
     File_object.close() 
     print('Converted ' + str(sys.argv[1]))
