@@ -19,8 +19,7 @@ getDimensions(width, height, channels, slices, frames);
 print("Stack Dimentions:"+(width*voxelWidth)+" x "+(height*voxelHeight)+" x "+(slices*voxelDepth) + " " + unit);
 if ((slices*voxelDepth) > (width*voxelWidth)) {
   print("Reslicing...");
-  run("Reslice [/]...", "output=0.500 start=Left rotate avoid");
-  voxelWidth=voxelDepth;
+  run("Reslice [/]...", "output="+voxelWidth+" start=Left rotate avoid");
 }
 run("Z Project...", "projection=[Max Intensity]");
 getDimensions(width, height, channels, slices, frames);
