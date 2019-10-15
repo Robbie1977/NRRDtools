@@ -18,6 +18,10 @@ getVoxelSize(voxelWidth, voxelHeight, voxelDepth, unit);
 getDimensions(width, height, channels, slices, frames);
 print("Stack Dimentions:"+(width*voxelWidth)+" x "+(height*voxelHeight)+" x "+(slices*voxelDepth) + " " + unit);
 if ((slices*voxelDepth) > (width*voxelWidth)) {
+  print("Scaling Z...");
+  scale=voxelDepth/voxelWidth;
+  depth=slices*scale;
+  run("Scale...", "x=1.0 y=1.0 z="+scale+" width="+width+" height="+height+" depth="+depth);
   print("Reslicing...");
   run("Reslice [/]...", "output="+voxelWidth+" start=Left rotate avoid");
 }
