@@ -14,16 +14,18 @@ ch1=File.getName(template);
 ch2=File.getName(signal);
 title=replace(replace(replace(replace(ch2,"ch2",""),"/",""),"VFBi","VFB_")," ","_");
 run("Merge Channels...", "c1=" + ch1 + " c2=" + ch2 + " c3=" + ch1 + " create ignore");
+getVoxelSize(voxelWidth, voxelHeight, voxelDepth, unit)
 getDimensions(width, height, channels, slices, frames);
-print("Stack Dimentions:"+width+" x "+height+" x "+slices);
-if (slices > width) {
+print("Stack Dimentions:"+(width*voxelWidth)+" x "+(height*voxelHeight)+" x "+(slices*voxelDepth) + " " + unit);
+if ((slices*voxelDepth) > (width*voxelWidth)) {
   print("Reslicing...");
   run("Reslice [/]...", "output=0.500 start=Left rotate avoid");
+  voxelWidth=voxelDepth;
 }
 run("Z Project...", "projection=[Max Intensity]");
 getDimensions(width, height, channels, slices, frames);
 print("Image Dimentions:"+width+" x "+height); 
-if (height > width) {
+if ((height*voxelHeight) > (width*voxelWidth)) {
   print("Rotating...");
   run("Rotate 90 Degrees Left");
 }
