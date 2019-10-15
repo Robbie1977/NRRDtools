@@ -14,6 +14,10 @@ ch1=File.getName(template);
 ch2=File.getName(signal);
 title=replace(replace(replace(replace(ch2,"ch2",""),"/",""),"VFBi","VFB_")," ","_");
 run("Merge Channels...", "c1=" + ch1 + " c2=" + ch2 + " c3=" + ch1 + " create ignore");
+getVoxelSize(width, height, depth, unit);
+if (depth > width) {
+  run("Reslice [/]...", "output=0.500 start=Left rotate avoid");
+}
 run("Z Project...", "projection=[Max Intensity]");
 getDimensions(width, height, channels, slices, frames); 
 print("Image Dimentions:"+width+" x "+height); 
