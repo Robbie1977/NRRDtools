@@ -14,7 +14,7 @@ ch1=File.getName(template);
 ch2=File.getName(signal);
 title=replace(replace(replace(replace(ch2,"ch2",""),"/",""),"VFBi","VFB_")," ","_");
 run("Merge Channels...", "c1=" + ch1 + " c2=" + ch2 + " c3=" + ch1 + " create ignore");
-getVoxelSize(voxelWidth, voxelHeight, voxelDepth, unit)
+getVoxelSize(voxelWidth, voxelHeight, voxelDepth, unit);
 getDimensions(width, height, channels, slices, frames);
 print("Stack Dimentions:"+(width*voxelWidth)+" x "+(height*voxelHeight)+" x "+(slices*voxelDepth) + " " + unit);
 if ((slices*voxelDepth) > (width*voxelWidth)) {
