@@ -15,7 +15,7 @@ else:
       print 'Changing: ' + str(header2)
       print 'Into:     ' + str(header1)
       print 'Saving...'
-      nrrd.write(str(sys.argv[2]), data1, options=header1)
+      nrrd.write(str(sys.argv[2]), data1, header1)
       print 'Updated: ' + str(sys.argv[2])
     else:
       print 'Images must be the same size!'
