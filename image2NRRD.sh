@@ -25,10 +25,10 @@ do
       # convert n5j into nrrd
       if [[ $1 == *"h"* ]]
       then
-        timeout 15m xvfb-run -w 10 $FIJI -macro $MACRO $file
+        gtimeout 15m xvfb-run -w 10 $FIJI -macro $MACRO $file
         pkill Xvfb
       else
-        timeout 15m $FIJI -macro $MACRO $file
+        gtimeout 15m $FIJI -macro $MACRO $file
       fi
       sleep 5s
     fi
