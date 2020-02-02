@@ -2,6 +2,7 @@ echo 'before running specify the fiji executable and macro (located in this dir)
 echo 'export FIJI=path/fiji'
 echo 'export MACRO=ThisDir/image2NRRD.ijm'
 echo 'export EXT=h5j'
+echo 'export TIMEOUT="gtimeout 15m "'
 echo 'run in the directory above the volume.nrrd files'
 echo '-f forces recreation'
 echo '-h runs in headless mode using xvfb-run'
@@ -25,10 +26,10 @@ do
       # convert n5j into nrrd
       if [[ $1 == *"h"* ]]
       then
-        gtimeout 15m xvfb-run -w 10 $FIJI -macro $MACRO $file
+        $TIMEOUT xvfb-run -w 10 $FIJI -macro $MACRO $file
         pkill Xvfb
       else
-        gtimeout 15m $FIJI -macro $MACRO $file
+        $TIMEOUT $FIJI -macro $MACRO $file
       fi
       sleep 5s
     fi
