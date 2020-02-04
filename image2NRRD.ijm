@@ -11,7 +11,7 @@ test = isOpen(1)+isOpen(2)+isOpen(3);
 
 while(test>0) {
 	ntitle = getTitle();
-	run("Nrrd ... ", "nrrd=" + replace(replace(name,otitle,ntitle), oExt, "-C"+test+".nrrd"));
+	run("Nrrd ... ", "nrrd=" + replace(replace(name,otitle,ntitle), oExt, ".nrrd"));
 	close();
 	wait(500);
 	test=test-1;
