@@ -41,7 +41,7 @@ else:
       w=np.int32(sys.argv[4])
      
     if (len(sys.argv) > 5):    
-      scale=np.int32(sys.argv[5])
+      scale=np.float(sys.argv[5])
       bounded = False
      
     
@@ -63,22 +63,28 @@ else:
     
     if bounded:
         for i in range(3):
-            extent[i] = np.max([(np.max([x['position'][i] for x in lineDict.values()])/scale).astype(np.int),np.shape(tempData1)[i]])
+            extent[i] = np.max([(np.max([x['position'][i] for x in lineDict.values()])/scale).astype(np.int)],tempHeader1['sizes'][i])
     else:
         for i in range(3):
             extent[i] = (np.max([x['position'][i] for x in lineDict.values()])/scale).astype(np.int)
-            
+
+
     print(extent)
     
+    extent=tempHeader1['sizes']
+
+    print(extent)
+
     outputImg = np.zeros(extent,dtype=np.uint8)
+
 
     r=0
     
     for thisDict in lineDict.values():
         r=w
         p = np.clip(np.floor(np.divide(np.divide(thisDict['position'],[tempHeader1['space directions'][0][0],tempHeader1['space directions'][1][1],tempHeader1['space directions'][2][2]]),scale)),[0,0,0],np.subtract(extent,1)).astype(np.int)
-        if float(thisDict['radius'])>r:
-            r=float(thisDict['radius'])
+        if np.divide(float(thisDict['radius']),scale)>r:
+            r=np.divide(float(thisDict['radius']),scale)
         if r<1:
             outputImg[p[0],p[1],p[2]]=np.uint8(255)
         else:
