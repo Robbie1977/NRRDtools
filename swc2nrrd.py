@@ -29,11 +29,12 @@ scale=1
 
 if (len(sys.argv) < 2):
     print('Error: missing arguments!')
-    print('e.g. python swc2nrrd.py template.nrrd neuron.swc Image.nrrd [width] [scale]')
+    print('e.g. python swc2nrrd.py template.nrrd neuron.swc Image.nrrd [width] [scale] [Xoffset,Yoffset,Zoffset]')
 else:
     Itemp = str(sys.argv[1])
     Iswc = str(sys.argv[2])
     Iout = str(sys.argv[3])
+    offset = [0.0,0.0,0.0]
     bounded = True
     
     w = 0
@@ -43,6 +44,9 @@ else:
     if (len(sys.argv) > 5):    
       scale=np.float(sys.argv[5])
       bounded = False
+
+    if (len(sys.argv) > 6):    
+      offset=np.float(sys.argv[6].split(','))
      
     
     print('Loading %s...'% (Itemp))
@@ -56,7 +60,7 @@ else:
     for thisLine in swcIn:
         if thisLine[0]!='#':
             splitLine = thisLine.split(" ")
-            lineDict[int(splitLine[0])] = {'position':np.array([splitLine[2],splitLine[3],splitLine[4]],dtype=np.float),
+            lineDict[int(splitLine[0])] = {'position':np.array([splitLine[2]+offset[0],splitLine[3]+offset[1],splitLine[4]+offset[2]],dtype=np.float),
                                       'radius':splitLine[5],
                                       'parent':int(splitLine[6])}
     extent=[1000,1000,1000]
