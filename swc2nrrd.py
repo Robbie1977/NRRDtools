@@ -60,20 +60,9 @@ else:
     for thisLine in swcIn:
         if thisLine[0]!='#':
             splitLine = thisLine.split(" ")
-            lineDict[int(splitLine[0])] = {'position':np.array([splitLine[2]+offset[0],splitLine[3]+offset[1],splitLine[4]+offset[2]],dtype=np.float),
+            lineDict[int(splitLine[0])] = {'position':np.array([np.float(splitLine[2])+offset[0],np.float(splitLine[3])+offset[1],np.float(splitLine[4])+offset[2]],dtype=np.float),
                                       'radius':splitLine[5],
                                       'parent':int(splitLine[6])}
-    extent=[1000,1000,1000]
-    
-    if bounded:
-        for i in range(3):
-            extent[i] = np.max([(np.max([x['position'][i] for x in lineDict.values()])/scale).astype(np.int)],tempHeader1['sizes'][i])
-    else:
-        for i in range(3):
-            extent[i] = (np.max([x['position'][i] for x in lineDict.values()])/scale).astype(np.int)
-
-
-    print(extent)
     
     extent=tempHeader1['sizes']
 
