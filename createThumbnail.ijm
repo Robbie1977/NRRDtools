@@ -17,7 +17,7 @@ run("Merge Channels...", "c1=" + ch1 + " c2=" + ch2 + " c3=" + ch1 + " create ig
 getVoxelSize(voxelWidth, voxelHeight, voxelDepth, unit);
 getDimensions(width, height, channels, slices, frames);
 print("Stack Dimentions:"+(width*voxelWidth)+" x "+(height*voxelHeight)+" x "+(slices*voxelDepth) + " " + unit);
-if ((slices*voxelDepth) > (width*voxelWidth)) {
+if ((slices*voxelDepth) > ((width*voxelWidth)+20)) {
   print("Scaling Z...");
   scale=voxelDepth/voxelWidth;
   depth=slices*scale;
