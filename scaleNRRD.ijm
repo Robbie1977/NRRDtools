@@ -30,7 +30,9 @@ newDepth = round(newDepth);
 print("Scalling from [" + width + "," + height + "," + slices + "] to [" + newWidth + "," + newHeight + "," + newDepth + "]...");
 run("Scale...", "x="+x+" y="+y+" z="+z+" width="+newWidth+" height="+newHeight+" depth="+newDepth+" interpolation=Bicubic average process create title=" + outFile);
 print("Saving to " + outFile);
+setKeyDown("alt");
 run("Nrrd ... ", "nrrd=" + outFile);
+setKeyDown("none");
 
 run("Quit");
 eval("script", "System.exit(0);"); 
