@@ -25,14 +25,18 @@ if ((height*voxelHeight) > ((width*voxelWidth)+20)) {
   getVoxelSize(voxelWidth, voxelHeight, voxelDepth, unit);
   getDimensions(width, height, channels, slices, frames);
   print("Stack Dimentions:"+(width*voxelWidth)+" x "+(height*voxelHeight)+" x "+(slices*voxelDepth) + " " + unit);
-}
-if ((slices*voxelDepth) > ((width*voxelWidth)+40)) {
-  print("Scaling Z...");
-  scale=voxelDepth/voxelWidth;
-  depth=slices*scale;
-  run("Scale...", "x=1.0 y=1.0 z="+scale+" width="+width+" height="+height+" depth="+depth);
-  print("Reslicing from the left...");
-  run("Reslice [/]...", "output="+voxelWidth+" start=Left rotate avoid");
+}else {
+  if ((slices*voxelDepth) > ((width*voxelWidth)+40)) {
+    print("Scaling Z...");
+    scale=voxelDepth/voxelWidth;
+    depth=slices*scale;
+    run("Scale...", "x=1.0 y=1.0 z="+scale+" width="+width+" height="+height+" depth="+depth);
+    print("Reslicing from the left...");
+    run("Reslice [/]...", "output="+voxelWidth+" start=Left rotate avoid");
+    getVoxelSize(voxelWidth, voxelHeight, voxelDepth, unit);
+    getDimensions(width, height, channels, slices, frames);
+    print("Stack Dimentions:"+(width*voxelWidth)+" x "+(height*voxelHeight)+" x "+(slices*voxelDepth) + " " + unit);
+  }
 }
 run("Z Project...", "projection=[Max Intensity]");
 getDimensions(width, height, channels, slices, frames);
