@@ -39,14 +39,15 @@ if ((height*voxelHeight) > ((width*voxelWidth)+20)) {
   }
 }
 run("Z Project...", "projection=[Max Intensity]");
-getDimensions(width, height, channels, slices, frames);
-print("Image Dimentions:"+width+" x "+height); 
-if ((height*voxelHeight) > ((width*voxelWidth)+40)) {
+print("Stack Dimentions:"+(width*voxelWidth)+" x "+(height*voxelHeight)+" x "+(slices*voxelDepth) + " " + unit);
+if ((height*voxelHeight) > ((width*voxelWidth)+80)) {
   print("Rotating...");
   run("Rotate 90 Degrees Left");
 }
 run("Scale...", "x=0.2 y=0.2 width="+width+" height="+height+" interpolation=Bicubic create title="+title);
 file=replace(signal,ch2,"thumbnail.png");
+getDimensions(width, height, channels, slices, frames);
+print("Image Dimentions:"+width+" x "+height);
 saveAs("PNG", file);
 run("Quit");
 eval("script", "System.exit(0);"); 
