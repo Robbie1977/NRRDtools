@@ -5,6 +5,21 @@ export FILE=$1
 export TEMPLATE=$2
 export OUTPUT=$3
 
+if [ ! -f $FILE ]; 
+then
+  echo "$FILE can not be found?"
+fi
+
+if [ ! -f $TEMPLATE ]; 
+then
+  echo "$TEMPLATE can not be found?"
+fi
+
+if [ ! -d $OUTPUT ]; 
+then
+  echo "$OUTPUT is not a directory?"
+fi
+
 export NAME=${FILE//\//_}-${TEMPLATE//\//_}
 export NAME=${NAME//.nrrd/}
 
