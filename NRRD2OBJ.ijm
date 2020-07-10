@@ -1,4 +1,4 @@
-name = getArgument;
+name = getArgument();
 if (name=="") exit ("No argument!");
 setBatchMode(true);
 run("Nrrd ...", "load=[" + name + "]");
