@@ -18,26 +18,47 @@ title=replace(replace(replace(replace(ch2,"ch2",""),"/",""),"VFBi","VFB_")," ","
 run("Merge Channels...", "c1=" + ch1 + " c2=" + ch2 + " c3=" + ch1 + " create ignore");
 getVoxelSize(voxelWidth, voxelHeight, voxelDepth, unit);
 getDimensions(width, height, channels, slices, frames);
-print("Stack Dimentions:"+(width*voxelWidth)+" x "+(height*voxelHeight)+" x "+(slices*voxelDepth) + " " + unit);
-if ((height*voxelHeight) > ((width*voxelWidth)+20)) {
-  print("Reslicing from the top...");
-  run("Reslice [/]...", "output="+voxelHeight+" start=Top avoid");
-  getVoxelSize(voxelWidth, voxelHeight, voxelDepth, unit);
-  getDimensions(width, height, channels, slices, frames);
-  print("Stack Dimentions:"+(width*voxelWidth)+" x "+(height*voxelHeight)+" x "+(slices*voxelDepth) + " " + unit);
-}else {
-  if ((slices*voxelDepth) > ((width*voxelWidth)+40)) {
-    print("Scaling Z...");
-    scale=voxelDepth/voxelWidth;
-    depth=slices*scale;
-    run("Scale...", "x=1.0 y=1.0 z="+scale+" width="+width+" height="+height+" depth="+depth);
-    print("Reslicing from the left...");
-    run("Reslice [/]...", "output="+voxelWidth+" start=Left rotate avoid");
-    getVoxelSize(voxelWidth, voxelHeight, voxelDepth, unit);
-    getDimensions(width, height, channels, slices, frames);
-    print("Stack Dimentions:"+(width*voxelWidth)+" x "+(height*voxelHeight)+" x "+(slices*voxelDepth) + " " + unit);
-  }
+X=(width*voxelWidth);
+Y=(height*voxelHeight);
+Z=(slices*voxelDepth);
+print("Stack Dimentions:"+X+" x "+Y+" x "+Z + " " + unit);
+if (Z > X) {
+  print("Rotaing +90degrees about the Y axis");
+  run("TransformJ Rotate", "z-angle=0.0 y-angle=90 x-angle=0.0 interpolation=Linear background=0.0 adjust");
+  X1=Z;
+  Y1=Y;
+  Z1=X;
+}else{
+  X1=X;
+  Y1=Y;
+  Z1=Z;
 }
+if (Z1 > Y1) {
+  print("Rotaing +90degrees about the X axis");
+  run("TransformJ Rotate", "z-angle=0.0 y-angle=0.0 x-angle=90 interpolation=Linear background=0.0 adjust");
+  X2=X1;
+  Y2=Z1;
+  Z2=Y1;
+}else{
+  X2=X1;
+  Y2=Y1;
+  Z2=Z1;
+}
+if (Y2 > X2) {
+  print("Rotaing -90degrees about the Z axis");
+  run("TransformJ Rotate", "z-angle=-90 y-angle=0.0 x-angle=0.0 interpolation=Linear background=0.0 adjust");
+  X3=Y2;
+  Y3=X2;
+  Z3=Z2;
+}else{
+  X3=X2;
+  Y3=Y2;
+  Z3=Z2;
+}
+getVoxelSize(voxelWidth, voxelHeight, voxelDepth, unit);
+getDimensions(width, height, channels, slices, frames);
+print("Stack Dimentions:"+(width*voxelWidth)+" x "+(height*voxelHeight)+" x "+(slices*voxelDepth) + " " + unit);
+
 run("Z Project...", "projection=[Max Intensity]");
 print("Stack Dimentions:"+(width*voxelWidth)+" x "+(height*voxelHeight)+" x "+(slices*voxelDepth) + " " + unit);
 if ((height*voxelHeight) > ((width*voxelWidth)+80)) {
