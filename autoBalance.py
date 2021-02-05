@@ -116,5 +116,8 @@ if __name__ == "__main__":
         data, header = nrrd.read(str(sys.argv[1]))
         chan, Nbound, hist = AutoBalance(data, threshold=TH, background=BG)
         print('New boundaries %s' % (str(Nbound)))
+        header['encoding'] = 'gzip'
+        if 'space directions' in header.keys() and header['space directions'] == ['none', 'none', 'none']:
+            header.pop("space directions", None)
         print('Saving result to %s...' % (outFile))
         nrrd.write(outFile, np.uint8(chan), header)
