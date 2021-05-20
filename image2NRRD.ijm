@@ -4,10 +4,10 @@ setBatchMode(true);
 open(name);
 wait(500);
 otitle = getTitle();
-dotIndex = indexOf(otitle, "."); 
-oExt = substring(otitle, dotIndex); 
+dotIndex = indexOf(otitle, ".");
+oExt = substring(otitle, dotIndex);
 run("Split Channels");
-test = isOpen(1)+isOpen(2)+isOpen(3);
+test = isOpen(1)+isOpen(2)+isOpen(3)+isOpen(4);
 
 while(test>0) {
 	ntitle = getTitle();
