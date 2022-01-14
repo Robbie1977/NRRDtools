@@ -5,7 +5,7 @@ import numpy as np
 
 import nrrd
 
-adjust_thresh = 0.0035
+adjust_thresh = 0.0 #0.0035
 
 
 def AutoBalance(data, threshold=adjust_thresh, background=0):
