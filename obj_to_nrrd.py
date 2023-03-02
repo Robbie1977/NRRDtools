@@ -1,7 +1,6 @@
 import numpy as np
+import nrrd
 import os
-import pynrrd
-import sys
 
 def obj_to_nrrd(input_file, output_file=None):
     """
@@ -32,9 +31,11 @@ def obj_to_nrrd(input_file, output_file=None):
     mesh[np.round(scaled_vertices).astype(int)] = True  # set binary value to True at each vertex coordinate
     matrix = mesh.astype(np.uint8) * 255  # convert binary mesh to uint8 matrix
     header = {'encoding': 'gzip', 'space': 'right-anterior-superior', 'space directions': [(1.0,0,0), (0,1.0,0), (0,0,1.0)], 'space units': ['microns', 'microns', 'microns'], 'kinds': ['domain', 'domain', 'domain']}  # set NRRD header with 1 micron scale factor and microns as the unit for each axis
-    pynrrd.write(output_file, matrix, header)  # save uint8 matrix as NRRD file using pynrrd
+    nrrd.write(output_file, matrix, header)  # save uint8 matrix as NRRD file using nrrd
 
 if __name__ == "__main__":
+    import sys
+
     if len(sys.argv) < 2:
         print("Usage: python obj_to_nrrd.py input.obj [output.nrrd]")
         sys.exit(1)
