@@ -23,7 +23,7 @@ def obj_to_nrrd(input_file, output_file=None):
 
     # Convert vertex data to binary NRRD file
     max_coord = np.max(vertices, axis=0)
-    grid_size = np.ceil(max_coord).astype(int) + 1  # increase grid size by 1 to avoid index out of bounds errors
+    grid_size = np.ceil(max_coord).astype(int) + 2  # increase grid size by 2 voxels to avoid index out of bounds errors
     grid_shape = tuple(grid_size)
     mesh = np.zeros(grid_shape, dtype=bool)  # create an empty binary mesh
     scale_factor = grid_size / max_coord  # calculate scale factor
