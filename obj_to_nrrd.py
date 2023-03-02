@@ -1,6 +1,4 @@
-import numpy as np
-import nrrd
-import os
+
 
 def obj_to_nrrd(input_file, output_file=None):
     """
@@ -9,6 +7,10 @@ def obj_to_nrrd(input_file, output_file=None):
     :param input_file: str, path to the input OBJ file
     :param output_file: str (optional), path to the output NRRD file. If not specified, the output file will have the same name as the input file but with the '.nrrd' extension
     """
+    import numpy as np
+    import nrrd
+    import os
+    
     # Check if output file path is specified. If not, use the default output file name
     if output_file is None:
         output_file = os.path.splitext(input_file)[0] + '.nrrd'
