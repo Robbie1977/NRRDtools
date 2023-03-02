@@ -28,10 +28,16 @@ def obj_to_nrrd(input_file, output_file=None, fill_factor=0.05):
                 faces.append(face)
     trimesh_mesh = trimesh.Trimesh(vertices=vertices, faces=faces, process=False)
 
+    # Print extents of trimesh
+    print(f"Trimesh extents: {trimesh_mesh.bounds}")
+
     # Create a voxel grid that is large enough to fully enclose the trimesh
     max_coord = np.ceil(trimesh_mesh.bounds[1]).astype(int)
     grid_shape = tuple(max_coord - 1)
     mesh = np.zeros(grid_shape, dtype=bool)
+
+    # Print extents of voxel grid
+    print(f"Voxel grid extents: {np.array(mesh.shape)}")
 
     # Voxelized mesh and set binary values in mesh
     voxel_size = np.min(max_coord) * fill_factor
@@ -53,6 +59,8 @@ def obj_to_nrrd(input_file, output_file=None, fill_factor=0.05):
 
     # Save uint8 matrix as NRRD file using nrrd.write
     nrrd.write(output_file, matrix, header)
+
+    print(f"Saved NRRD file: {output_file}")
 
 if __name__ == "__main__":
     import sys
