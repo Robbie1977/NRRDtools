@@ -35,9 +35,8 @@ def obj_to_nrrd(input_file, output_file=None):
 
     # Extract surface voxels from trimesh and set binary values in mesh
     voxel_size = np.max(trimesh_mesh.extents) / np.min(grid_shape)
-    volume = trimesh_mesh.voxelized(1)
-    volume.fix_normals()
-    surface_mesh = volume.fix_mesh()
+    volume = trimesh_mesh.voxelized(1).as_implicit()
+    surface_mesh = trimesh.remesh.fix_mesh(trimesh.voxel.ops.surface_reconstruction(volume))  # Extract surface mesh
     vertices, faces, _, _ = marching_cubes(volume=surface_mesh, spacing=(voxel_size, voxel_size, voxel_size))
     mesh[tuple(vertices.T)] = True
 
