@@ -69,6 +69,7 @@ def obj_to_nrrd(input_file, output_file=None, fill_factor=0.05):
 
 if __name__ == "__main__":
     import sys
+    import numpy as np
 
     if len(sys.argv) < 2:
         print("Usage: python obj_to_nrrd.py input.obj [output.nrrd]")
