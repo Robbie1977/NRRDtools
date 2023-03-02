@@ -35,7 +35,8 @@ def obj_to_nrrd(input_file, output_file=None):
 
     # Extract surface voxels from trimesh and set binary values in mesh
     voxel_size = np.max(trimesh_mesh.extents) / np.min(grid_shape)
-    vertices, faces, _, _ = marching_cubes(mesh=trimesh_mesh.voxelized(1), spacing=(voxel_size, voxel_size, voxel_size))
+    volume = trimesh_mesh.voxelized(1).as_implicit()
+    vertices, faces, _, _ = marching_cubes(volume, spacing=(voxel_size, voxel_size, voxel_size))
     mesh[tuple(vertices.T)] = True
 
     # Convert binary mesh to uint8 matrix
@@ -66,4 +67,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 2:
         output_file = sys.argv[2]
 
-    obj_to_nrrd(input_file, output_file)
+    obj_to_nrrd(input_file, output_file
