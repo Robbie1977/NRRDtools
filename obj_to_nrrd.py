@@ -36,7 +36,8 @@ def obj_to_nrrd(input_file, output_file=None, fill_factor=0.05):
     # Voxelized mesh and set binary values in mesh
     voxel_size = np.min(max_coord) * fill_factor
     volume = trimesh_mesh.voxelized(voxel_size).fill()
-    mesh[volume.points] = True
+    voxel_indices = np.round(volume.points).astype(int)
+    mesh[voxel_indices[:, 0], voxel_indices[:, 1], voxel_indices[:, 2]] = True
 
     # Convert binary mesh to uint8 matrix
     matrix = mesh.astype(np.uint8) * 255
