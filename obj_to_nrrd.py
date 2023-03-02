@@ -29,15 +29,15 @@ def obj_to_nrrd(input_file, output_file=None, fill_factor=0.05):
     trimesh_mesh = trimesh.Trimesh(vertices=vertices, faces=faces, process=False)
 
     # Create a voxel grid that is large enough to fully enclose the trimesh
-    max_coord = np.ceil(trimesh_mesh.bounds[1]).astype(int) + 1
-    grid_shape = tuple(max_coord)
+    max_coord = np.ceil(trimesh_mesh.bounds[1]).astype(int)
+    grid_shape = tuple(max_coord - 1)
     mesh = np.zeros(grid_shape, dtype=bool)
 
     # Voxelized mesh and set binary values in mesh
     voxel_size = np.min(max_coord) * fill_factor
     volume = trimesh_mesh.voxelized(voxel_size).fill()
     voxel_indices = np.round(volume.points).astype(int)
-    mesh[voxel_indices[:, 0], voxel_indices[:, 1], voxel_indices[:, 2]] = True
+    mesh[voxel_indices[:, 0]-1, voxel_indices[:, 1]-1, voxel_indices[:, 2]-1] = True
 
     # Convert binary mesh to uint8 matrix
     matrix = mesh.astype(np.uint8) * 255
