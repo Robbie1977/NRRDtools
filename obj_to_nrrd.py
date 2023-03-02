@@ -14,7 +14,7 @@ def obj_to_nrrd(input_file, output_file=None, fill_factor=0.05):
     # Check if output file path is specified. If not, use the default output file name
     if output_file is None:
         output_file = os.path.splitext(input_file)[0] + '.nrrd'
-
+    
     # Load vertex data from OBJ file and create trimesh
     vertices = []
     faces = []
@@ -31,10 +31,15 @@ def obj_to_nrrd(input_file, output_file=None, fill_factor=0.05):
     # Translate Trimesh so its minimum coordinate values are at the origin
     min_coord = np.min(trimesh_mesh.vertices, axis=0)
     trimesh_mesh.vertices -= min_coord
+    
+    # Calculate the extents of the trimesh
+    trimesh_extents = trimesh_mesh.bounds
+    print(f"Trimesh extents: {trimesh_extents}")
 
     # Create a voxel grid that is large enough to fully enclose the trimesh
     max_coord = np.ceil(trimesh_mesh.bounds[1]).astype(int)
     grid_shape = tuple(max_coord)
+    print(f"Voxel grid extents: {grid_shape}")
     mesh = np.zeros(grid_shape, dtype=bool)
 
     # Voxelized mesh and set binary values in mesh
@@ -56,8 +61,10 @@ def obj_to_nrrd(input_file, output_file=None, fill_factor=0.05):
     }
 
     # Save uint8 matrix as NRRD file using nrrd.write
+    if output_file is None:
+        output_file = os.path.splitext(input_file)[0] + '.nrrd'
     nrrd.write(output_file, matrix, header)
-
+    
     print(f"Saved NRRD file: {output_file}")
 
 if __name__ == "__main__":
