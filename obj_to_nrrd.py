@@ -29,7 +29,7 @@ def obj_to_nrrd(input_file, output_file=None, fill_factor=0.05):
     trimesh_mesh = trimesh.Trimesh(vertices=vertices, faces=faces, process=False)
 
     # Create a voxel grid that is large enough to fully enclose the trimesh
-    max_coord = np.ceil(trimesh_mesh.bounds[1]).astype(int)
+    max_coord = np.ceil(trimesh_mesh.bounds[1]).astype(int) + 1
     grid_shape = tuple(max_coord)
     mesh = np.zeros(grid_shape, dtype=bool)
 
