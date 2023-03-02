@@ -81,6 +81,6 @@ if __name__ == "__main__":
         output_file = sys.argv[2]
     
     if len(sys.argv) > 3:
-        fill_factor = sys.argv[2]
+        fill_factor = np.float(sys.argv[2])
 
     obj_to_nrrd(input_file, output_file, fill_factor)
