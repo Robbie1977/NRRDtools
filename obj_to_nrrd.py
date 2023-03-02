@@ -8,52 +8,36 @@ def obj_to_nrrd(input_file, output_file=None):
     import numpy as np
     import nrrd
     import os
-    import trimesh
-    from skimage.measure import marching_cubes
 
     # Check if output file path is specified. If not, use the default output file name
     if output_file is None:
         output_file = os.path.splitext(input_file)[0] + '.nrrd'
 
-    # Load vertex data from OBJ file and create trimesh
+    # Load vertex data from OBJ file
     vertices = []
-    faces = []
     with open(input_file, 'r') as f:
         for line in f:
             if line.startswith('v '):
                 vertex = [float(x) for x in line.strip().split()[1:]]
                 vertices.append(vertex)
-            elif line.startswith('f '):
-                face = [int(x.split('/')[0])-1 for x in line.strip().split()[1:]]
-                faces.append(face)
-    trimesh_mesh = trimesh.Trimesh(vertices=vertices, faces=faces, process=False)
 
-    # Create a voxel grid that is large enough to fully enclose the trimesh
-    max_coord = np.ceil(trimesh_mesh.bounds[1]).astype(int)
+    # Convert vertex data to binary NRRD file
+    max_coord = np.ceil(np.max(vertices, axis=0)).astype(int)
     grid_shape = tuple(max_coord)
-    mesh = np.zeros(grid_shape, dtype=bool)
-
-    # Extract surface voxels from trimesh and set binary values in mesh
-    voxel_size = np.max(trimesh_mesh.extents) / np.min(grid_shape)
-    volume = trimesh_mesh.voxelized(1).as_implicit()
-    surface_mesh = trimesh.remesh.fix_mesh(trimesh.voxel.ops.surface_reconstruction(volume))  # Extract surface mesh
-    vertices, faces, _, _ = marching_cubes(volume=surface_mesh, spacing=(voxel_size, voxel_size, voxel_size))
-    mesh[tuple(vertices.T)] = True
-
-    # Convert binary mesh to uint8 matrix
-    matrix = mesh.astype(np.uint8) * 255
-
-    # Set NRRD header with 1 micron scale factor and microns as the unit for each axis
+    mesh = np.zeros(grid_shape, dtype=bool)  # create an empty binary mesh
+    scale_factor = np.ones(3, dtype=float)  # scale factor is 1 micron per voxel
+    scaled_vertices = np.round(vertices).astype(int) - 1  # subtract 1 to convert to 0-based indexing
+    mesh[tuple(scaled_vertices.T)] = True  # set binary value to True at each vertex coordinate
+    matrix = mesh.astype(np.uint8) * 255  # convert binary mesh to uint8 matrix
     header = {
         'encoding': 'gzip',
         'space': 'right-anterior-superior',
         'space directions': [(1.0, 0, 0), (0, 1.0, 0), (0, 0, 1.0)],
         'space units': ['microns', 'microns', 'microns'],
         'kinds': ['domain', 'domain', 'domain']
-    }
+    }  # set NRRD header with 1 micron scale factor and microns as the unit for each axis
+    nrrd.write(output_file, matrix, header)  # save uint8 matrix as NRRD file using nrrd.write
 
-    # Save uint8 matrix as NRRD file using nrrd.write
-    nrrd.write(output_file, matrix, header)
 
 if __name__ == "__main__":
     import sys
