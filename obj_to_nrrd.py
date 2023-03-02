@@ -76,7 +76,11 @@ if __name__ == "__main__":
 
     input_file = sys.argv[1]
     output_file = None
+    fill_factor = 0.05
     if len(sys.argv) > 2:
         output_file = sys.argv[2]
+    
+    if len(sys.argv) > 3:
+        fill_factor = sys.argv[2]
 
-    obj_to_nrrd(input_file, output_file)
+    obj_to_nrrd(input_file, output_file, fill_factor)
