@@ -9,6 +9,20 @@ adjust_thresh = 0.0 #0.0035
 
 
 def AutoBalance(data, threshold=adjust_thresh, background=0):
+    """
+    This function performs automatic intensity balancing on the input 3D data array.
+
+    Args:
+        data (ndarray): The input 3D data array to be balanced.
+        threshold (float, optional): The threshold of maximum percentage of voxels that can be clipped.
+        background (int, optional): The background level for intensity balancing.
+
+    Returns:
+        ndarray: The balanced 3D data array.
+        dict: A dictionary containing the minimum and maximum intensity values of the balanced data.
+        ndarray: The histogram of the input data.
+
+    """
     try:
         threshold = float(threshold)
         if np.max(data) == 0:
