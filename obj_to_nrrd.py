@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
     input_file = sys.argv[1]
     output_file = None
-    fill_factor = 0.05
+    fill_factor = 0.005 # Note denser fill factor used 
     if len(sys.argv) > 2:
         output_file = sys.argv[2]
     
