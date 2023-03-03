@@ -1,10 +1,11 @@
-def obj_to_nrrd(input_file, output_file=None, extent=None):
+def obj_to_nrrd(input_file, output_file=None, extent=None, radius=None):
     """
     Convert an OBJ file to a binary NRRD file with a physical size of 1 micron per voxel and microns as the unit for each axis.
 
     :param input_file: str, path to the input OBJ file
     :param output_file: str (optional), path to the output NRRD file. If not specified, the output file will have the same name as the input file but with the '.nrrd' extension
     :param extent: tuple (optional), the extent of the voxel grid. If not specified, the extent will be calculated based on the maximum vertex coordinates in the OBJ file.
+    :param radius: float (optional), the radius of the sphere of voxels to mark as True for each vector point.
     """
     import numpy as np
     import nrrd
@@ -37,6 +38,16 @@ def obj_to_nrrd(input_file, output_file=None, extent=None):
     scaled_vertices = np.round(vertices).astype(int) - 1  # subtract 1 to convert to 0-based indexing
     mesh[tuple(scaled_vertices.T)] = True
 
+    # Set binary value to True for each vector point with a sphere of voxels of radius `radius`
+    if radius is not None:
+        for vertex in vertices:
+            # Get the indices of the mesh array that are within `radius` distance of the vector point
+            indices = np.indices(grid_shape)
+            distances = np.linalg.norm(indices - np.round(vertex / scale_factor).astype(int).reshape(3, 1, 1, 1), axis=0)
+            mask = distances <= radius / scale_factor[0]
+            # Set the corresponding values in the mesh array to True
+            mesh[mask] = True
+
     # Convert binary mesh to uint8 matrix
     matrix = mesh.astype(np.uint8) * 255
 
@@ -61,12 +72,16 @@ if __name__ == "__main__":
 
     input_file = sys.argv[1]
     output_file = None
-    extent=None
+    extent = None
+    radius = None
     if len(sys.argv) > 2:
         output_file = sys.argv[2]
     
     if len(sys.argv) > 3:
         extent = sys.argv[3]
         extent = tuple(map(int, extent.strip("()").split(",")))
+    
+    if len(sys.argv) > 4:
+        radius = int(sys.argv[4])
 
     obj_to_nrrd(input_file, output_file=output_file, extent=extent)
