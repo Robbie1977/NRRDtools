@@ -2,11 +2,11 @@
 
 A collection of Python scripts for working with NRRD files.
 
-* obj_to_nrrd.py: A Python script for converting OBJ files to binary NRRD files with a physical size of 1 micron per voxel and microns as the unit for each axis.
-* nrrd_info.py: A Python script for printing information about NRRD files, including their size, dimensions, and metadata.
-* nrrd_viewer.py: A Python script for visualizing NRRD files using the VTK library.
-* example.obj: An example OBJ file that can be used with obj_to_nrrd.py.
-* example.nrrd: An example NRRD file that can be used with nrrd_viewer.py.
+- `obj_to_nrrd.py`: A Python script for converting OBJ files to binary NRRD files with a physical size of 1 micron per voxel and microns as the unit for each axis.
+- `nrrd_info.py`: A Python script for printing information about NRRD files, including their size, dimensions, and metadata.
+- `nrrd_viewer.py`: A Python script for visualizing NRRD files using the VTK library.
+- `example.obj`: An example OBJ file that can be used with obj_to_nrrd.py.
+- `example.nrrd`: An example NRRD file that can be used with nrrd_viewer.py.
 
 ## Installation
 
