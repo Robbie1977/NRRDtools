@@ -56,7 +56,7 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) < 2:
-        print("Usage: python obj_to_nrrd.py input.obj [output.nrrd]")
+        print("Usage: python obj_to_nrrd.py input.obj [output.nrrd] ['(X,Y,Z)']")
         sys.exit(1)
 
     input_file = sys.argv[1]
@@ -67,5 +67,6 @@ if __name__ == "__main__":
     
     if len(sys.argv) > 3:
         extent = sys.argv[3]
+        extent = tuple(map(int, extent.strip("()").split(",")))
 
     obj_to_nrrd(input_file, output_file=output_file, extent=extent)
