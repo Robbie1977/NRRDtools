@@ -67,7 +67,7 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) < 2:
-        print("Usage: python obj_to_nrrd.py input.obj [output.nrrd] ['(X,Y,Z)']")
+        print("Usage: python obj_to_nrrd.py input.obj [output.nrrd] ['(X,Y,Z)'] [radius]")
         sys.exit(1)
 
     input_file = sys.argv[1]
@@ -84,4 +84,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 4:
         radius = int(sys.argv[4])
 
-    obj_to_nrrd(input_file, output_file=output_file, extent=extent)
+    obj_to_nrrd(input_file, output_file=output_file, extent=extent, radius=radius)
