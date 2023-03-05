@@ -2,23 +2,26 @@ import numpy as np
 import nrrd
 import os
 from multiprocessing import Pool
+import threading
 
 def process_chunk(args):
     """
+    vertices, radius, grid_shape, scale_factor, progress_queue = args
     Process a chunk of vertices and create a binary mesh for each chunk.
     :param args: tuple, contains the arguments to be processed by this function
     :return: numpy.ndarray, the binary mesh created from this chunk
     """
-    vertices, radius, grid_shape, scale_factor = args
+    vertices, radius, grid_shape, scale_factor, progress_queue = args
     mesh = np.zeros(grid_shape, dtype=bool)
     scaled_vertices = np.round(vertices).astype(int) - 1
     mesh[tuple(scaled_vertices.T)] = True
     if radius is not None:
-        for vertex in vertices:
+        for i, vertex in enumerate(vertices):
             indices = np.indices(grid_shape)
             distances = np.linalg.norm(indices - np.round(vertex / scale_factor).astype(int).reshape(3, 1, 1, 1), axis=0)
             mask = distances <= radius / scale_factor[0]
             mesh[mask] = True
+            progress_queue.put((i, len(vertices)))
     return mesh
 
 def obj_to_nrrd(input_file, output_file=None, extent=None, radius=None, num_workers=1):
@@ -47,10 +50,13 @@ def obj_to_nrrd(input_file, output_file=None, extent=None, radius=None, num_work
     if radius is not None:
         chunks = np.array_split(vertices, num_workers)
         with Pool(num_workers) as pool:
-            results = pool.map(process_chunk, [(chunk, radius, grid_shape, scale_factor) for chunk in chunks])
-        mesh = np.zeros(grid_shape, dtype=bool)
-        for result in results:
-            mesh |= result
+            results = []
+            for i, result in enumerate(pool.imap_unordered(process_chunk, [(chunk, radius, grid_shape, scale_factor) for chunk in chunks])):
+                results.append(result)
+                print_progress(i + 1, len(chunks))
+            mesh = np.zeros(grid_shape, dtype=bool)
+            for result in results:
+                mesh |= result
     else:
         mesh = np.zeros(grid_shape, dtype=bool)
         scaled_vertices = np.round(vertices).astype(int) - 1
@@ -64,6 +70,19 @@ def obj_to_nrrd(input_file, output_file=None, extent=None, radius=None, num_work
         'kinds': ['domain', 'domain', 'domain']
     }
     nrrd.write(output_file, matrix, header)
+    
+def print_progress(iteration, total):
+    """
+    Print progress during execution of a loop.
+    :param iteration: int, current iteration (0-based)
+    :param total: int, total number of iterations
+    """
+    percent = "{:.1f}".format(100 * (iteration / float(total)))
+    filled_length = int(50 * iteration // total)
+    bar = '#' * filled_length + '-' * (50 - filled_length)
+    print(f'\rProgress |{bar}| {percent}% Complete', end='\r')
+    if iteration == total:
+        print('\n')
 
 if __name__ == "__main__":
     import sys
