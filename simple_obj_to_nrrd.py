@@ -1,6 +1,7 @@
 import numpy as np
 import nrrd
 import os
+import multiprocessing
 from multiprocessing import Pool
 import threading
 
