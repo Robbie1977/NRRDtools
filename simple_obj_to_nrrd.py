@@ -51,6 +51,7 @@ def obj_to_nrrd(input_file, output_file=None, extent=None, radius=None, num_work
         chunks = np.array_split(vertices, num_workers)
         with Pool(num_workers) as pool:
             results = []
+            progress_queue = multiprocessing.Manager().Queue()
             for i, result in enumerate(pool.imap_unordered(process_chunk, [(chunk, radius, grid_shape, scale_factor, progress_queue) for chunk in chunks])):
                 results.append(result)
                 print_progress(i + 1, len(chunks))
