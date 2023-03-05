@@ -30,6 +30,9 @@ def colorize_image_stack(input_file, output_file):
         # Normalize data to 0-255 range
         data_norm = (data[i] - np.min(data[i])) / (np.max(data[i]) - np.min(data[i])) * 255
 
+        # Replace any NaN or inf values with zeros
+        data_norm = np.nan_to_num(data_norm)
+
         # Create color map for the layer using rainbow color scheme
         layer_colors = np.array([cmap(j) for j in np.linspace(0, 1, 256)])
         layer_cmap = ListedColormap(layer_colors)
@@ -58,7 +61,7 @@ def colorize_image_stack(input_file, output_file):
 
     # Save thumbnail
     thumbnail.save(output_file)
-
+    
 def main():
     # Parse command line arguments
     parser = argparse.ArgumentParser(description='Colorize an image stack.')
