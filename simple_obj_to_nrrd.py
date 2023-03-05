@@ -105,6 +105,6 @@ if __name__ == "__main__":
         extent = tuple(map(int, extent.strip("()").split(",")))
     
     if len(sys.argv) > 4:
-        radius = int(sys.argv[4])
+        radius = float(sys.argv[4])
 
     obj_to_nrrd(input_file, output_file=output_file, extent=extent, radius=radius, num_workers=5)
