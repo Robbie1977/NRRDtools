@@ -21,7 +21,7 @@ def process_chunk(args):
             mesh[mask] = True
     return mesh
 
-def obj_to_nrrd(input_file, output_file=None, extent=None, radius=None, num_workers=None):
+def obj_to_nrrd(input_file, output_file=None, extent=None, radius=None, num_workers=1):
     """
     Convert an OBJ file to a binary NRRD file with a physical size of 1 micron per voxel and microns as the unit for each axis.
     :param input_file: str, path to the input OBJ file
@@ -86,4 +86,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 4:
         radius = int(sys.argv[4])
 
-    obj_to_nrrd(input_file, output_file=output_file, extent=extent, radius=radius)
+    obj_to_nrrd(input_file, output_file=output_file, extent=extent, radius=radius, num_workers=5)
