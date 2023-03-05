@@ -1,57 +1,61 @@
-def obj_to_nrrd(input_file, output_file=None, extent=None, radius=None):
+import numpy as np
+import nrrd
+import os
+from multiprocessing import Pool
+
+def process_chunk(args):
+    """
+    Process a chunk of vertices and create a binary mesh for each chunk.
+    :param args: tuple, contains the arguments to be processed by this function
+    :return: numpy.ndarray, the binary mesh created from this chunk
+    """
+    vertices, radius, grid_shape, scale_factor = args
+    mesh = np.zeros(grid_shape, dtype=bool)
+    scaled_vertices = np.round(vertices).astype(int) - 1
+    mesh[tuple(scaled_vertices.T)] = True
+    if radius is not None:
+        for vertex in vertices:
+            indices = np.indices(grid_shape)
+            distances = np.linalg.norm(indices - np.round(vertex / scale_factor).astype(int).reshape(3, 1, 1, 1), axis=0)
+            mask = distances <= radius / scale_factor[0]
+            mesh[mask] = True
+    return mesh
+
+def obj_to_nrrd(input_file, output_file=None, extent=None, radius=None, num_workers=None):
     """
     Convert an OBJ file to a binary NRRD file with a physical size of 1 micron per voxel and microns as the unit for each axis.
-
     :param input_file: str, path to the input OBJ file
     :param output_file: str (optional), path to the output NRRD file. If not specified, the output file will have the same name as the input file but with the '.nrrd' extension
     :param extent: tuple (optional), the extent of the voxel grid. If not specified, the extent will be calculated based on the maximum vertex coordinates in the OBJ file.
     :param radius: float (optional), the radius of the sphere of voxels to mark as True for each vector point.
+    :param num_workers: int (optional), the number of worker processes to use for parallel processing. If not specified, uses a single process.
     """
-    import numpy as np
-    import nrrd
-    import os
-
-    # Check if output file path is specified. If not, use the default output file name
     if output_file is None:
         output_file = os.path.splitext(input_file)[0] + '.nrrd'
-
-    # Load vertex data from OBJ file
     vertices = []
     with open(input_file, 'r') as f:
         for line in f:
             if line.startswith('v '):
                 vertex = [float(x) for x in line.strip().split()[1:]]
                 vertices.append(vertex)
-
-    # Calculate the extent of the voxel grid
     if extent is None:
         max_coord = np.ceil(np.max(vertices, axis=0)).astype(int)
         grid_shape = tuple(max_coord)
     else:
         grid_shape = tuple(extent)
-
-    # Create a binary mesh
-    mesh = np.zeros(grid_shape, dtype=bool)
-
-    # Set binary value to True at each vertex coordinate
-    scale_factor = np.ones(3, dtype=float)  # scale factor is 1 micron per voxel
-    scaled_vertices = np.round(vertices).astype(int) - 1  # subtract 1 to convert to 0-based indexing
-    mesh[tuple(scaled_vertices.T)] = True
-
-    # Set binary value to True for each vector point with a sphere of voxels of radius `radius`
+    scale_factor = np.ones(3, dtype=float)
     if radius is not None:
-        for vertex in vertices:
-            # Get the indices of the mesh array that are within `radius` distance of the vector point
-            indices = np.indices(grid_shape)
-            distances = np.linalg.norm(indices - np.round(vertex / scale_factor).astype(int).reshape(3, 1, 1, 1), axis=0)
-            mask = distances <= radius / scale_factor[0]
-            # Set the corresponding values in the mesh array to True
-            mesh[mask] = True
-
-    # Convert binary mesh to uint8 matrix
+        chunks = np.array_split(vertices, num_workers)
+        with Pool(num_workers) as pool:
+            results = pool.map(process_chunk, [(chunk, radius, grid_shape, scale_factor) for chunk in chunks])
+        mesh = np.zeros(grid_shape, dtype=bool)
+        for result in results:
+            mesh |= result
+    else:
+        mesh = np.zeros(grid_shape, dtype=bool)
+        scaled_vertices = np.round(vertices).astype(int) - 1
+        mesh[tuple(scaled_vertices.T)] = True
     matrix = mesh.astype(np.uint8) * 255
-
-    # Set NRRD header with 1 micron scale factor and microns as the unit for each axis
     header = {
         'encoding': 'gzip',
         'space': 'right-anterior-superior',
@@ -59,8 +63,6 @@ def obj_to_nrrd(input_file, output_file=None, extent=None, radius=None):
         'space units': ['microns', 'microns', 'microns'],
         'kinds': ['domain', 'domain', 'domain']
     }
-
-    # Save uint8 matrix as NRRD file using nrrd.write
     nrrd.write(output_file, matrix, header)
 
 if __name__ == "__main__":
