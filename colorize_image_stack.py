@@ -53,6 +53,7 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
 
     print(np.shape(max_indices))
     print(np.shape(mip))
+    print(np.shape(colorized_image))
     
     # Loop through each X,Y position and set the color based on the max Z value
     for y in range(width):
