@@ -4,6 +4,7 @@ import nrrd
 from PIL import Image
 from rotate_image_stack import rotate_image_stack
 
+
 def create_mip(nrrd_path, png_path):
     # Load NRRD file
     data, header = nrrd.read(nrrd_path)
@@ -20,11 +21,21 @@ def create_mip(nrrd_path, png_path):
     # Calculate maximum intensity projection across Z
     mip = np.max(data, axis=2)
 
-    # Create thumbnail image by resizing the MIP to 256x256
-    thumbnail = Image.fromarray(mip).resize((256, 256))
+    # Calculate physical dimensions of MIP
+    x_size, y_size = np.multiply(voxel_sizes[:2], [width, height])
+
+    # Calculate ratio of physical dimensions
+    ratio = y_size / x_size
+
+    # Create thumbnail image by resizing the MIP while preserving aspect ratio
+    thumbnail = Image.fromarray(mip)
+    thumbnail_width = 256
+    thumbnail_height = int(thumbnail_width * ratio)
+    thumbnail = thumbnail.resize((thumbnail_width, thumbnail_height))
 
     # Save the thumbnail image as a PNG file
     thumbnail.save(png_path)
+
 
 if __name__ == '__main__':
     # Create argument parser
