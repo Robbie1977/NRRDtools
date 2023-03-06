@@ -51,6 +51,9 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
     # Create an empty array to store the colorized image
     colorized_image = np.zeros((height, width, 3), dtype=np.uint8)
 
+    print(np.shape(max_indices))
+    print(np.shape(mip))
+    
     # Loop through each X,Y position and set the color based on the max Z value
     for y in range(width):
         for x in range(height):
@@ -59,17 +62,14 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
 
     # Save the colorized image as a PNG file
     if thumbnail:
-        # Start with CD-MIP
-        mip = Image.fromarray(colorized_image)
-
         # Calculate physical dimensions of MIP
         y_size, x_size = np.multiply(voxel_sizes[:2], [width, height])
-
+        
         # Calculate ratio of physical dimensions
         ratio = y_size / x_size
-
+        
         # Create thumbnail image by resizing the MIP while preserving aspect ratio
-        thumbnail = Image.fromarray(mip)
+        thumbnail = Image.fromarray(colorized_image)
         thumbnail_width = 256
         thumbnail_height = int(thumbnail_width * ratio)
         thumbnail = thumbnail.resize((thumbnail_width, thumbnail_height))
