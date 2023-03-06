@@ -30,6 +30,7 @@ def create_mip(nrrd_path, png_path, thumb=True):
     # Create thumbnail image by resizing the MIP while preserving aspect ratio
     thumbnail = Image.fromarray(mip)
     if thumb:
+        print(f"Reducing images size from: {width} x {height}")
         thumbnail_width = 256
         thumbnail_height = int(thumbnail_width * ratio)
         thumbnail = thumbnail.resize((thumbnail_width, thumbnail_height))
