@@ -34,6 +34,11 @@ def create_mip(nrrd_path, png_path, thumb=True):
         thumbnail_height = int(thumbnail_width * ratio)
         thumbnail = thumbnail.resize((thumbnail_width, thumbnail_height))
     thumbnail = thumbnail.rotate(-90, expand=True)
+    
+    # Get image size
+    width, height = thumbnail.size
+    print(f"Thumbnail size: {width} x {height}")
+    
     # Save the thumbnail image as a PNG file
     thumbnail.save(png_path)
 
