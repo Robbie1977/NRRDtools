@@ -55,7 +55,10 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
             colorized_image[y, x, :] = np.uint8(np.multiply(cmap(index)[0:3],mip[y, x]))
 
     # Save the colorized image as a PNG file
-    Image.fromarray(colorized_image).save(png_path)
+    if thumbnail:
+        Image.fromarray(colorized_image).resize((256, 256).save(png_path)
+    else:
+        Image.fromarray(colorized_image).save(png_path)
 
 if __name__ == '__main__':
     # Define command line arguments
