@@ -65,10 +65,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Create a color depth MIP from an NRRD image stack.')
     parser.add_argument('--nrrd', type=str, help='Path to the NRRD image stack')
     parser.add_argument('--png', type=str, help='Path to save the resulting PNG file')
-    parser.add_argument('--thumb', type=bool, help='wheather to reduce the size of the resulting PNG file')
+    parser.add_argument('--thumb', type=bool, help='wheather to reduce the size of the resulting PNG file', default=False)
 
     # Parse command line arguments
     args = parser.parse_args()
 
     # Call function to create color depth MIP
-    colorize_image_stack(args.nrrd, args.png, arg.thumb)
+    colorize_image_stack(args.nrrd, args.png, args.thumb)
