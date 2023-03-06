@@ -11,7 +11,7 @@ def merge_images(input_path1, input_path2, output_path):
         raise ValueError('Input images must have the same size')
 
     # Make the first image semi-transparent
-    img1.putalpha(80)
+    img1.putalpha(20)
 
     # Merge the images
     result = Image.alpha_composite(img2, img1)
