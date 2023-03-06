@@ -22,7 +22,7 @@ def rotate_image_stack(data, voxel_size):
     # Rotate the data and the voxel size accordingly
     for _ in range(num_rotations):
         print("90 degree rotation")
-        data = np.rot90(data, axes=(2, 1))
+        data = np.rot90(data, axes=(1, 0))
         voxel_size = np.roll(voxel_size, 1)
         print(f"Voxel size: {voxel_size}")
         print(f"Data size: {np.shape(data)}")
