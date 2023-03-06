@@ -16,7 +16,7 @@ def create_mip(nrrd_path, png_path):
     
     # Rotate image stack
     data, voxel_sizes = rotate_image_stack(data, voxel_sizes)
-    depth, height, width = data.shape
+    height, width, depth = data.shape
     
     # Calculate maximum intensity projection across Z
     mip = np.max(data, axis=2)
