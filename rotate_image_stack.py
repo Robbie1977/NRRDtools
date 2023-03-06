@@ -14,8 +14,8 @@ def rotate_image_stack(data, voxel_size):
         data = np.rot90(data, axes=(1, 0))
         voxel_size = np.roll(voxel_size, 1)
 
-    # Determine the axis permutation required to put the next longest axis in the Y axis
-    axis_permutation = [1, 2, 0] if next_axis == 0 else [0, 2, 1]
+    # Determine the axis permutation required to put the longest axis in the X axis and next longest axis in the Y axis
+    axis_permutation = [0, 1, 2] if longest_axis == 0 else [1, 0, 2]
 
     # Permute the axes of the data and the voxel size accordingly
     data = np.transpose(data, axis_permutation)
@@ -23,9 +23,10 @@ def rotate_image_stack(data, voxel_size):
 
     return data, voxel_size
 
-# Load NRRD file
-# data, header = nrrd.read('/path/to/image_stack.nrrd')
-# voxel_size = header['spacings']
 
-# Rotate the image stack
+# # Load NRRD file
+# data, header = nrrd.read('/path/to/image_stack.nrrd')
+# voxel_size = np.sqrt(np.sum(np.square(header['space directions']), axis=1))
+
+# # Rotate the image stack
 # data, voxel_size = rotate_image_stack(data, voxel_size)
