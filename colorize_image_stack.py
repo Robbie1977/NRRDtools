@@ -64,7 +64,7 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
     # Save the colorized image as a PNG file
     if thumbnail:
         # Calculate physical dimensions of MIP
-        y_size, x_size = np.multiply(voxel_sizes[:2], [width, height])
+        y_size, x_size = np.multiply(voxel_size[:2], [width, height])
         
         # Calculate ratio of physical dimensions
         ratio = y_size / x_size
