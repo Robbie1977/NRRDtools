@@ -5,7 +5,7 @@ from PIL import Image
 from rotate_image_stack import rotate_image_stack
 
 
-def create_mip(nrrd_path, png_path):
+def create_mip(nrrd_path, png_path, thumbnail=True):
     # Load NRRD file
     data, header = nrrd.read(nrrd_path)
     
@@ -29,9 +29,10 @@ def create_mip(nrrd_path, png_path):
 
     # Create thumbnail image by resizing the MIP while preserving aspect ratio
     thumbnail = Image.fromarray(mip)
-    thumbnail_width = 256
-    thumbnail_height = int(thumbnail_width * ratio)
-    thumbnail = thumbnail.resize((thumbnail_width, thumbnail_height))
+    if thumbnail:
+        thumbnail_width = 256
+        thumbnail_height = int(thumbnail_width * ratio)
+        thumbnail = thumbnail.resize((thumbnail_width, thumbnail_height))
     thumbnail = thumbnail.rotate(-90, expand=True)
     # Save the thumbnail image as a PNG file
     thumbnail.save(png_path)
@@ -39,14 +40,15 @@ def create_mip(nrrd_path, png_path):
 
 if __name__ == '__main__':
     # Create argument parser
-    parser = argparse.ArgumentParser(description='Create maximum intensity projection (MIP) from an image stack NRRD and save a thumbnail as a PNG file.')
+    parser = argparse.ArgumentParser(description='Create maximum intensity projection (MIP) from an image stack NRRD and save [a thumbnail] as a PNG file.')
 
     # Define arguments
     parser.add_argument('nrrd_path', type=str, help='Path to image stack NRRD file')
     parser.add_argument('png_path', type=str, help='Path to output PNG file')
+    parser.add_argument('thumb', type=str, help='Reduce size to thumnbnail', Default=True)
 
     # Parse arguments
     args = parser.parse_args()
 
     # Create MIP and save thumbnail as PNG file
-    create_mip(args.nrrd_path, args.png_path)
+    create_mip(args.nrrd_path, args.png_path, args.thumb)
