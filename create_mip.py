@@ -5,7 +5,7 @@ from PIL import Image
 from rotate_image_stack import rotate_image_stack
 
 
-def create_mip(nrrd_path, png_path, thumbnail=True):
+def create_mip(nrrd_path, png_path, thumb=True):
     # Load NRRD file
     data, header = nrrd.read(nrrd_path)
     
@@ -29,7 +29,7 @@ def create_mip(nrrd_path, png_path, thumbnail=True):
 
     # Create thumbnail image by resizing the MIP while preserving aspect ratio
     thumbnail = Image.fromarray(mip)
-    if thumbnail:
+    if thumb:
         thumbnail_width = 256
         thumbnail_height = int(thumbnail_width * ratio)
         thumbnail = thumbnail.resize((thumbnail_width, thumbnail_height))
