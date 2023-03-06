@@ -2,10 +2,14 @@ import argparse
 import numpy as np
 import nrrd
 from PIL import Image
+from rotate_image_stack import rotate_image_stack
 
 def create_mip(nrrd_path, png_path):
     # Load NRRD file
     data, header = nrrd.read(nrrd_path)
+    
+    data, header['spacings'] = rotate_image_stack(data, header['spacings'])
+    
     depth, height, width = data.shape
 
     # Calculate maximum intensity projection across Z
