@@ -3,8 +3,8 @@ from PIL import Image
 
 def merge_images(input_path1, input_path2, output_path):
     # Open the input images
-    img1 = Image.open(input_path1)
-    img2 = Image.open(input_path2)
+    img1 = Image.open(input_path1).convert('RGBA')
+    img2 = Image.open(input_path2).convert('RGBA')
 
     # Ensure both images have the same size
     if img1.size != img2.size:
