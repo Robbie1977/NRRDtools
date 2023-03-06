@@ -5,7 +5,7 @@ from PIL import Image
 from rotate_image_stack import rotate_image_stack
 
 
-def create_mip(nrrd_path, png_path, thumb=True):
+def create_mip(nrrd_path, png_path, thumb):
     # Load NRRD file
     data, header = nrrd.read(nrrd_path)
     
