@@ -5,7 +5,7 @@ from PIL import Image
 from rotate_image_stack import rotate_image_stack
 
 
-def create_mip(nrrd_path, png_path, thumb):
+def create_mip(nrrd_path, png_path, thumb=True):
     # Load NRRD file
     data, header = nrrd.read(nrrd_path)
     
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     # Define arguments
     parser.add_argument('nrrd_path', type=str, help='Path to image stack NRRD file')
     parser.add_argument('png_path', type=str, help='Path to output PNG file')
-    parser.add_argument('thumb', type=bool, help='Reduce size to thumnbnail', default=True)
+    parser.add_argument('--thumb', action='store_true', help='Reduce size to thumbnail')
 
     # Parse arguments
     args = parser.parse_args()
