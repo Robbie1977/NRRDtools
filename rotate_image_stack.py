@@ -17,7 +17,7 @@ def rotate_image_stack(data, voxel_size):
     print(f"Next axis: {next_axis}")
 
     # Determine the number of rotations required to align the longest axis with the X axis
-    num_rotations = (longest_axis - 1) % 3
+    num_rotations = (longest_axis) % 3
     
     print(f"Number of rotations: {num_rotations}")
 
