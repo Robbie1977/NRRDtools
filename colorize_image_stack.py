@@ -29,17 +29,17 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
     data = np.nan_to_num(data)
 
     # Find first and last non-zero Z indices
-    first_index = np.argmax((data > 0).any(axis=(1, 2)))
-    last_index = data.shape[0] - np.argmax((data > 0)[::-1].any(axis=(1, 2))) - 1
+    first_index = np.argmax((data > 0).any(axis=(0, 1)))
+    last_index = data.shape[2] - np.argmax((data > 0)[::-1].any(axis=(0, 1))) - 1
 
     print('First non-zero Z index:', first_index)
     print('Last non-zero Z index:', last_index)
 
     # Calculate maximum intensity projection across Z
-    mip = np.max(data, axis=0)
+    mip = np.max(data, axis=2)
 
     # Find indices of maximum values for each X,Y position offset by first_index
-    max_indices = np.argmax(data, axis=0) - first_index
+    max_indices = np.argmax(data, axis=2) - first_index
     max_indices = np.clip(max_indices, 0, None)
 
     # Define color map using JET color scheme
@@ -63,7 +63,7 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
         mip = Image.fromarray(colorized_image)
 
         # Calculate physical dimensions of MIP
-        x_size, y_size = np.multiply(voxel_sizes[:2], [width, height])
+        y_size, x_size = np.multiply(voxel_sizes[:2], [width, height])
 
         # Calculate ratio of physical dimensions
         ratio = y_size / x_size
