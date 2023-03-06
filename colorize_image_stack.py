@@ -23,7 +23,7 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
     data, header = nrrd.read(nrrd_path)
     voxel_size = np.sqrt(np.sum(np.square(header['space directions']), axis=1))
     data, voxel_size = rotate_image_stack(data, voxel_size)
-    width, height, depth = data.shape
+    width, height, depth = np.add(data.shape, 1)
 
     # Replace any NaN or inf values with zeros
     data = np.nan_to_num(data)
