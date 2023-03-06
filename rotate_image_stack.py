@@ -21,6 +21,9 @@ def rotate_image_stack(data, voxel_size):
     data = np.transpose(data, axis_permutation)
     voxel_size = voxel_size[axis_permutation]
 
+    # Flip the data array along the Z axis
+    data = np.flip(data, axis=0)
+
     return data, voxel_size
 
 
