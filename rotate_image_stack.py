@@ -35,7 +35,7 @@ def rotate_image_stack(data, voxel_size):
     print("transpose")
     # Permute the axes of the data and the voxel size accordingly
     data = np.transpose(data, axis_permutation)
-    voxel_size = voxel_size[axis_permutation]
+    voxel_size = voxel_size[np.array(axis_permutation)]
 
     print(f"Voxel size: {voxel_size}")
     print(f"Data size: {np.shape(data)}")
