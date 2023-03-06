@@ -52,8 +52,8 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
     colorized_image = np.zeros((height, width, 3), dtype=np.uint8)
 
     # Loop through each X,Y position and set the color based on the max Z value
-    for y in range(height):
-        for x in range(width):
+    for y in range(width):
+        for x in range(height):
             index = max_indices[y, x]
             colorized_image[y, x, :] = np.uint8(np.multiply(cmap(index)[0:3],mip[y, x]))
 
