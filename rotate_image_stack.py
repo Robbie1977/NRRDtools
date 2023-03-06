@@ -15,7 +15,7 @@ def rotate_image_stack(data, voxel_size):
         voxel_size = np.roll(voxel_size, 1)
 
     # Determine the axis permutation required to put the next longest axis in the X axis
-    axis_permutation = [2, 1, 0] if next_axis == 0 else [1, 0, 2]
+    axis_permutation = [1, 2, 0] if next_axis == 0 else [0, 2, 1]
 
     # Permute the axes of the data and the voxel size accordingly
     data = np.transpose(data, axis_permutation)
