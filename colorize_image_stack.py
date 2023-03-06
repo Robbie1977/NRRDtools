@@ -49,7 +49,7 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
     cmap = ListedColormap(colors)
 
     # Create an empty array to store the colorized image
-    colorized_image = np.zeros((height, width, 3), dtype=np.uint8)
+    colorized_image = np.zeros((width, height, 3), dtype=np.uint8)
 
     print(np.shape(max_indices))
     print(np.shape(mip))
