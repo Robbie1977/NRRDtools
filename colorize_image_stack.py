@@ -56,7 +56,7 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
 
     # Save the colorized image as a PNG file
     if thumbnail:
-        Image.fromarray(colorized_image).resize(256, 256).save(png_path)
+        Image.fromarray(colorized_image).resize((256, 256), resample=Image.Resampling.BILINEAR).save(png_path)
     else:
         Image.fromarray(colorized_image).save(png_path)
 
