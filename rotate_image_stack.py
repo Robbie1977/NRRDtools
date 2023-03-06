@@ -30,22 +30,6 @@ def rotate_image_stack(data, voxel_size):
         voxel_size = tuple(voxel_size)
         print(f"Voxel size: {voxel_size}")
         print(f"Data size: {np.shape(data)}")
-
-    # Determine the axis permutation required to put the next longest axis in the Y axis
-    axis_permutation = [2, 0, 1] if next_axis == 0 else [1, 0, 2]
-    
-    print("transpose")
-    # Permute the axes of the data and the voxel size accordingly
-    data = np.transpose(data, axis_permutation)
-    voxel_size = voxel_size[axis_permutation]
-
-    print(f"Voxel size: {voxel_size}")
-    print(f"Data size: {np.shape(data)}")
-    
-    print("flip")
-    
-    # Flip the data array along the Z axis
-    data = np.flip(data, axis=0)
     
     print(f"Voxel size: {voxel_size}")
     print(f"Data size: {np.shape(data)}")
