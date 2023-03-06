@@ -2,70 +2,69 @@ import numpy as np
 import nrrd
 from PIL import Image
 from matplotlib.colors import ListedColormap
+import matplotlib.pyplot as plt
 import argparse
 
-def colorize_image_stack(input_file, output_file):
+def colorize_image_stack(nrrd_path, png_path):
+    '''
+    Load an NRRD image stack and create a color depth MIP by setting the color of each pixel based on the
+    Z index with the maximum voxel intensity at that position, using a JET color scale. The resulting image
+    is saved as a PNG file.
+    
+    Arguments:
+    nrrd_path -- path to the NRRD image stack
+    png_path -- path to save the resulting PNG file
+    
+    Example usage:
+    python colorize_image_stack.py --nrrd /path/to/image_stack.nrrd --png /path/to/output.png
+    '''
     # Load NRRD file
-    data, header = nrrd.read(input_file)
-    depth = data.shape[0]
+    data, header = nrrd.read(nrrd_path)
+    depth, height, width = data.shape
 
     # Replace any NaN or inf values with zeros
     data = np.nan_to_num(data)
 
-    # Calculate maximin intensity projection
-    mip = np.max(data, axis=0) - np.min(data, axis=0)
+    # Find first and last non-zero Z indices
+    first_index = np.argmax((data > 0).any(axis=(1, 2)))
+    last_index = data.shape[0] - np.argmax((data > 0)[::-1].any(axis=(1, 2))) - 1
 
-    # Normalize mip
-    mip_norm = (mip - np.min(mip)) / (np.max(mip) - np.min(mip))
+    print('First non-zero Z index:', first_index)
+    print('Last non-zero Z index:', last_index)
 
-    # Create color map using Janelia color scheme
-    colors = [[0.00, 0.00, 0.00], [0.00, 0.00, 0.75], [0.00, 0.50, 1.00], [0.00, 0.75, 0.50], [1.00, 0.75, 0.00], [1.00, 0.25, 0.00], [0.75, 0.00, 0.00], [0.75, 0.00, 0.75], [0.75, 0.75, 0.75]]
+    # Calculate maximum intensity projection across Z
+    mip = np.max(data, axis=0)
+
+    # Find indices of maximum values for each X,Y position offset by first_index
+    max_indices = np.argmax(data, axis=0) - first_index
+    max_indices = np.clip(max_indices, 0, None)
+
+    # Define color map using JET color scheme
+    jet_cmap = plt.cm.get_cmap('jet')
+    colors = jet_cmap(np.linspace(0, 1, last_index - first_index + 1))
+    colors = np.vstack(([0, 0, 0, 1], colors)) # add black at index 0
     cmap = ListedColormap(colors)
 
-    # Create an empty list to store colorized images
-    colorized_images = []
+    # Create an empty array to store the colorized image
+    colorized_image = np.zeros((height, width, 3), dtype=np.uint8)
 
-    # Loop through the stack and apply color as a filter on each image
-    for i in range(depth):
-        # Normalize data to 0-255 range
-        data_norm = (data[i] - np.min(data[i])) / (np.max(data[i]) - np.min(data[i])) * 255
+    # Loop through each X,Y position and set the color based on the max Z value
+    for y in range(height):
+        for x in range(width):
+            index = max_indices[y, x]
+            colorized_image[y, x, :] = np.uint8(np.multiply(cmap(index)[0:3],mip[y, x]))
 
-        # Replace any NaN or inf values with zeros
-        data_norm = np.nan_to_num(data_norm)
+    # Save the colorized image as a PNG file
+    Image.fromarray(colorized_image).save(png_path)
 
-        # Create color map for the layer using rainbow color scheme
-        layer_colors = np.array([cmap(j) for j in np.linspace(0, 1, 256)])
-        layer_cmap = ListedColormap(layer_colors)
+if __name__ == '__main__':
+    # Define command line arguments
+    parser = argparse.ArgumentParser(description='Create a color depth MIP from an NRRD image stack.')
+    parser.add_argument('--nrrd', type=str, help='Path to the NRRD image stack')
+    parser.add_argument('--png', type=str, help='Path to save the resulting PNG file')
 
-        # Apply layer color as a filter
-        layer_rgb = layer_cmap(data_norm)[:,:,:3]
-
-        # Resize the colorized layer to match the size of the mip
-        layer_rgb_resized = np.array(Image.fromarray(np.uint8(layer_rgb)).resize((mip.shape[1], mip.shape[0])))
-
-        # Add colorized layer to the list of colorized images
-        colorized_images.append(layer_rgb_resized)
-
-    # Merge colorized layers using maximum intensity projection
-    mip_colorized = np.max(np.array(colorized_images), axis=0)
-
-    # Normalize the merged image to 0-255 range
-    mip_colorized_norm = (mip_colorized - np.min(mip_colorized)) / (np.max(mip_colorized) - np.min(mip_colorized)) * 255
-
-    # Convert normalized merged image to RGB image using color map
-    mip_colorized_rgb = cmap(mip_colorized_norm)[:,:,:3]
-
-    # Create thumbnail
-    thumbnail = Image.fromarray(np.uint8(mip_colorized_rgb))
-    thumbnail = thumbnail.resize((256, 256))
-
-    # Save thumbnail
-    thumbnail.save(output_file)
-    
-def main():
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description='Colorize an image stack.')
-    parser.add_argument('input_file', type=str, help='Path to input NRRD file')
-    parser.add_argument('output_file', type=str, help='Path to output colorized thumbnail file')
     args = parser.parse_args()
 
+    # Call function to create color depth MIP
+    colorize_image_stack(args.nrrd, args.png)
