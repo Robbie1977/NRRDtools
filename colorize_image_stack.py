@@ -5,7 +5,7 @@ from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
 import argparse
 
-def colorize_image_stack(nrrd_path, png_path):
+def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
     '''
     Load an NRRD image stack and create a color depth MIP by setting the color of each pixel based on the
     Z index with the maximum voxel intensity at that position, using a JET color scale. The resulting image
@@ -62,9 +62,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Create a color depth MIP from an NRRD image stack.')
     parser.add_argument('--nrrd', type=str, help='Path to the NRRD image stack')
     parser.add_argument('--png', type=str, help='Path to save the resulting PNG file')
+    parser.add_argument('--thumb', type=boolean, help='wheather to reduce the size of the resulting PNG file')
 
     # Parse command line arguments
     args = parser.parse_args()
 
     # Call function to create color depth MIP
-    colorize_image_stack(args.nrrd, args.png)
+    colorize_image_stack(args.nrrd, args.png, arg.thumb)
