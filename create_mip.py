@@ -45,7 +45,7 @@ if __name__ == '__main__':
     # Define arguments
     parser.add_argument('nrrd_path', type=str, help='Path to image stack NRRD file')
     parser.add_argument('png_path', type=str, help='Path to output PNG file')
-    parser.add_argument('thumb', type=str, help='Reduce size to thumnbnail', default=True)
+    parser.add_argument('thumb', type=bool, help='Reduce size to thumnbnail', default=True)
 
     # Parse arguments
     args = parser.parse_args()
