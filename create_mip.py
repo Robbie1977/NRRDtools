@@ -18,7 +18,7 @@ def create_mip(nrrd_path, png_path):
     depth, height, width = data.shape
     
     # Calculate maximum intensity projection across Z
-    mip = np.max(data, axis=0)
+    mip = np.max(data, axis=2)
 
     # Create thumbnail image by resizing the MIP to 256x256
     thumbnail = Image.fromarray(mip).resize((256, 256))
