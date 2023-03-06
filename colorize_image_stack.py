@@ -4,6 +4,7 @@ from PIL import Image
 from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
 import argparse
+from rotate_image_stack import rotate_image_stack
 
 def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
     '''
@@ -20,7 +21,9 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
     '''
     # Load NRRD file
     data, header = nrrd.read(nrrd_path)
-    depth, height, width = data.shape
+    voxel_size = np.sqrt(np.sum(np.square(header['space directions']), axis=1))
+    data, voxel_size = rotate_image_stack(data, voxel_size)
+    width, height, depth = data.shape
 
     # Replace any NaN or inf values with zeros
     data = np.nan_to_num(data)
@@ -56,9 +59,25 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
 
     # Save the colorized image as a PNG file
     if thumbnail:
-        Image.fromarray(colorized_image).resize((256, 256), resample=Image.Resampling.BILINEAR).save(png_path)
+        # Start with CD-MIP
+        mip = Image.fromarray(colorized_image)
+
+        # Calculate physical dimensions of MIP
+        x_size, y_size = np.multiply(voxel_sizes[:2], [width, height])
+
+        # Calculate ratio of physical dimensions
+        ratio = y_size / x_size
+
+        # Create thumbnail image by resizing the MIP while preserving aspect ratio
+        thumbnail = Image.fromarray(mip)
+        thumbnail_width = 256
+        thumbnail_height = int(thumbnail_width * ratio)
+        thumbnail = thumbnail.resize((thumbnail_width, thumbnail_height))
+        thumbnail = thumbnail.rotate(-90, expand=True)
+        # Save the thumbnail image as a PNG file
+        thumbnail.save(png_path)
     else:
-        Image.fromarray(colorized_image).save(png_path)
+        Image.fromarray(colorized_image).rotate(-90, expand=True).save(png_path)
 
 if __name__ == '__main__':
     # Define command line arguments
