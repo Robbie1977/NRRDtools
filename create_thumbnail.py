@@ -11,7 +11,7 @@ def create_thumbnail(template_file, signal_file, output_file):
     os.system(f"python3 {create_mip_path} {template_file} template_mip.png")
     
     # Colorize the signal image
-    os.system(f"python3 {colorize_image_stack_path} {signal_file} signal_colorized.png")
+    os.system(f"python3 {colorize_image_stack_path} --nrrd {signal_file} --png signal_colorized.png")
     
     # Merge the template and colorized signal images
     os.system(f"python3 {merge_images_path} template_mip.png signal_colorized.png {output_file}")
