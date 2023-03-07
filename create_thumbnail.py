@@ -8,17 +8,17 @@ def create_thumbnail(template_file, signal_file, output_file):
     create_mip_path = os.path.join(os.getcwd(), "create_mip.py")
     
     # Create the maximum intensity projection of the template
-    os.system(f"python3 {create_mip_path} -i {template_file} -o template_mip.png -s full")
+    os.system(f"python3 {create_mip_path} {template_file} template_mip.png")
     
     # Colorize the signal image
-    os.system(f"python3 {colorize_image_stack_path} -i {signal_file} -o signal_colorized.nrrd -s full")
+    os.system(f"python3 {colorize_image_stack_path} {signal_file} signal_colorized.png")
     
     # Merge the template and colorized signal images
-    os.system(f"python3 {merge_images_path} -t template_mip.png -s signal_colorized.nrrd -o {output_file}")
+    os.system(f"python3 {merge_images_path} template_mip.png signal_colorized.png {output_file}")
     
     # Clean up temporary files
     os.remove("template_mip.png")
-    os.remove("signal_colorized.nrrd")
+    os.remove("signal_colorized.png")
 
 def main():
     # Create argument parser
