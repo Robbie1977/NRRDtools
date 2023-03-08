@@ -8,8 +8,8 @@ def merge_images(input_path1, input_path2, output_path):
 
     # Allow for a 2 pixel colour bar on right:
     color_bar_width = 2
-    if img2.size[0] == img1.size[0] and img2.size[1] - img1.size[1] == color_bar_width:
-        color_bar_height = img1.size[0]
+    if img2.size[1] == img1.size[1] and img2.size[0] - img1.size[0] == color_bar_width:
+        color_bar_height = img1.size[1]
         color_bar = np.zeros((color_bar_height, color_bar_width, 3), dtype=np.uint8)
         img1 = np.concatenate((img1, color_bar), axis=1)
     
