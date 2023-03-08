@@ -61,8 +61,12 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
             index = max_indices[y, x]
             colorized_image[y, x, :] = np.uint8(np.multiply(cmap(index)[0:3],mip[y, x]))
     
+    # Rotate clockwise to make wider than longer
+    colorized_image = colorized_image.rotate(-90, expand=True)
+    height, width = [width, height]
+    
     if add_scale:
-        print('Add color bar to the image')
+        print('Add color bar to the right of the image')
         # Add color bar to the right side of the image
         color_bar_width = 20
         color_bar_height = height
@@ -95,14 +99,13 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
         thumbnail_width = 256
         thumbnail_height = int(thumbnail_width * ratio)
         thumbnail = thumbnail.resize((thumbnail_width, thumbnail_height))
-        thumbnail = thumbnail.rotate(-90, expand=True)
         # Save the thumbnail image as a PNG file
         thumbnail.save(png_path)
     else:
         if add_scale:
-            Image.fromarray(combined_image).rotate(-90, expand=True).save(png_path)
+            Image.fromarray(combined_image).save(png_path)
         else:
-            Image.fromarray(colorized_image).rotate(-90, expand=True).save(png_path)
+            Image.fromarray(colorized_image).save(png_path)
         
 
 if __name__ == '__main__':
