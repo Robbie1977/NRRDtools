@@ -72,8 +72,8 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
         color_bar_height = height
         color_bar = np.zeros((color_bar_height, color_bar_width, 3), dtype=np.uint8)
         for y in range(color_bar_height):
-            index = int((y / height) * depth)
-            if index >= first_index and index <= last_index:
+            index = int((y / height) * depth) - first_index
+            if index >= 0 and index <= last_index - first_index:
                 color_bar[y, :, :] = np.uint8(np.multiply(cmap(index)[0:3], 255))
         
         # Combine colorized image and color bar
