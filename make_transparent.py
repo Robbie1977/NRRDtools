@@ -8,12 +8,11 @@ def make_transparent(input_file, output_file):
         # Get the color of the top-left pixel
         bg_color = im.getpixel((0, 0))
         # Make all pixels with the same color as the top-left pixel transparent
-        im = im.convert("RGBA")
         data = im.getdata()
         new_data = []
         for item in data:
             if item[:3] == bg_color:
-                new_data.append((255, 255, 255, 0))
+                new_data.append((0, 0, 0, 0))
             else:
                 new_data.append(item)
         im.putdata(new_data)
