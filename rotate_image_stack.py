@@ -6,19 +6,24 @@ def rotate_image_stack(data, voxel_size):
     
     print(f"Data size: {np.shape(data)}")
     
-    # Determine the longest axis and the next longest axis
     axis_lengths = np.array(data.shape) * voxel_size
+    
+    # Determine the longest axis and the next longest axis
+    if axis_lengths[0] == axis_lengths[1]:
+        # If X and Y sizes are equal, skip the rotation
+        longest_axis = 0
+        next_axis = 1
+        num_rotations = 0
+    else:
+        
+        print(f"Axis lengths: {axis_lengths}")
+        longest_axis, next_axis = np.argsort(axis_lengths)[::-1][:2]
+        print(f"Longest axis: {longest_axis}")
+        print(f"Next axis: {next_axis}")
 
-    print(f"Axis lengths: {axis_lengths}")
-    
-    longest_axis, next_axis = np.argsort(axis_lengths)[::-1][:2]
-    
-    print(f"Longest axis: {longest_axis}")
-    print(f"Next axis: {next_axis}")
+        # Determine the number of rotations required to align the longest axis with the X axis
+        num_rotations = (longest_axis) % 3
 
-    # Determine the number of rotations required to align the longest axis with the X axis
-    num_rotations = (longest_axis) % 3
-    
     print(f"Number of rotations: {num_rotations}")
 
     # Rotate the data and the voxel size accordingly
