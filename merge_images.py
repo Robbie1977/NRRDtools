@@ -12,7 +12,7 @@ def merge_images(input_path1, input_path2, output_path):
     if img2.size[1] == img1.size[1] and img2.size[0] - img1.size[0] == color_bar_width:
         color_bar_height = img1.size[1]
         color_bar = np.zeros((color_bar_height, color_bar_width, 4), dtype=np.uint8)
-        img1 = np.concatenate((img1, color_bar), axis=1)
+        img1 = Image.fromarray(np.concatenate((np.array(img1), color_bar), axis=1))
     
     # Ensure both images have the same size
     if img1.size != img2.size:
