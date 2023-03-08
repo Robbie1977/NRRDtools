@@ -68,12 +68,13 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
     if add_scale:
         print('Add color bar to the right of the image')
         # Add color bar to the right side of the image
-        color_bar_width = 20
+        color_bar_width = 2
         color_bar_height = height
         color_bar = np.zeros((color_bar_height, color_bar_width, 3), dtype=np.uint8)
         for y in range(color_bar_height):
             index = int((y / height) * depth)
-            color_bar[y, :, :] = np.uint8(np.multiply(cmap(index)[0:3], 255))
+            if index >= first_index and index <= last_index:
+                color_bar[y, :, :] = np.uint8(np.multiply(cmap(index)[0:3], 255))
         
         # Combine colorized image and color bar
         combined_image = np.concatenate((colorized_image, color_bar), axis=1)
