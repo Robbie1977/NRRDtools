@@ -64,7 +64,7 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
     # Rotate clockwise to make wider than longer
     final_image = Image.fromarray(colorized_image).rotate(-90, expand=True)
     height, width = [width, height]
-    colorized_image = np.rot90(colorized_image, 3)
+    colorized_image = np.rot90(colorized_image)
     
     if add_scale:
         print('Add color bar to the right of the image')
