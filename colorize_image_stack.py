@@ -74,7 +74,7 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
         bar_ratio = height / depth
         print(bar_ratio)
         for y in range(color_bar_height):
-            index = y * bar_ratio
+            index = y / bar_ratio
             color_bar[y, :, :] = np.uint8(np.multiply(cmap(index)[0:3], 255))
         
         # Combine colorized image and color bar
