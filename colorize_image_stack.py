@@ -34,6 +34,10 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
 
     print('First non-zero Z index:', first_index)
     print('Last non-zero Z index:', last_index)
+    
+    if first_index > last_index:
+        print('index error - reversing')
+        first_index, last_index = [last_index, first_index] 
 
     # Calculate maximum intensity projection across Z
     mip = np.max(data, axis=2)
