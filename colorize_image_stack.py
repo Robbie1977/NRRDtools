@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import argparse
 from rotate_image_stack import rotate_image_stack
 
-def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
+def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
     '''
     Load an NRRD image stack and create a color depth MIP by setting the color of each pixel based on the
     Z index with the maximum voxel intensity at that position, using a JET color scale. The resulting image
@@ -60,6 +60,23 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
         for x in range(height):
             index = max_indices[y, x]
             colorized_image[y, x, :] = np.uint8(np.multiply(cmap(index)[0:3],mip[y, x]))
+    
+    if add_scale:
+        # Add color bar to the right side of the image
+        color_bar_width = 20
+        color_bar_height = height
+        color_bar = np.zeros((color_bar_height, color_bar_width, 3), dtype=np.uint8)
+        for y in range(color_bar_height):
+            index = y / color_bar_height * (last_index - first_index) + first_index
+            color_bar[y, :, :] = np.uint8(np.multiply(cmap(index)[0:3], 255))
+        
+        # Combine colorized image and color bar
+        color_bar_height = 20
+        color_bar = np.zeros((height, color_bar_height, 3), dtype=np.uint8)
+        for y in range(height):
+            color_bar[y, :, :] = np.uint8(np.multiply(cmap(y)[0:3], 255))
+
+    combined_image = np.concatenate((colorized_image, color_bar), axis=1)
 
     # Save the colorized image as a PNG file
     if thumbnail:
@@ -70,7 +87,10 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False):
         ratio = y_size / x_size
         
         # Create thumbnail image by resizing the MIP while preserving aspect ratio
-        thumbnail = Image.fromarray(colorized_image)
+        if add_scale:
+            thumbnail = Image.fromarray(combined_image)
+        else:
+            thumbnail = Image.fromarray(colorized_image)
         thumbnail_width = 256
         thumbnail_height = int(thumbnail_width * ratio)
         thumbnail = thumbnail.resize((thumbnail_width, thumbnail_height))
@@ -86,9 +106,10 @@ if __name__ == '__main__':
     parser.add_argument('--nrrd', type=str, help='Path to the NRRD image stack')
     parser.add_argument('--png', type=str, help='Path to save the resulting PNG file')
     parser.add_argument('--thumb', action='store_true', help='Reduce size to thumbnail')
+    parser.add_argument('--scale', action='store_true', help='Add colour scale bar to thumbnail')
 
     # Parse command line arguments
     args = parser.parse_args()
 
     # Call function to create color depth MIP
-    colorize_image_stack(args.nrrd, args.png, args.thumb)
+    colorize_image_stack(args.nrrd, args.png, args.thumb, args.scale)
