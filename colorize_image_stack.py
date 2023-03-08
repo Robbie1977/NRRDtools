@@ -62,6 +62,7 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
             colorized_image[y, x, :] = np.uint8(np.multiply(cmap(index)[0:3],mip[y, x]))
     
     if add_scale:
+        print('Add color bar to the image')
         # Add color bar to the right side of the image
         color_bar_width = 20
         color_bar_height = height
