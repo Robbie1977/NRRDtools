@@ -99,7 +99,11 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
         # Save the thumbnail image as a PNG file
         thumbnail.save(png_path)
     else:
-        Image.fromarray(colorized_image).rotate(-90, expand=True).save(png_path)
+        if add_scale:
+            Image.fromarray(combined_image).rotate(-90, expand=True).save(png_path)
+        else:
+            Image.fromarray(colorized_image).rotate(-90, expand=True).save(png_path)
+        
 
 if __name__ == '__main__':
     # Define command line arguments
