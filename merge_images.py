@@ -15,8 +15,8 @@ def merge_images(input_path1, input_path2, output_path):
     
     # Ensure both images have the same size
     if img1.size != img2.size:
-        print(f"Template size: {img1.size}"
-        print(f"Signal size: {img2.size}"
+        print(f"Template size: {img1.size}")
+        print(f"Signal size: {img2.size}")
         raise ValueError('Input images must have the same size')
 
     # Make the first image semi-transparent
