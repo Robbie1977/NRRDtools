@@ -62,7 +62,7 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
             colorized_image[y, x, :] = np.uint8(np.multiply(cmap(index)[0:3],mip[y, x]))
     
     # Rotate clockwise to make wider than longer
-    colorized_image = np.rot90(colorized_image)
+    colorized_image = np.rot90(colorized_image, -1)
     height, width, rgb = colorized_image.shape
     
     if add_scale:
