@@ -1,4 +1,5 @@
 import argparse
+import numpy as np
 from PIL import Image
 
 def merge_images(input_path1, input_path2, output_path):
