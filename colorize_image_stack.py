@@ -58,7 +58,7 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
     # Loop through each X,Y position and set the color based on the max Z value
     for y in range(width):
         for x in range(height):
-            index = y
+            max_indices[y, x]
             colorized_image[y, x, :] = np.uint8(np.multiply(cmap(index)[0:3],mip[y, x]))
     
     # Rotate clockwise to make wider than longer
@@ -72,7 +72,7 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
         color_bar_height = height
         color_bar = np.zeros((color_bar_height, color_bar_width, 3), dtype=np.uint8)
         for y in range(color_bar_height):
-            index = np.multiply(y,1.0)
+            index = y
             color_bar[y, :, :] = np.uint8(np.multiply(cmap(index)[0:3], 255))
         
         # Combine colorized image and color bar
