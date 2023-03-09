@@ -29,8 +29,8 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
     data = np.nan_to_num(data)
 
     # Find first and last non-zero Z indices
-    first_index = np.argmax((data > 0).any(axis=(0, 1)))
-    last_index = data.shape[2] - np.argmax((data > 0)[::-1].any(axis=(0, 1))) - 1
+    first_index = np.argmax((data > 0)[:, :, ::1].any(axis=(0, 1)))
+    last_index = data.shape[2] - np.argmax((data > 0)[:, :, ::-1].any(axis=(0, 1))) - 1
 
     print('First non-zero Z index:', first_index)
     print('Last non-zero Z index:', last_index)
