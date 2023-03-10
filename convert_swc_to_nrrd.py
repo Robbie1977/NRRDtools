@@ -13,8 +13,6 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     dims = header['sizes']
     # Get the direction vectors for each axis
     directions = header['space directions']
-    # Get the origin of the volume
-    origin = header['space origin']
     
     # Create a new volume for the SWC data
     volume = np.zeros(dims)
@@ -22,7 +20,6 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     # Draw each point in the SWC file as a sphere
     for i in range(swc_data.shape[0]):
         point = swc_data[i, 2:5].astype(int)
-        point -= origin.astype(int)
         radius = swc_data[i, 5]
         label = swc_data[i, 1]
         
