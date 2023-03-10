@@ -1,5 +1,6 @@
 import argparse
 import os
+import random
 
 def create_thumbnail(template_file, signal_file, output_file):
     # Set up paths to the necessary files
@@ -7,18 +8,21 @@ def create_thumbnail(template_file, signal_file, output_file):
     colorize_image_stack_path = os.path.join(os.getcwd(), "colorize_image_stack.py")
     create_mip_path = os.path.join(os.getcwd(), "create_mip.py")
     
+    # Generate a random number for temporary file names
+    rand_num = str(random.randint(1000, 9999))
+    
     # Create the maximum intensity projection of the template
-    os.system(f"python3 {create_mip_path} {template_file} template_mip.png")
+    os.system(f"python3 {create_mip_path} {template_file} template_mip_{rand_num}.png")
     
     # Colorize the signal image
-    os.system(f"python3 {colorize_image_stack_path} --nrrd {signal_file} --png signal_colorized.png --scale")
+    os.system(f"python3 {colorize_image_stack_path} --nrrd {signal_file} --png signal_colorized_{rand_num}.png --scale")
     
     # Merge the template and colorized signal images
-    os.system(f"python3 {merge_images_path} template_mip.png signal_colorized.png {output_file}")
+    os.system(f"python3 {merge_images_path} template_mip_{rand_num}.png signal_colorized_{rand_num}.png {output_file}")
     
     # Clean up temporary files
-    os.remove("template_mip.png")
-    os.remove("signal_colorized.png")
+    os.remove(f"template_mip_{rand_num}.png")
+    os.remove(f"signal_colorized_{rand_num}.png")
 
 def main():
     # Create argument parser
