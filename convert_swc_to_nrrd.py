@@ -64,4 +64,4 @@ def main():
     args = parser.parse_args()
     
     # Convert SWC to NRRD
-    convert_swc_to_nrrd(args
+    convert_swc_to_nrrd(args.swc_file, args.template_file, args.output_file)
