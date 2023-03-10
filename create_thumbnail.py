@@ -13,7 +13,7 @@ def create_thumbnail(template_file, signal_file, output_file, cache_template=Fal
     
     if cache_template:
         # extract the template id from the VFB specific folder structure
-        template_id = parent_dir = os.path.basename(os.path.dirname(
+        template_id = parent_dir = os.path.basename(os.path.dirname(template_file))
         template_mip = f"template_mip_{template_id}.png"
     else:
         template_mip = "template_mip_{rand_num}.png"
