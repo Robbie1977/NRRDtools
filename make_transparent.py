@@ -14,7 +14,7 @@ def make_transparent(input_file, output_file):
             if item[:3] == bg_color:
                 new_data.append((0, 0, 0, 0))
             else:
-                new_data.append(item)
+                new_data.append(item[:3] + [255])
         im.putdata(new_data)
         # Save the transparent image
         im.save(output_file)
