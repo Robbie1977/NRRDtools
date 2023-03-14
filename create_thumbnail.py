@@ -2,7 +2,7 @@ import argparse
 import os
 import random
 
-def create_thumbnail(template_file, signal_file, output_file, cache_template=False):
+def create_thumbnail(template_file, signal_file, output_file, cache_template=False, max_scale=False):
     # Set up paths to the necessary files
     merge_images_path = os.path.join(os.getcwd(), "merge_images.py")
     colorize_image_stack_path = os.path.join(os.getcwd(), "colorize_image_stack.py")
@@ -23,7 +23,10 @@ def create_thumbnail(template_file, signal_file, output_file, cache_template=Fal
         os.system(f"python3 {create_mip_path} {template_file} {template_mip}")
     
     # Colorize the signal image
-    os.system(f"python3 {colorize_image_stack_path} --nrrd {signal_file} --png signal_colorized_{rand_num}.png --scale")
+    if max_scale:
+        os.system(f"python3 {colorize_image_stack_path} --nrrd {signal_file} --png signal_colorized_{rand_num}.png --scale --max_scale")
+    else:
+        os.system(f"python3 {colorize_image_stack_path} --nrrd {signal_file} --png signal_colorized_{rand_num}.png --scale")
     
     # Merge the template and colorized signal images
     os.system(f"python3 {merge_images_path} {template_mip} signal_colorized_{rand_num}.png {output_file}")
@@ -42,12 +45,13 @@ def main():
     parser.add_argument("signal_file", help="Path to Signal.nrrd file")
     parser.add_argument("output_file", help="Path to output thumbnail.png file")
     parser.add_argument('--cache', action='store_true', help='If added then the template mips are cached')
+    parser.add_argument('--max_scale', action='store_true', help='If the colour scale should use the full stack rather than fit only data depth')
     
     # Parse arguments
     args = parser.parse_args()
     
     # Create thumbnail
-    create_thumbnail(args.template_file, args.signal_file, args.output_file, args.cache)
+    create_thumbnail(args.template_file, args.signal_file, args.output_file, args.cache, args.max_scale)
 
 if __name__ == "__main__":
     main()
