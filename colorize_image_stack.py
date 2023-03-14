@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import argparse
 from rotate_image_stack import rotate_image_stack
 
-def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
+def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True, max_scale=False):
     '''
     Load an NRRD image stack and create a color depth MIP by setting the color of each pixel based on the
     Z index with the maximum voxel intensity at that position, using a JET color scale. The resulting image
@@ -37,7 +37,12 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True):
     
     if first_index > last_index:
         print('index error - reversing')
-        first_index, last_index = [last_index, first_index] 
+        first_index, last_index = [last_index, first_index]
+        
+    if max_scale:
+        print('Extending scale to full stack')
+        first_index = 0
+        last_index = data.shape[2] - 1
 
     # Calculate maximum intensity projection across Z
     mip = np.max(data, axis=2)
@@ -115,6 +120,7 @@ if __name__ == '__main__':
     parser.add_argument('--png', type=str, help='Path to save the resulting PNG file')
     parser.add_argument('--thumb', action='store_true', help='Reduce size to thumbnail')
     parser.add_argument('--scale', action='store_true', help='Add colour scale bar to thumbnail')
+    parser.add_argument('--max', action='store_true', help='Max colour scale bar to full Z range')
 
     # Parse command line arguments
     args = parser.parse_args()
