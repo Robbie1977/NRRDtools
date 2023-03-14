@@ -24,7 +24,7 @@ def create_thumbnail(template_file, signal_file, output_file, cache_template=Fal
     
     # Colorize the signal image
     if max_scale:
-        os.system(f"python3 {colorize_image_stack_path} --nrrd {signal_file} --png signal_colorized_{rand_num}.png --scale --max_scale")
+        os.system(f"python3 {colorize_image_stack_path} --nrrd {signal_file} --png signal_colorized_{rand_num}.png --scale --max")
     else:
         os.system(f"python3 {colorize_image_stack_path} --nrrd {signal_file} --png signal_colorized_{rand_num}.png --scale")
     
