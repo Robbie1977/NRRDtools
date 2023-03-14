@@ -126,4 +126,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Call function to create color depth MIP
-    colorize_image_stack(args.nrrd, args.png, args.thumb, args.scale)
+    colorize_image_stack(args.nrrd, args.png, args.thumb, args.scale, args.max)
