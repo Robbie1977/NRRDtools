@@ -43,7 +43,8 @@ def rotate_image_stack(data, voxel_size):
             print(f"Voxel size: {voxel_size}")
             print(f"Data size: {np.shape(data)}")
 
-        longest_axis, next_axis = 1, 2  # Reassign the longest_axis and next_axis after the previous rotation
+        # Update the next_axis value after the first set of rotations
+        next_axis = 3 - (longest_axis + next_axis)
 
         # Determine the number of rotations required to align the next longest axis with the Y axis
         num_rotations = (3 - next_axis) % 3
