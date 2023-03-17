@@ -1,5 +1,6 @@
 import numpy as np
 import nrrd
+from scipy.ndimage import zoom
 
 def resample_to_isotropic(data, voxel_size):
     target_voxel_size = min(voxel_size)
