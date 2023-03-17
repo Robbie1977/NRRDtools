@@ -1,10 +1,22 @@
 import numpy as np
 import nrrd
 
-def rotate_image_stack(data, voxel_size):
-    print(f"Voxel size: {voxel_size}")
+def resample_to_isotropic(data, voxel_size):
+    target_voxel_size = min(voxel_size)
+    resample_factors = voxel_size / target_voxel_size
+    isotropic_data = zoom(data, resample_factors, order=1)  # Using bilinear interpolation (order=1)
+    isotropic_voxel_size = np.array([target_voxel_size] * 3)
     
-    print(f"Data size: {np.shape(data)}")
+    return isotropic_data, isotropic_voxel_size
+
+def rotate_image_stack(data, voxel_size):
+    print(f"Original voxel size: {voxel_size}")
+    print(f"Original data size: {np.shape(data)}")
+
+    # Resample the data to isotropic voxels
+    data, voxel_size = resample_to_isotropic(data, voxel_size)
+    print(f"Isotropic voxel size: {voxel_size}")
+    print(f"Isotropic data size: {np.shape(data)}")
     
     axis_lengths = np.array(data.shape) * voxel_size
     
