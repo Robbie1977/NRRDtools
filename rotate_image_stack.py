@@ -23,28 +23,30 @@ def rotate_image_stack(data, voxel_size):
         # Rotate the data and the voxel size accordingly
         for _ in range(num_rotations):
             print("90 degree rotation")
-            data = np.rot90(data, axes=(0, 1))
+            data = np.swapaxes(data, 0, longest_axis)
             voxel_size = list(voxel_size)
-            voxel_size[0], voxel_size[1] = voxel_size[1], voxel_size[0]
+            voxel_size[0], voxel_size[longest_axis] = voxel_size[longest_axis], voxel_size[0]
             voxel_size = tuple(voxel_size)
             print(f"Voxel size: {voxel_size}")
             print(f"Data size: {np.shape(data)}")
-        
+
+        longest_axis, next_axis = 1, 2  # Reassign the longest_axis and next_axis after the previous rotation
+
         # Determine the number of rotations required to align the next longest axis with the Y axis
-        num_rotations = (next_axis - 1) % 3
+        num_rotations = (3 - next_axis) % 3
 
         print(f"Number of rotations: {num_rotations}")
 
         # Rotate the data and the voxel size accordingly
         for _ in range(num_rotations):
             print("90 degree rotation")
-            data = np.rot90(data, axes=(1, 2))
+            data = np.swapaxes(data, 1, next_axis)
             voxel_size = list(voxel_size)
-            voxel_size[1], voxel_size[2] = voxel_size[2], voxel_size[1]
+            voxel_size[1], voxel_size[next_axis] = voxel_size[next_axis], voxel_size[1]
             voxel_size = tuple(voxel_size)
             print(f"Voxel size: {voxel_size}")
             print(f"Data size: {np.shape(data)}")
-    
+
     print(f"Voxel size: {voxel_size}")
     print(f"Data size: {np.shape(data)}")
     
