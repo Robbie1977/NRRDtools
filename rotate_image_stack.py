@@ -29,21 +29,23 @@ def rotate_image_stack(data, voxel_size):
     print(f"Next axis: {next_axis}")
     print(f"Shortest axis: {shortest_axis}")
 
-    if axis_lengths[longest_axis] != axis_lengths[next_axis]:
+    if axis_lengths[longest_axis] != axis_lengths[next_axis] and next_axis != 2:
         # Swap the longest axis with the X axis
         print("Swapping longest axis with X axis")
         data = np.swapaxes(data, 0, longest_axis)
         voxel_size = list(voxel_size)
         voxel_size[0], voxel_size[longest_axis] = voxel_size[longest_axis], voxel_size[0]
+        if next_axis == 0:
+            next_axis = longest_axis
         voxel_size = tuple(voxel_size)
         print(f"Voxel size: {voxel_size}")
         print(f"Data size: {np.shape(data)}")
 
         # Swap the shortest axis with the Y axis
         print("Swapping shortest axis with Y axis")
-        data = np.swapaxes(data, 1, shortest_axis)
+        data = np.swapaxes(data, 1, next_axis)
         voxel_size = list(voxel_size)
-        voxel_size[1], voxel_size[shortest_axis] = voxel_size[shortest_axis], voxel_size[1]
+        voxel_size[1], voxel_size[next_axis] = voxel_size[next_axis], voxel_size[1]
         voxel_size = tuple(voxel_size)
         print(f"Voxel size: {voxel_size}")
         print(f"Data size: {np.shape(data)}")
