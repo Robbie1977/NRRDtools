@@ -1,16 +1,17 @@
-def obj_to_nrrd(input_file, output_file=None, fill_factor=0.05):
-    """
-    Convert an OBJ file to a binary NRRD file with a physical size of 1 micron per voxel and microns as the unit for each axis.
+import sys
+import numpy as np
+import nrrd
+import os
+import trimesh
 
+
+def obj_to_nrrd(input_file, template_nrrd, output_file=None):
+    """
+    Convert an OBJ file to a binary NRRD file with the voxel size, space directions, and mesh size of a template NRRD file.
     :param input_file: str, path to the input OBJ file
+    :param template_nrrd: str, path to the template NRRD file
     :param output_file: str (optional), path to the output NRRD file. If not specified, the output file will have the same name as the input file but with the '.nrrd' extension
-    :param fill_factor: float (optional), voxel size as a fraction of the minimum dimension of the bounding box of the mesh. Default is 0.05 (1/20th of the minimum dimension).
     """
-    import numpy as np
-    import nrrd
-    import os
-    import trimesh
-
     # Check if output file path is specified. If not, use the default output file name
     if output_file is None:
         output_file = os.path.splitext(input_file)[0] + '.nrrd'
@@ -28,59 +29,48 @@ def obj_to_nrrd(input_file, output_file=None, fill_factor=0.05):
                 faces.append(face)
     trimesh_mesh = trimesh.Trimesh(vertices=vertices, faces=faces, process=False)
 
+    # Read the template NRRD file and extract the header and data size
+    template_data, template_header = nrrd.read(template_nrrd)
+    space_directions = template_header['space directions']
+    space_units = template_header['space units']
+    template_shape = template_data.shape
+
     # Translate Trimesh so its minimum coordinate values are at the origin
     min_coord = np.min(trimesh_mesh.vertices, axis=0)
     trimesh_mesh.vertices -= min_coord
-    
-    # Calculate the extents of the trimesh
-    trimesh_extents = trimesh_mesh.bounds
-    print(f"Trimesh extents: {trimesh_extents}")
 
-    # Create a voxel grid that is large enough to fully enclose the trimesh
-    max_coord = np.ceil(trimesh_mesh.bounds[1]).astype(int)
-    grid_shape = tuple(max_coord)
-    print(f"Voxel grid extents: {grid_shape}")
-    mesh = np.zeros(grid_shape, dtype=bool)
+    # Create a voxel grid that matches the shape of the template NRRD file's data
+    mesh = np.zeros(template_shape, dtype=bool)
+
+    # Get the voxel size from the space directions of the template NRRD file
+    voxel_size = np.linalg.norm(space_directions[0])
 
     # Voxelized mesh and set binary values in mesh
-    voxel_size = np.min(max_coord) * fill_factor
     volume = trimesh_mesh.voxelized(voxel_size).fill()
-    voxel_indices = np.round(volume.points).astype(int)
-    mesh[voxel_indices[:, 0]-1, voxel_indices[:, 1]-1, voxel_indices[:, 2]-1] = True
+    voxel_indices = np.round(volume.points / voxel_size).astype(int)
+    mesh[voxel_indices[:, 0], voxel_indices[:, 1], voxel_indices[:, 2]] = True
 
     # Convert binary mesh to uint8 matrix
     matrix = mesh.astype(np.uint8) * 255
 
-    # Set NRRD header with 1 micron scale factor and microns as the unit for each axis
-    header = {
-        'encoding': 'gzip',
-        'space': 'right-anterior-superior',
-        'space directions': [(1.0, 0, 0), (0, 1.0, 0), (0, 0, 1.0)],
-        'space units': ['microns', 'microns', 'microns'],
-        'kinds': ['domain', 'domain', 'domain']
-    }
+    # Set NRRD header with space directions and units from the template NRRD file
+    header = template_header
 
     # Save uint8 matrix as NRRD file using nrrd.write
-    if output_file is None:
-        output_file = os.path.splitext(input_file)[0] + '.nrrd'
     nrrd.write(output_file, matrix, header)
     
     print(f"Saved NRRD file: {output_file}")
 
 if __name__ == "__main__":
-    import sys
-
-    if len(sys.argv) < 2:
-        print("Usage: python obj_to_nrrd.py input.obj [output.nrrd]")
+    if len(sys.argv) < 3:
+        print("Usage: python obj_to_nrrd.py input.obj template.nrrd [output.nrrd]")
         sys.exit(1)
 
     input_file = sys.argv[1]
+    template_nrrd = sys.argv[2]
     output_file = None
-    fill_factor = 0.0005 # Note denser fill factor used 
-    if len(sys.argv) > 2:
-        output_file = sys.argv[2]
-    
-    if len(sys.argv) > 3:
-        fill_factor = float(sys.argv[3])
 
-    obj_to_nrrd(input_file, output_file, fill_factor)
+    if len(sys.argv) > 3:
+        output_file = sys.argv[3]
+
+    obj_to_nrrd(input_file, template_nrrd, output_file)
