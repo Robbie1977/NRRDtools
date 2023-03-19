@@ -31,13 +31,9 @@ def obj_to_nrrd(input_file, template_nrrd, output_file=None):
 
     # Read the template NRRD file and extract the header and data size
     template_data, template_header = nrrd.read(template_nrrd)
-    space_directions = template_header['space directions']
-    space_units = template_header['space units']
+    space_directions = np.array([tuple(map(float, x.strip('()').split(','))) for x in template_header['space directions'].split()])
+    space_units = template_header['space units'].split()
     template_shape = template_data.shape
-
-    # Translate Trimesh so its minimum coordinate values are at the origin
-    min_coord = np.min(trimesh_mesh.vertices, axis=0)
-    trimesh_mesh.vertices -= min_coord
 
     # Create a voxel grid that matches the shape of the template NRRD file's data
     mesh = np.zeros(template_shape, dtype=bool)
@@ -52,7 +48,7 @@ def obj_to_nrrd(input_file, template_nrrd, output_file=None):
 
     # Convert binary mesh to uint8 matrix
     matrix = mesh.astype(np.uint8) * 255
-
+    
     # Set NRRD header with space directions and units from the template NRRD file
     header = template_header
 
