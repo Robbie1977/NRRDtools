@@ -32,7 +32,7 @@ def obj_to_nrrd(input_file, template_nrrd, output_file=None):
     # Read the template NRRD file and extract the header and data size
     template_data, template_header = nrrd.read(template_nrrd)
     space_directions = template_header['space directions']
-    space_units = template_header['space units'].split()
+    space_units = template_header['space units']
     template_shape = template_data.shape
 
     # Create a voxel grid that matches the shape of the template NRRD file's data
