@@ -31,7 +31,7 @@ def obj_to_nrrd(input_file, template_nrrd, output_file=None):
 
     # Read the template NRRD file and extract the header and data size
     template_data, template_header = nrrd.read(template_nrrd)
-    space_directions = np.array([tuple(map(float, x.strip('()').split(','))) for x in template_header['space directions'].split()])
+    space_directions = template_header['space directions']
     space_units = template_header['space units'].split()
     template_shape = template_data.shape
 
