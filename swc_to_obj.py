@@ -8,7 +8,7 @@ def read_swc(file_path):
                       dtype={'names': ('id', 'type', 'x', 'y', 'z', 'radius', 'parent'),
                              'formats': ('i4', 'i4', 'f4', 'f4', 'f4', 'f4', 'i4')})
 
-def create_mesh_from_swc(swc_data, minRadius=0.5):
+def create_mesh_from_swc(swc_data, minRadius=0.0001):
     # Create an empty list to store all mesh objects
     meshes = []
     
