@@ -8,14 +8,14 @@ def read_swc(file_path):
                       dtype={'names': ('id', 'type', 'x', 'y', 'z', 'radius', 'parent'),
                              'formats': ('i4', 'i4', 'f4', 'f4', 'f4', 'f4', 'i4')})
 
-def create_mesh_from_swc(swc_data):
+def create_mesh_from_swc(swc_data, minRadius=0.5):
     # Create an empty list to store all mesh objects
     meshes = []
-
+    
     # Process nodes
     for i, node in enumerate(swc_data):
         # Create a sphere for each node
-        sphere = trimesh.creation.icosphere(subdivisions=2, radius=node['radius'])
+        sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'], minRadius))
         sphere.apply_translation([node['x'], node['y'], node['z']])
         meshes.append(sphere)
 
@@ -28,7 +28,7 @@ def create_mesh_from_swc(swc_data):
             end = np.array([parent_node['x'], parent_node['y'], parent_node['z']])
             length = np.linalg.norm(end - start)
             direction = (end - start) / length
-            radius = (node['radius'] + parent_node['radius']) / 2
+            radius = (max(node['radius'], minRadius) + max(parent_node['radius'], minRadius)) / 2
 
             # Create the cylinder
             cylinder = trimesh.creation.cylinder(radius=radius, height=length, sections=16)
