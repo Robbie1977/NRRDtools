@@ -38,7 +38,7 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
             sphere_coords = (coords[sphere_mask] + point).T
             
             # Set the value of the volume at the sphere coordinates to 255
-            volume[round(sphere_coords[0]), round(sphere_coords[1]), round(sphere_coords[2])] = 255
+            volume[np.round(sphere_coords[0]).astype(int), np.round(sphere_coords[1]).astype(int), np.round(sphere_coords[2]).astype(int)] = 255
         # Otherwise, draw the point as a single voxel
         else:
             # Convert point coordinates to volume coordinates
