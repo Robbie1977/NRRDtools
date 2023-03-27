@@ -1,6 +1,7 @@
 import numpy as np
 import trimesh
 import math
+import argparse
 
 def read_swc(file_path):
     return np.loadtxt(file_path, delimiter=' ', comments='#',
