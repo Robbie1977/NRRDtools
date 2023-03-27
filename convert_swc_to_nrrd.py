@@ -51,16 +51,20 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
                 np.clip(np.floor(sphere_coords[2]).astype(int), 0, dims[2] - 1)
             ], axis=-1)
             volume[clipped_coords[:, 0], clipped_coords[:, 1], clipped_coords[:, 2]] = 255
-
-        # Otherwise, draw the point as a single voxel
+            
+            # Otherwise, draw the point as a single voxel
         else:
             # Convert point coordinates to volume coordinates
             point -= 1  # SWC format starts indexing at 1
             point = np.dot(directions, point)
             point = point.astype(int)
-            
-            # Set the value of the volume at the point coordinates to 255
-            volume[point[0], point[1], point[2]] = 255
+
+            # Clip the point coordinates to ensure they are within the valid range
+            clipped_point = np.clip(point, 0, dims - 1)
+
+            # Set the value of the volume at the clipped point coordinates to 255
+            volume[clipped_point[0], clipped_point[1], clipped_point[2]] = 255
+
     
     # Write the output NRRD file
     nrrd.write(output_file, volume, header=header)
