@@ -2,10 +2,17 @@ import numpy as np
 import nrrd
 import argparse
 from math import pi
+import pandas as pd
 
 def convert_swc_to_nrrd(swc_file, template_file, output_file):
-    # Load SWC file
-    swc_data = np.loadtxt(swc_file, comments='#')
+    # Load SWC file using pandas
+    swc_data = pd.read_csv(swc_file, delim_whitespace=True, comment='#', header=None)
+    
+    # Replace 'NA' values with -1 
+    swc_data = swc_data.replace('NA', -1)  
+    
+    # Convert the pandas DataFrame to a NumPy array
+    swc_data = swc_data.to_numpy()
     
     # Load template NRRD file
     data, header = nrrd.read(template_file)
