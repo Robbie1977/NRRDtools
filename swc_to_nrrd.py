@@ -46,11 +46,15 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     voxel_size = [np.linalg.norm(direction) for direction in space_directions]
     dims = np.ceil(np.divide(np.shape(nrrd_template),voxel_size)).astype(int)
 
+    print(f"Scalled image shape: {dims}")
+    
     volume = create_volume_from_swc(swc_data, dims)
     volume = np.repeat(volume, voxel_size[0], axis=0)
     volume = np.repeat(volume, voxel_size[1], axis=1)
     volume = np.repeat(volume, voxel_size[2], axis=2)
 
+    print(f"Output image shape: {np.shape(volume)}")
+    
     nrrd.write(output_file, volume.astype(np.uint8), header=options)
     
     print(f"Saved NRRD file: {output_file}")
