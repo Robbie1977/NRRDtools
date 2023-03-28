@@ -47,7 +47,7 @@ def obj_to_nrrd(input_file, template_nrrd, output_file=None):
     # Voxelized mesh using a pitch of 1.0
     volume = trimesh_mesh.voxelized(1.0).fill()
     
-    voxel_indices = np.floor(volume.points).astype(int)
+    voxel_indices = np.clip(np.floor(volume.points).astype(int), 0, np.array(template_shape) - 1)
     mesh[voxel_indices[:, 0], voxel_indices[:, 1], voxel_indices[:, 2]] = True
 
     # Convert binary mesh to uint8 matrix
