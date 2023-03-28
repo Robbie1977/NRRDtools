@@ -41,8 +41,8 @@ def create_volume_from_swc(swc_data, dims, minRadius=0.005):
 
 def scale_volume(volume, scale_factors):
     input_shape = np.array(volume.shape)
-    output_shape = np.round(input_shape * scale_factors).astype(int)
-    print(f"Scalled image shape: {output_shape}")
+    output_shape = (input_shape * scale_factors).astype(int)
+    print(f"Scaled image shape: {output_shape}")
     output_volume = np.zeros(output_shape, dtype=volume.dtype)
 
     for i in range(output_shape[0]):
@@ -52,7 +52,7 @@ def scale_volume(volume, scale_factors):
                 y_start, y_end = j * scale_factors[1], (j + 1) * scale_factors[1]
                 z_start, z_end = k * scale_factors[2], (k + 1) * scale_factors[2]
 
-                output_volume[x_start:x_end, y_start:y_end, z_start:z_end] = volume[i // scale_factors[0], j // scale_factors[1], k // scale_factors[2]]
+                output_volume[x_start:x_end, y_start:y_end, z_start:z_end] = volume[i // int(scale_factors[0]), j // int(scale_factors[1]), k // int(scale_factors[2])]
 
     return output_volume
 
