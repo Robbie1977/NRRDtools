@@ -25,7 +25,7 @@ def read_swc(file_path):
 
 
 def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
-    volume = np.zeros(dims)
+    volume = np.zeros(dims).astype(np.uint8)
 
     for node in swc_data:
         sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'], minRadius))
@@ -66,7 +66,7 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     volume = create_volume_from_swc(swc_data, dims, voxel_size)
     
     # Convert the volume to uint8
-    volume = (volume * 255).astype(np.uint8)
+    volume = volume.astype(np.uint8)
 
     # Write the output NRRD file
     nrrd.write(output_file, volume, header=header)
