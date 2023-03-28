@@ -37,10 +37,10 @@ def obj_to_nrrd(input_file, template_nrrd, output_file=None):
 
     # Create a voxel grid that matches the shape of the template NRRD file's data
     mesh = np.zeros(template_shape, dtype=bool)
-
-    # Get the voxel size from the space directions of the template NRRD file
-    voxel_size = np.linalg.norm(space_directions[0])
-    print(f"voxel size:{voxel_size}")
+    
+    # Get the voxel sizes from the space directions of the template NRRD file
+    voxel_sizes = [np.linalg.norm(direction) for direction in space_directions]
+    print(f"Voxel sizes: {voxel_sizes}")
 
     # Voxelized mesh and set binary values in mesh
     volume = trimesh_mesh.voxelized(voxel_size).fill()
