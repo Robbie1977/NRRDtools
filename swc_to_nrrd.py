@@ -21,21 +21,24 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     # Get the direction vectors for each axis
     directions = header['space directions']
     
+    # Get the voxel sizes from the space directions of the template NRRD file
+    voxel_size = [np.linalg.norm(direction) for direction in directions]
+    
     # Create a new volume for the SWC data
     volume = np.zeros(dims)
     
     # Draw each point in the SWC file as a sphere
     for i in range(swc_data.shape[0]):
-        point = swc_data[i, 2:5].astype(int)
+        point = np.floor(np.divide(swc_data[i, 2:5],voxel_size)).astype(int)
         radius = swc_data[i, 5]
         label = swc_data[i, 1]
         
         # If the point is a soma, draw it as a sphere
         if label == 1:
             # Get the coordinates of each voxel within the sphere
-            x_range = np.arange(-radius, radius+1)
-            y_range = np.arange(-radius, radius+1)
-            z_range = np.arange(-radius, radius+1)
+            x_range = np.arange(-np.divide(radius,voxel_size[0]), np.divide(radius,voxel_size[0])+1)
+            y_range = np.arange(-np.divide(radius,voxel_size[1]), np.divide(radius,voxel_size[1])+1)
+            z_range = np.arange(-np.divide(radius,voxel_size[2]), np.divide(radius,voxel_size[2])+1)
             xv, yv, zv = np.meshgrid(x_range, y_range, z_range, indexing='ij')
             coords = np.array([xv.flatten(), yv.flatten(), zv.flatten()]).T
             dist = np.linalg.norm(coords, axis=1)
