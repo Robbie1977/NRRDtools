@@ -44,7 +44,7 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     nrrd_template, options = nrrd.read(template_file)
     space_directions = options['space directions']
     voxel_size = [np.linalg.norm(direction) for direction in space_directions]
-    dims = np.ceil(np.divide(nrrd_template.shape,voxel_size)).astype(int)
+    dims = np.ceil(np.divide(np.shape(nrrd_template),voxel_size)).astype(int)
 
     volume = create_volume_from_swc(swc_data, dims)
     volume = np.repeat(volume, voxel_size[0], axis=0)
