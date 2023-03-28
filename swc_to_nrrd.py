@@ -12,21 +12,21 @@ def read_swc(file_path):
     swc_data = np.core.records.fromarrays(swc_data.T, names='id, type, x, y, z, radius, parent', formats='i4, i4, f4, f4, f4, f4, i4')
     return swc_data
 
-def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
+def create_volume_from_swc(swc_data, dims, minRadius=0.005):
     volume = np.zeros(dims).astype(np.uint8)
     pitch = 1.0
 
     for node in swc_data:
         sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'], minRadius))
-        sphere.apply_translation([node['x'] / voxel_size[0], node['y'] / voxel_size[1], node['z'] / voxel_size[2]])
+        sphere.apply_translation([node['x'], node['y'], node['z']])
         sphere_vox = trimesh.voxel.creation.voxelize(sphere, pitch=pitch)
         sphere_indices = sphere_vox.sparse_indices.astype(int)
         volume[sphere_indices[:, 0], sphere_indices[:, 1], sphere_indices[:, 2]] = 255
 
         if node['parent'] != -1:
             parent_node = swc_data[np.where(swc_data['id'] == node['parent'])[0][0]]
-            start = np.array([node['x'], node['y'], node['z']]) / voxel_size
-            end = np.array([parent_node['x'], parent_node['y'], parent_node['z']]) / voxel_size
+            start = np.array([node['x'], node['y'], node['z']])
+            end = np.array([parent_node['x'], parent_node['y'], parent_node['z']])
             length = np.linalg.norm(end - start)
             direction = (end - start) / length
             radius = (max(node['radius'], minRadius) + max(parent_node['radius'], minRadius)) / 2
@@ -51,7 +51,7 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
 
     print(f"Micron space image shape: {dims}")
 
-    volume = create_volume_from_swc(swc_data, dims, voxel_size)
+    volume = create_volume_from_swc(swc_data, dims)
 
     nonzero_indices = np.nonzero(volume)
     max_volume_coords = np.max(np.column_stack(nonzero_indices), axis=0)
