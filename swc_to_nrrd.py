@@ -41,19 +41,26 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
 
 def convert_swc_to_nrrd(swc_file, template_file, output_file):
     swc_data = read_swc(swc_file)
+    max_coords = np.max(swc_data[['x', 'y', 'z']], axis=0)
+    print(f"Max SWC coordinates: {max_coords}")
+
     nrrd_template, options = nrrd.read(template_file)
     space_directions = options['space directions']
     voxel_size = [np.linalg.norm(direction) for direction in space_directions]
     dims = np.ceil(np.divide(np.shape(nrrd_template),voxel_size)).astype(int)
 
-    print(f"micron space image shape: {dims}")
-    
+    print(f"Micron space image shape: {dims}")
+
     volume = create_volume_from_swc(swc_data, dims, voxel_size)
 
+    nonzero_indices = np.nonzero(volume)
+    max_volume_coords = np.max(np.column_stack(nonzero_indices), axis=0)
+    print(f"Max volume coordinates: {max_volume_coords}")
+
     print(f"Output image shape: {np.shape(volume)}")
-    
+
     nrrd.write(output_file, volume.astype(np.uint8), header=options)
-    
+
     print(f"Saved NRRD file: {output_file}")
 
 if __name__ == "__main__":
