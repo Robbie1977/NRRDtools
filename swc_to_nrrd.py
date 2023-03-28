@@ -20,6 +20,8 @@ def read_swc(file_path):
     swc_data = np.core.records.fromarrays(swc_data.T,
                                           names='id, type, x, y, z, radius, parent',
                                           formats='i4, i4, f4, f4, f4, f4, i4')
+    
+    return swc_data
 
 
 def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
