@@ -44,6 +44,7 @@ def create_mesh_from_swc(swc_data, minRadius=0.0001):
             radius = (max(node['radius'], minRadius) + max(parent_node['radius'], minRadius)) / 2
 
             # Create the cylinder
+            print("Creating cylinder with radius:", radius, "and length:", length)
             cylinder = trimesh.creation.cylinder(radius=max(radius, minRadius), height=length, sections=16)
             cylinder.apply_transform(trimesh.geometry.align_vectors([0, 0, 1], direction))
             cylinder.apply_translation((start + end) / 2)
