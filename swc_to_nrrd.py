@@ -39,18 +39,20 @@ def create_volume_from_swc(swc_data, dims, minRadius=0.005):
 
     return volume
 
-def scale_volume(volume, voxel_size):
-    output_shape = tuple(np.round(np.array(volume.shape) * np.array(voxel_size)).astype(int))
+def scale_volume(volume, scale_factors):
+    input_shape = np.array(volume.shape)
+    output_shape = np.round(input_shape * scale_factors).astype(int)
+    print(f"Scalled image shape: {output_shape}")
     output_volume = np.zeros(output_shape, dtype=volume.dtype)
-    
-    for x in range(volume.shape[0]):
-        for y in range(volume.shape[1]):
-            for z in range(volume.shape[2]):
-                x_start, x_end = x * voxel_size[0], (x + 1) * voxel_size[0]
-                y_start, y_end = y * voxel_size[1], (y + 1) * voxel_size[1]
-                z_start, z_end = z * voxel_size[2], (z + 1) * voxel_size[2]
 
-                output_volume[x_start:x_end, y_start:y_end, z_start:z_end] = volume[x, y, z]
+    for i in range(output_shape[0]):
+        for j in range(output_shape[1]):
+            for k in range(output_shape[2]):
+                x_start, x_end = i * scale_factors[0], (i + 1) * scale_factors[0]
+                y_start, y_end = j * scale_factors[1], (j + 1) * scale_factors[1]
+                z_start, z_end = k * scale_factors[2], (k + 1) * scale_factors[2]
+
+                output_volume[x_start:x_end, y_start:y_end, z_start:z_end] = volume[i // scale_factors[0], j // scale_factors[1], k // scale_factors[2]]
 
     return output_volume
 
