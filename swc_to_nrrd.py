@@ -39,7 +39,9 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
             volume[cylinder_indices[:, 0], cylinder_indices[:, 1], cylinder_indices[:, 2]] = 255
 
     # Scale the volume by the voxel_size
-    scaled_volume = scipy.ndimage.zoom(volume, voxel_size, order=0)
+    scale_factor = np.divide(voxel_size, 1.0)
+    print(f"Scaling by: {scale_factor}")
+    scaled_volume = scipy.ndimage.zoom(volume, scale_factor, order=0)
 
     return scaled_volume
 
