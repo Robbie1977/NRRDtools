@@ -51,7 +51,7 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     volume = np.repeat(volume, voxel_size[1], axis=1)
     volume = np.repeat(volume, voxel_size[2], axis=2)
 
-    nrrd.write(output_file, volume.astype(np.uint8), header=header)
+    nrrd.write(output_file, volume.astype(np.uint8), header=options)
     
     print(f"Saved NRRD file: {output_file}")
 
