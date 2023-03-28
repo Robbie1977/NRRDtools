@@ -22,6 +22,7 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
         sphere.apply_translation([node['x'], node['y'], node['z']])
         sphere_vox = trimesh.voxel.creation.voxelize(sphere, pitch=pitch)
         sphere_indices = sphere_vox.sparse_indices.astype(int)
+        print(f"Sphere indices: {sphere_indices}")
         volume[sphere_indices[:, 0], sphere_indices[:, 1], sphere_indices[:, 2]] = 255
 
         if node['parent'] != -1:
@@ -36,6 +37,7 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
             cylinder.apply_translation((start + end) / 2)
             cylinder_vox = trimesh.voxel.creation.voxelize(cylinder, pitch=pitch)
             cylinder_indices = cylinder_vox.sparse_indices.astype(int)
+            print(f"Cylinder indices: {cylinder_indices}")
             volume[cylinder_indices[:, 0], cylinder_indices[:, 1], cylinder_indices[:, 2]] = 255
 
     nonzero_indices = np.nonzero(volume)
