@@ -12,21 +12,21 @@ def read_swc(file_path):
     swc_data = np.core.records.fromarrays(swc_data.T, names='id, type, x, y, z, radius, parent', formats='i4, i4, f4, f4, f4, f4, i4')
     return swc_data
 
-def create_volume_from_swc(swc_data, dims, minRadius=0.005):
+def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
     volume = np.zeros(dims).astype(np.uint8)
     pitch = 1.0
 
     for node in swc_data:
         sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'], minRadius))
-        sphere.apply_translation([node['x'], node['y'], node['z']])
+        sphere.apply_translation([node['x'] / voxel_size[0], node['y'] / voxel_size[1], node['z'] / voxel_size[2]])
         sphere_vox = trimesh.voxel.creation.voxelize(sphere, pitch=pitch)
         sphere_indices = sphere_vox.sparse_indices.astype(int)
         volume[sphere_indices[:, 0], sphere_indices[:, 1], sphere_indices[:, 2]] = 255
 
         if node['parent'] != -1:
             parent_node = swc_data[np.where(swc_data['id'] == node['parent'])[0][0]]
-            start = np.array([node['x'], node['y'], node['z']])
-            end = np.array([parent_node['x'], parent_node['y'], parent_node['z']])
+            start = np.array([node['x'], node['y'], node['z']]) / voxel_size
+            end = np.array([parent_node['x'], parent_node['y'], parent_node['z']]) / voxel_size
             length = np.linalg.norm(end - start)
             direction = (end - start) / length
             radius = (max(node['radius'], minRadius) + max(parent_node['radius'], minRadius)) / 2
@@ -39,23 +39,6 @@ def create_volume_from_swc(swc_data, dims, minRadius=0.005):
 
     return volume
 
-def scale_volume(volume, scale_factors):
-    input_shape = np.array(volume.shape)
-    output_shape = (input_shape * scale_factors).astype(int)
-    print(f"Given voxel size: {scale_factors}")
-    print(f"Scaled image shape: {output_shape}")
-
-    x, y, z = np.meshgrid(np.arange(output_shape[0]), np.arange(output_shape[1]), np.arange(output_shape[2]), indexing='ij')
-    
-    x_indices = np.minimum((x / scale_factors[0]).astype(int), input_shape[0] - 1)
-    y_indices = np.minimum((y / scale_factors[1]).astype(int), input_shape[1] - 1)
-    z_indices = np.minimum((z / scale_factors[2]).astype(int), input_shape[2] - 1)
-    
-    output_volume = np.zeros(output_shape, dtype=volume.dtype)
-    output_volume[x, y, z] = volume[x_indices, y_indices, z_indices]
-    
-    return output_volume
-
 def convert_swc_to_nrrd(swc_file, template_file, output_file):
     swc_data = read_swc(swc_file)
     nrrd_template, options = nrrd.read(template_file)
@@ -65,8 +48,7 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
 
     print(f"micron space image shape: {dims}")
     
-    volume = create_volume_from_swc(swc_data, dims)
-    volume = scale_volume(volume, np.array(voxel_size) / np.array([1, 1, 1]))
+    volume = create_volume_from_swc(swc_data, dims, voxel_size)
 
     print(f"Output image shape: {np.shape(volume)}")
     
