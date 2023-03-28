@@ -53,7 +53,11 @@ def scale_volume(volume, scale_factors):
                 y_start, y_end = j * scale_factors[1], (j + 1) * scale_factors[1]
                 z_start, z_end = k * scale_factors[2], (k + 1) * scale_factors[2]
 
-                output_volume[x_start:x_end, y_start:y_end, z_start:z_end] = volume[i // int(scale_factors[0]), j // int(scale_factors[1]), k // int(scale_factors[2])]
+                x_idx = min(int(i / scale_factors[0]), input_shape[0] - 1)
+                y_idx = min(int(j / scale_factors[1]), input_shape[1] - 1)
+                z_idx = min(int(k / scale_factors[2]), input_shape[2] - 1)
+
+                output_volume[int(x_start):int(x_end), int(y_start):int(y_end), int(z_start):int(z_end)] = volume[x_idx, y_idx, z_idx]
 
     return output_volume
 
