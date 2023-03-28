@@ -79,8 +79,14 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     if volume.shape == nrrd_template.shape:
         print("Scalling correct")
     else:
-        print("Scalling off")
-
+        print("Tweaking scalling")
+        scale_factor = np.divide(nrrd_template.shape, volume.shape)
+        print(f"micron image shape: {volume.shape}")
+        print(f"Scaling by: {scale_factor}")
+        scaled_volume = scipy.ndimage.zoom(volume, scale_factor, order=0)
+        print(f"scaled image shape: {scaled_volume.shape}")
+        volume = scaled_volume
+        
     nonzero_indices = np.nonzero(volume)
     max_volume_coords = np.max(np.column_stack(nonzero_indices), axis=0)
     print(f"Max volume coordinates: {max_volume_coords}")
