@@ -39,6 +39,21 @@ def create_volume_from_swc(swc_data, dims, minRadius=0.005):
 
     return volume
 
+def scale_volume(volume, voxel_size):
+    output_shape = tuple(np.array(volume.shape) * np.array(voxel_size))
+    output_volume = np.zeros(output_shape, dtype=volume.dtype)
+    
+    for x in range(volume.shape[0]):
+        for y in range(volume.shape[1]):
+            for z in range(volume.shape[2]):
+                x_start, x_end = x * voxel_size[0], (x + 1) * voxel_size[0]
+                y_start, y_end = y * voxel_size[1], (y + 1) * voxel_size[1]
+                z_start, z_end = z * voxel_size[2], (z + 1) * voxel_size[2]
+
+                output_volume[x_start:x_end, y_start:y_end, z_start:z_end] = volume[x, y, z]
+
+    return output_volume
+
 def convert_swc_to_nrrd(swc_file, template_file, output_file):
     swc_data = read_swc(swc_file)
     nrrd_template, options = nrrd.read(template_file)
@@ -49,9 +64,7 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     print(f"Scalled image shape: {dims}")
     
     volume = create_volume_from_swc(swc_data, dims)
-    volume = np.repeat(volume, voxel_size[0], axis=0)
-    volume = np.repeat(volume, voxel_size[1], axis=1)
-    volume = np.repeat(volume, voxel_size[2], axis=2)
+    volume = scale_volume(volume, voxel_size)
 
     print(f"Output image shape: {np.shape(volume)}")
     
