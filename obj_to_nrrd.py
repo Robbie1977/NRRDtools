@@ -42,7 +42,7 @@ def obj_to_nrrd(input_file, template_nrrd, output_file=None):
     voxel_size = [np.linalg.norm(direction) for direction in space_directions]
 
     # Voxelized mesh and set binary values in mesh
-    volume = trimesh_mesh.voxelized(voxel_size).fill()
+    volume = trimesh_mesh.voxelized_box(pitch=voxel_size).fill()
     voxel_indices = np.floor(np.multiply(volume.points,voxel_size)).astype(int)
     mesh[voxel_indices[:, 0], voxel_indices[:, 1], voxel_indices[:, 2]] = True
 
