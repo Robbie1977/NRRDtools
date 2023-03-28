@@ -8,8 +8,8 @@ def read_swc(file_path):
     # Load SWC file using pandas
     swc_data = pd.read_csv(file_path, delim_whitespace=True, comment='#', header=None)
 
-    # Replace 'NA' values with -1
-    swc_data = swc_data.replace('NA', -1)
+    # Replace 'NA' and 'nan' values with -1
+    swc_data = swc_data.replace(['NA', np.nan], -1)
 
     # Convert the pandas DataFrame to a NumPy array
     swc_data = swc_data.to_numpy()
