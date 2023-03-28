@@ -3,10 +3,24 @@ import nrrd
 import argparse
 from math import pi
 import pandas as pd
-
-import numpy as np
 import trimesh
-import nrrd
+
+
+def read_swc(file_path):
+    # Load SWC file using pandas
+    swc_data = pd.read_csv(file_path, delim_whitespace=True, comment='#', header=None)
+
+    # Replace 'NA' and 'nan' values with -1
+    swc_data = swc_data.replace(['NA', np.nan], -1)
+
+    # Convert the pandas DataFrame to a NumPy array
+    swc_data = swc_data.to_numpy()
+
+    # Create a structured array with the specified header
+    swc_data = np.core.records.fromarrays(swc_data.T,
+                                          names='id, type, x, y, z, radius, parent',
+                                          formats='i4, i4, f4, f4, f4, f4, i4')
+
 
 def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
     volume = np.zeros(dims)
