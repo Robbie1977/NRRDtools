@@ -17,13 +17,16 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
     volume = np.zeros(dims).astype(np.uint8)
     pitch = 1.0
 
+def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
+    volume = np.zeros(dims).astype(np.uint8)
+    pitch = 1.0
+
     for node in swc_data:
-        print(f"Node coordinates: X:{node['x']}, Y:{node['y']}, Z:{node['z']}")
         sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'], minRadius))
-        sphere.apply_translation([node['x'], node['y'], node['z']])
         sphere_vox = trimesh.voxel.creation.voxelize(sphere, pitch=pitch)
-        sphere_indices = sphere_vox.sparse_indices.astype(int)
-        print(f"Sphere indices: {sphere_indices}")
+        sphere_indices = sphere_vox.sparse_indices
+        sphere_indices += np.array([node['x'], node['y'], node['z']])
+        sphere_indices = np.round(sphere_indices).astype(int)
         volume[sphere_indices[:, 0], sphere_indices[:, 1], sphere_indices[:, 2]] = 255
 
         if node['parent'] != -1:
@@ -37,8 +40,9 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
             cylinder.apply_transform(trimesh.geometry.align_vectors([0, 0, 1], direction))
             cylinder.apply_translation((start + end) / 2)
             cylinder_vox = trimesh.voxel.creation.voxelize(cylinder, pitch=pitch)
-            cylinder_indices = cylinder_vox.sparse_indices.astype(int)
-            print(f"Cylinder indices: {cylinder_indices}")
+            cylinder_indices = cylinder_vox.sparse_indices
+            cylinder_indices += np.array([(start + end) / 2])
+            cylinder_indices = np.round(cylinder_indices).astype(int)
             volume[cylinder_indices[:, 0], cylinder_indices[:, 1], cylinder_indices[:, 2]] = 255
 
     nonzero_indices = np.nonzero(volume)
