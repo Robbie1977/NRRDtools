@@ -2,11 +2,21 @@ import numpy as np
 import trimesh
 import math
 import argparse
+import pandas as pd
 
 def read_swc(file_path):
-    return np.loadtxt(file_path, delimiter=' ', comments='#',
-                      dtype={'names': ('id', 'type', 'x', 'y', 'z', 'radius', 'parent'),
-                             'formats': ('i4', 'i4', 'f4', 'f4', 'f4', 'f4', 'i4')})
+    # Load SWC file using pandas
+    swc_data = pd.read_csv(file_path, delim_whitespace=True, comment='#', header=None)
+
+    # Replace 'NA' values with -1
+    swc_data = swc_data.replace('NA', -1)
+
+    # Convert the pandas DataFrame to a NumPy structured array with the specified header
+    swc_data = swc_data.to_records(index=False,
+                                    column_dtypes={'names': ('id', 'type', 'x', 'y', 'z', 'radius', 'parent'),
+                                                   'formats': ('i4', 'i4', 'f4', 'f4', 'f4', 'f4', 'i4')})
+
+    return swc_data
 
 def create_mesh_from_swc(swc_data, minRadius=0.0001):
     # Create an empty list to store all mesh objects
