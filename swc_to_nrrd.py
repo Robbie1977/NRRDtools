@@ -4,6 +4,7 @@ import trimesh
 import nrrd
 import pandas as pd
 import trimesh.voxel.creation
+import scipy.ndimage
 
 def read_swc(file_path):
     swc_data = pd.read_csv(file_path, delim_whitespace=True, comment='#', header=None)
@@ -38,12 +39,7 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
             volume[cylinder_indices[:, 0], cylinder_indices[:, 1], cylinder_indices[:, 2]] = 255
 
     # Scale the volume by the voxel_size
-    x_scaled = np.arange(0, dims[0] * voxel_size[0], voxel_size[0])
-    y_scaled = np.arange(0, dims[1] * voxel_size[1], voxel_size[1])
-    z_scaled = np.arange(0, dims[2] * voxel_size[2], voxel_size[2])
-    x_grid, y_grid, z_grid = np.meshgrid(x_scaled, y_scaled, z_scaled, indexing='ij')
-    scaled_volume = np.zeros_like(volume, dtype=np.uint8)
-    scaled_volume[x_grid.astype(int), y_grid.astype(int), z_grid.astype(int)] = volume
+    scaled_volume = scipy.ndimage.zoom(volume, voxel_size, order=0)
 
     return scaled_volume
 
