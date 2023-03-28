@@ -21,7 +21,7 @@ def read_swc(file_path):
 
     return swc_data
 
-def create_mesh_from_swc(swc_data, minRadius=0.0001):
+def create_mesh_from_swc(swc_data, minRadius=0.005):
     # Create an empty list to store all mesh objects
     meshes = []
     
