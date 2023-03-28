@@ -58,17 +58,19 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
 
 def convert_swc_to_nrrd(swc_file, template_file, output_file):
     swc_data = read_swc(swc_file)
-
     data, header = nrrd.read(template_file)
     dims = header['sizes']
     directions = header['space directions']
-
     voxel_size = [np.linalg.norm(direction) for direction in directions]
 
     volume = create_volume_from_swc(swc_data, dims, voxel_size)
+    
+    # Convert the volume to uint8
+    volume = (volume * 255).astype(np.uint8)
 
+    # Write the output NRRD file
     nrrd.write(output_file, volume, header=header)
-
+    
     print(f"Saved NRRD file: {output_file}")
 
 
