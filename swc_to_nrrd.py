@@ -4,7 +4,7 @@ import argparse
 from math import pi
 import pandas as pd
 import trimesh
-import pyvista as pv
+import trimesh.voxel.creation
 
 
 def read_swc(file_path):
@@ -24,7 +24,6 @@ def read_swc(file_path):
     
     return swc_data
 
-
 def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
     volume = np.zeros(dims).astype(np.uint8)
 
@@ -32,9 +31,10 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
         sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'], minRadius))
         sphere.apply_translation([node['x'], node['y'], node['z']])
         
-        sphere_pv = pv.wrap(sphere)
-        sphere_vol = sphere_pv.voxelize(voxel_size)
-        sphere_indices = np.argwhere(sphere_vol.cell_data['Scalars'].reshape(dims) == 1)
+        sphere_vox = trimesh.voxel.creation.voxelize(sphere, pitch=voxel_size)
+        sphere_indices = sphere_vox.indices
+        valid_indices = np.all((sphere_indices >= 0) & (sphere_indices < dims), axis=1)
+        sphere_indices = sphere_indices[valid_indices]
         volume[sphere_indices[:, 0], sphere_indices[:, 1], sphere_indices[:, 2]] = 255
 
         if node['parent'] != -1:
@@ -50,12 +50,14 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
             cylinder.apply_transform(trimesh.geometry.align_vectors([0, 0, 1], direction))
             cylinder.apply_translation((start + end) / 2)
 
-            cylinder_pv = pv.wrap(cylinder)
-            cylinder_vol = cylinder_pv.voxelize(voxel_size)
-            cylinder_indices = np.argwhere(cylinder_vol.cell_data['Scalars'].reshape(dims) == 1)
+            cylinder_vox = trimesh.voxel.creation.voxelize(cylinder, pitch=voxel_size)
+            cylinder_indices = cylinder_vox.indices
+            valid_indices = np.all((cylinder_indices >= 0) & (cylinder_indices < dims), axis=1)
+            cylinder_indices = cylinder_indices[valid_indices]
             volume[cylinder_indices[:, 0], cylinder_indices[:, 1], cylinder_indices[:, 2]] = 255
 
     return volume
+
 
 def convert_swc_to_nrrd(swc_file, template_file, output_file):
     swc_data = read_swc(swc_file)
