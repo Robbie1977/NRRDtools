@@ -18,6 +18,7 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
     pitch = 1.0
 
     for node in swc_data:
+        print(f"Node coordinates: X:{node['x']}, Y:{node['y']}, Z:{node['z']}")
         sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'], minRadius))
         sphere.apply_translation([node['x'], node['y'], node['z']])
         sphere_vox = trimesh.voxel.creation.voxelize(sphere, pitch=pitch)
