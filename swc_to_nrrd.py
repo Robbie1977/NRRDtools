@@ -31,7 +31,7 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
         sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'], minRadius))
         sphere.apply_translation([node['x'], node['y'], node['z']])
         
-        sphere_vox = trimesh.voxel.creation.voxelize(sphere, pitch=voxel_size)
+        sphere_vox = trimesh.voxel.creation.voxelize(sphere, pitch=1.0)
         sphere_indices = sphere_vox.indices
         valid_indices = np.all((sphere_indices >= 0) & (sphere_indices < dims), axis=1)
         sphere_indices = sphere_indices[valid_indices]
@@ -50,14 +50,13 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
             cylinder.apply_transform(trimesh.geometry.align_vectors([0, 0, 1], direction))
             cylinder.apply_translation((start + end) / 2)
 
-            cylinder_vox = trimesh.voxel.creation.voxelize(cylinder, pitch=voxel_size)
+            cylinder_vox = trimesh.voxel.creation.voxelize(cylinder, pitch=1.0)
             cylinder_indices = cylinder_vox.indices
             valid_indices = np.all((cylinder_indices >= 0) & (cylinder_indices < dims), axis=1)
             cylinder_indices = cylinder_indices[valid_indices]
             volume[cylinder_indices[:, 0], cylinder_indices[:, 1], cylinder_indices[:, 2]] = 255
 
     return volume
-
 
 def convert_swc_to_nrrd(swc_file, template_file, output_file):
     swc_data = read_swc(swc_file)
