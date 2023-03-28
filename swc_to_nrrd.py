@@ -45,17 +45,15 @@ def scale_volume(volume, scale_factors):
     print(f"Given voxel size: {scale_factors}")
     print(f"Scaled image shape: {output_shape}")
 
-    x_indices = (np.arange(output_shape[0]) / scale_factors[0]).astype(int)
-    y_indices = (np.arange(output_shape[1]) / scale_factors[1]).astype(int)
-    z_indices = (np.arange(output_shape[2]) / scale_factors[2]).astype(int)
-
-    x_indices = np.clip(x_indices, 0, input_shape[0] - 1)
-    y_indices = np.clip(y_indices, 0, input_shape[1] - 1)
-    z_indices = np.clip(z_indices, 0, input_shape[2] - 1)
-
+    x, y, z = np.meshgrid(np.arange(output_shape[0]), np.arange(output_shape[1]), np.arange(output_shape[2]), indexing='ij')
+    
+    x_indices = np.minimum((x * scale_factors[0]).astype(int), input_shape[0] - 1)
+    y_indices = np.minimum((y * scale_factors[1]).astype(int), input_shape[1] - 1)
+    z_indices = np.minimum((z * scale_factors[2]).astype(int), input_shape[2] - 1)
+    
     output_volume = np.zeros(output_shape, dtype=volume.dtype)
-    output_volume[np.ix_(np.arange(output_shape[0]), np.arange(output_shape[1]), np.arange(output_shape[2]))] = volume[x_indices, y_indices, z_indices]
-
+    output_volume[x, y, z] = volume[x_indices, y_indices, z_indices]
+    
     return output_volume
 
 def convert_swc_to_nrrd(swc_file, template_file, output_file):
