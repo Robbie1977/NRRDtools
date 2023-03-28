@@ -40,7 +40,7 @@ def create_volume_from_swc(swc_data, dims, minRadius=0.005):
     return volume
 
 def scale_volume(volume, voxel_size):
-    output_shape = tuple(np.array(volume.shape) * np.array(voxel_size))
+    output_shape = tuple(np.round(np.array(volume.shape) * np.array(voxel_size)).astype(int))
     output_volume = np.zeros(output_shape, dtype=volume.dtype)
     
     for x in range(volume.shape[0]):
