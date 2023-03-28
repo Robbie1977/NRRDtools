@@ -40,10 +40,11 @@ def obj_to_nrrd(input_file, template_nrrd, output_file=None):
 
     # Get the voxel size from the space directions of the template NRRD file
     voxel_size = np.linalg.norm(space_directions[0])
+    print(f"voxel size:{voxel_size}")
 
     # Voxelized mesh and set binary values in mesh
     volume = trimesh_mesh.voxelized(voxel_size).fill()
-    voxel_indices = np.floor(volume.points / voxel_size).astype(int)
+    voxel_indices = np.floor(np.multiply(volume.points,voxel_size)).astype(int)
     mesh[voxel_indices[:, 0], voxel_indices[:, 1], voxel_indices[:, 2]] = True
 
     # Convert binary mesh to uint8 matrix
