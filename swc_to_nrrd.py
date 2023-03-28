@@ -70,13 +70,16 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     nrrd_template, options = nrrd.read(template_file)
     space_directions = options['space directions']
     voxel_size = [np.linalg.norm(direction) for direction in space_directions]
-    dims = np.ceil(np.multiply(np.shape(nrrd_template),voxel_size)).astype(int)
+    dims = np.round(np.multiply(np.shape(nrrd_template),voxel_size)).astype(int)
 
     print(f"Micron space image shape: {dims}")
 
     volume = create_volume_from_swc(swc_data, dims, voxel_size)
     
-    
+    if volume.shape == nrrd_template:
+        print("Scalling correct")
+    else:
+        print("Scalling off")
 
     nonzero_indices = np.nonzero(volume)
     max_volume_coords = np.max(np.column_stack(nonzero_indices), axis=0)
