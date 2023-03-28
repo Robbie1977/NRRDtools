@@ -44,20 +44,16 @@ def scale_volume(volume, scale_factors):
     output_shape = (input_shape * scale_factors).astype(int)
     print(f"Given voxel size: {scale_factors}")
     print(f"Scaled image shape: {output_shape}")
-    output_volume = np.zeros(output_shape, dtype=volume.dtype)
+    
+    x = np.arange(output_shape[0])
+    y = np.arange(output_shape[1])
+    z = np.arange(output_shape[2])
 
-    for i in range(output_shape[0]):
-        for j in range(output_shape[1]):
-            for k in range(output_shape[2]):
-                x_start, x_end = i * scale_factors[0], (i + 1) * scale_factors[0]
-                y_start, y_end = j * scale_factors[1], (j + 1) * scale_factors[1]
-                z_start, z_end = k * scale_factors[2], (k + 1) * scale_factors[2]
+    x_indices = np.minimum((x / scale_factors[0]).astype(int), input_shape[0] - 1)
+    y_indices = np.minimum((y / scale_factors[1]).astype(int), input_shape[1] - 1)
+    z_indices = np.minimum((z / scale_factors[2]).astype(int), input_shape[2] - 1)
 
-                x_idx = min(int(i / scale_factors[0]), input_shape[0] - 1)
-                y_idx = min(int(j / scale_factors[1]), input_shape[1] - 1)
-                z_idx = min(int(k / scale_factors[2]), input_shape[2] - 1)
-
-                output_volume[int(x_start):int(x_end), int(y_start):int(y_end), int(z_start):int(z_end)] = volume[x_idx, y_idx, z_idx]
+    output_volume = volume[np.ix_(x_indices, y_indices, z_indices)]
 
     return output_volume
 
