@@ -11,10 +11,13 @@ def read_swc(file_path):
     # Replace 'NA' values with -1
     swc_data = swc_data.replace('NA', -1)
 
-    # Convert the pandas DataFrame to a NumPy structured array with the specified header
-    swc_data = swc_data.to_records(index=False,
-                                    column_dtypes={'names': ('id', 'type', 'x', 'y', 'z', 'radius', 'parent'),
-                                                   'formats': ('i4', 'i4', 'f4', 'f4', 'f4', 'f4', 'i4')})
+    # Convert the pandas DataFrame to a NumPy array
+    swc_data = swc_data.to_numpy()
+
+    # Create a structured array with the specified header
+    swc_data = np.core.records.fromarrays(swc_data.T,
+                                          names='id, type, x, y, z, radius, parent',
+                                          formats='i4, i4, f4, f4, f4, f4, i4')
 
     return swc_data
 
