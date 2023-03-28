@@ -27,6 +27,7 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
         sphere_indices = sphere_vox.sparse_indices.astype(float)
         sphere_indices += np.array([node['x'], node['y'], node['z']])
         sphere_indices = np.round(sphere_indices).astype(int)
+        sphere_indices = np.clip(sphere_indices, [0, 0, 0], np.array(dims) - 1)
         volume[sphere_indices[:, 0], sphere_indices[:, 1], sphere_indices[:, 2]] = 255
 
         if node['parent'] != -1:
@@ -43,6 +44,7 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
             cylinder_indices = cylinder_vox.sparse_indices.astype(float)
             cylinder_indices += np.array([(start + end) / 2])
             cylinder_indices = np.round(cylinder_indices).astype(int)
+            cylinder_indices = np.clip(cylinder_indices, [0, 0, 0], np.array(dims) - 1)
             volume[cylinder_indices[:, 0], cylinder_indices[:, 1], cylinder_indices[:, 2]] = 255
 
     nonzero_indices = np.nonzero(volume)
