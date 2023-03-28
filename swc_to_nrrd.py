@@ -40,8 +40,10 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
 
     # Scale the volume by the voxel_size
     scale_factor = np.divide(1.0, voxel_size)
+    print(f"micron image shape: {volume.shape}")
     print(f"Scaling by: {scale_factor}")
     scaled_volume = scipy.ndimage.zoom(volume, scale_factor, order=0)
+    print(f"scaled image shape: {scaled_volume.shape}")
 
     return scaled_volume
 
