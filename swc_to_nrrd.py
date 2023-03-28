@@ -76,7 +76,7 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
 
     volume = create_volume_from_swc(swc_data, dims, voxel_size)
     
-    if volume.shape == nrrd_template:
+    if volume.shape == nrrd_template.shape:
         print("Scalling correct")
     else:
         print("Scalling off")
