@@ -71,6 +71,8 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     
     # Write the output NRRD file
     nrrd.write(output_file, volume, header=header)
+    
+    print(f"Saved NRRD file: {output_file}")
 
 def main():
     # Create argument parser
