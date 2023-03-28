@@ -32,6 +32,7 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
         point = np.floor(np.divide(swc_data[i, 2:5],voxel_size)).astype(int)
         radius = swc_data[i, 5]
         label = swc_data[i, 1]
+        parent = swc_data[i, 6]
         
         # If the point is a soma, draw it as a sphere
         if label == 1:
