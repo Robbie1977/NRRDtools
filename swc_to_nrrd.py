@@ -4,6 +4,7 @@ import argparse
 from math import pi
 import pandas as pd
 import trimesh
+import pyvista as pv
 
 
 def read_swc(file_path):
@@ -31,10 +32,10 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
         sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'], minRadius))
         sphere.apply_translation([node['x'], node['y'], node['z']])
         
-        voxel_indices = np.floor(sphere.vertices / voxel_size).astype(int)
-        valid_indices = np.all((voxel_indices >= 0) & (voxel_indices < dims), axis=1)
-        voxel_indices = voxel_indices[valid_indices]
-        volume[voxel_indices[:, 0], voxel_indices[:, 1], voxel_indices[:, 2]] = 255
+        sphere_pv = pv.wrap(sphere)
+        sphere_vol = sphere_pv.voxelize(voxel_size)
+        sphere_indices = np.argwhere(sphere_vol.cell_data['Scalars'].reshape(dims) == 1)
+        volume[sphere_indices[:, 0], sphere_indices[:, 1], sphere_indices[:, 2]] = 255
 
         if node['parent'] != -1:
             parent_node = swc_data[np.where(swc_data['id'] == node['parent'])[0][0]]
@@ -49,10 +50,10 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
             cylinder.apply_transform(trimesh.geometry.align_vectors([0, 0, 1], direction))
             cylinder.apply_translation((start + end) / 2)
 
-            voxel_indices = np.floor(cylinder.vertices / voxel_size).astype(int)
-            valid_indices = np.all((voxel_indices >= 0) & (voxel_indices < dims), axis=1)
-            voxel_indices = voxel_indices[valid_indices]
-            volume[voxel_indices[:, 0], voxel_indices[:, 1], voxel_indices[:, 2]] = 255
+            cylinder_pv = pv.wrap(cylinder)
+            cylinder_vol = cylinder_pv.voxelize(voxel_size)
+            cylinder_indices = np.argwhere(cylinder_vol.cell_data['Scalars'].reshape(dims) == 1)
+            volume[cylinder_indices[:, 0], cylinder_indices[:, 1], cylinder_indices[:, 2]] = 255
 
     return volume
 
