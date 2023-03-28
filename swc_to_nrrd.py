@@ -12,7 +12,7 @@ def read_swc(file_path):
     swc_data = np.core.records.fromarrays(swc_data.T, names='id, type, x, y, z, radius, parent', formats='i4, i4, f4, f4, f4, f4, i4')
     return swc_data
 
-def create_volume_from_swc(swc_data, dims, minRadius=0.005):
+def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
     volume = np.zeros(dims).astype(np.uint8)
     pitch = 1.0
 
@@ -37,7 +37,16 @@ def create_volume_from_swc(swc_data, dims, minRadius=0.005):
             cylinder_indices = cylinder_vox.sparse_indices.astype(int)
             volume[cylinder_indices[:, 0], cylinder_indices[:, 1], cylinder_indices[:, 2]] = 255
 
-    return volume
+    # Scale the volume by the voxel_size
+    x_scaled = np.arange(0, dims[0] * voxel_size[0], voxel_size[0])
+    y_scaled = np.arange(0, dims[1] * voxel_size[1], voxel_size[1])
+    z_scaled = np.arange(0, dims[2] * voxel_size[2], voxel_size[2])
+    x_grid, y_grid, z_grid = np.meshgrid(x_scaled, y_scaled, z_scaled, indexing='ij')
+    scaled_volume = np.zeros_like(volume, dtype=np.uint8)
+    scaled_volume[x_grid.astype(int), y_grid.astype(int), z_grid.astype(int)] = volume
+
+    return scaled_volume
+
 
 def convert_swc_to_nrrd(swc_file, template_file, output_file):
     swc_data = read_swc(swc_file)
@@ -51,7 +60,9 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
 
     print(f"Micron space image shape: {dims}")
 
-    volume = create_volume_from_swc(swc_data, dims)
+    volume = create_volume_from_swc(swc_data, dims, voxel_size)
+    
+    
 
     nonzero_indices = np.nonzero(volume)
     max_volume_coords = np.max(np.column_stack(nonzero_indices), axis=0)
