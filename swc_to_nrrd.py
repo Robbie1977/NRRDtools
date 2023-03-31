@@ -17,10 +17,6 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
     volume = np.zeros(dims).astype(np.uint8)
     pitch = 1.0
 
-def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
-    volume = np.zeros(dims).astype(np.uint8)
-    pitch = 1.0
-
     for node in swc_data:
         sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'], minRadius))
         sphere_vox = trimesh.voxel.creation.voxelize(sphere, pitch=pitch)
