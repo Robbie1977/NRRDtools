@@ -14,22 +14,26 @@ def read_swc(file_path):
     return swc_data
 
 def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
-    volume = np.zeros(dims).astype(np.uint8)
     pitch = 1.0
+    scaling_factor = 4 # The voxel size will now be 0.25x0.25x0.25 µm
+    # Scale the dims by the desired factor
+    scaled_dims = (dims * scaling_factor).astype(int)
+    volume = np.zeros(scaled_dims, dtype=np.uint8)
 
     for node in swc_data:
         sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'], minRadius))
         sphere_vox = trimesh.voxel.creation.voxelize(sphere, pitch=pitch)
         sphere_indices = sphere_vox.sparse_indices.astype(float)
         sphere_indices += np.array([node['x'], node['y'], node['z']])
+        sphere_indices *= scaling_factor
         sphere_indices = np.round(sphere_indices).astype(int)
         sphere_indices = np.clip(sphere_indices, [0, 0, 0], np.array(dims) - 1)
         volume[sphere_indices[:, 0], sphere_indices[:, 1], sphere_indices[:, 2]] = 255
 
         if node['parent'] != -1:
             parent_node = swc_data[np.where(swc_data['id'] == node['parent'])[0][0]]
-            start = np.array([node['x'], node['y'], node['z']])
-            end = np.array([parent_node['x'], parent_node['y'], parent_node['z']])
+            start = np.array([node['x'], node['y'], node['z']]) * scaling_factor
+            end = np.array([parent_node['x'], parent_node['y'], parent_node['z']]) * scaling_factor
             length = np.linalg.norm(end - start)
             direction = (end - start) / length
             radius = (max(node['radius'], minRadius) + max(parent_node['radius'], minRadius)) / 2
@@ -47,7 +51,7 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
     max_volume_coords = np.max(np.column_stack(nonzero_indices), axis=0)
     print(f"Max volume coordinates: {max_volume_coords}")
     # Scale the volume by the voxel_size
-    scale_factor = np.divide(1.0, voxel_size)
+    scale_factor = np.divide(1 / scaling_factor, voxel_size)
     print(f"micron image shape: {volume.shape}")
     print(f"Scaling by: {scale_factor}")
     scaled_volume = scipy.ndimage.zoom(volume, scale_factor, order=0)
