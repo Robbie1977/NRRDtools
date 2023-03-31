@@ -48,7 +48,11 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
             volume[cylinder_indices[:, 0], cylinder_indices[:, 1], cylinder_indices[:, 2]] = 255
 
     nonzero_indices = np.nonzero(volume)
-    max_volume_coords = np.max(np.column_stack(nonzero_indices), axis=0)
+    nonzero_indices = np.nonzero(volume)
+    if not np.any(nonzero_indices):
+        print("Warning: No nonzero values found in the volume. Please check your input SWC file.")
+    else:
+        max_volume_coords = np.max(np.column_stack(nonzero_indices), axis=0)
     print(f"Max volume coordinates: {max_volume_coords}")
     # Scale the volume by the voxel_size
     scale_factor = np.divide(1 / scaling_factor, voxel_size)
