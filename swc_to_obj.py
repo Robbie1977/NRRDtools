@@ -43,12 +43,17 @@ def create_mesh_from_swc(swc_data, minRadius=0.005):
             direction = (end - start) / length
             radius = (max(node['radius'], minRadius) + max(parent_node['radius'], minRadius)) / 2
 
-            # Add a small noise to the direction vector to avoid SVD convergence issues
-            direction += np.random.normal(0, 1e-8, 3)
-
             # Create the cylinder
             cylinder = trimesh.creation.cylinder(radius=max(radius, minRadius), height=length, sections=16)
-            cylinder.apply_transform(trimesh.geometry.align_vectors([0, 0, 1], direction))
+            
+            try:
+                cylinder.apply_transform(trimesh.geometry.align_vectors([0, 0, 1], direction))
+            except np.linalg.LinAlgError:
+                # Alternative method to align the vectors
+                axis = np.cross([0, 0, 1], direction)
+                angle = np.arccos(np.dot([0, 0, 1], direction))
+                cylinder.apply_transform(trimesh.transformations.rotation_matrix(angle, axis))
+
             cylinder.apply_translation((start + end) / 2)
 
             # Add the cylinder to the list of meshes
@@ -58,6 +63,7 @@ def create_mesh_from_swc(swc_data, minRadius=0.005):
     combined_mesh = trimesh.util.concatenate(meshes)
 
     return combined_mesh
+
 
 def convert_swc_to_obj(swc_file, obj_file):
     swc_data = read_swc(swc_file)
