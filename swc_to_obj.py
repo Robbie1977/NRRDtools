@@ -43,6 +43,9 @@ def create_mesh_from_swc(swc_data, minRadius=0.005):
             direction = (end - start) / length
             radius = (max(node['radius'], minRadius) + max(parent_node['radius'], minRadius)) / 2
 
+            # Add a small noise to the direction vector to avoid SVD convergence issues
+            direction += np.random.normal(0, 1e-8, 3)
+
             # Create the cylinder
             cylinder = trimesh.creation.cylinder(radius=max(radius, minRadius), height=length, sections=16)
             cylinder.apply_transform(trimesh.geometry.align_vectors([0, 0, 1], direction))
