@@ -15,7 +15,7 @@ def read_swc(file_path):
 
 def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
     pitch = 1.0
-    scaling_factor = 4 # The voxel size will now be 0.25x0.25x0.25 µm
+    scaling_factor = 4  # The voxel size will now be 0.25x0.25x0.25 µm
     # Scale the dims by the desired factor
     scaled_dims = (dims * scaling_factor).astype(int)
     volume = np.zeros(scaled_dims, dtype=np.uint8)
@@ -38,7 +38,15 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
             direction = (end - start) / length
             radius = (max(node['radius'], minRadius) + max(parent_node['radius'], minRadius)) / 2
             cylinder = trimesh.creation.cylinder(radius=max(radius * scaling_factor, minRadius * scaling_factor), height=length, sections=16)
-            cylinder.apply_transform(trimesh.geometry.align_vectors([0, 0, 1], direction))
+
+            try:
+                cylinder.apply_transform(trimesh.geometry.align_vectors([0, 0, 1], direction))
+            except np.linalg.LinAlgError:
+                # Alternative method to align the vectors
+                axis = np.cross([0, 0, 1], direction)
+                angle = np.arccos(np.dot([0, 0, 1], direction))
+                cylinder.apply_transform(trimesh.transformations.rotation_matrix(angle, axis))
+
             cylinder.apply_translation((start + end) / 2)
             cylinder_vox = trimesh.voxel.creation.voxelize(cylinder, pitch=pitch)
             cylinder_indices = cylinder_vox.sparse_indices.astype(float)
@@ -46,6 +54,8 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
             cylinder_indices = np.round(cylinder_indices).astype(int)
             cylinder_indices = np.clip(cylinder_indices, [0, 0, 0], np.array(scaled_dims) - 1)
             volume[cylinder_indices[:, 0], cylinder_indices[:, 1], cylinder_indices[:, 2]] = 255
+
+    return volume
 
     nonzero_indices = np.nonzero(volume)
     if not np.any(nonzero_indices):
