@@ -35,25 +35,27 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
             start = np.array([node['x'], node['y'], node['z']]) * scaling_factor
             end = np.array([parent_node['x'], parent_node['y'], parent_node['z']]) * scaling_factor
             length = np.linalg.norm(end - start)
-            direction = (end - start) / length
-            radius = (max(node['radius'], minRadius) + max(parent_node['radius'], minRadius)) / 2
-            cylinder = trimesh.creation.cylinder(radius=max(radius * scaling_factor, minRadius * scaling_factor), height=length, sections=16)
 
-            try:
-                cylinder.apply_transform(trimesh.geometry.align_vectors([0, 0, 1], direction))
-            except np.linalg.LinAlgError:
-                # Alternative method to align the vectors
-                axis = np.cross([0, 0, 1], direction)
-                angle = np.arccos(np.dot([0, 0, 1], direction))
-                cylinder.apply_transform(trimesh.transformations.rotation_matrix(angle, axis))
+            if length > 0:  # Check if the length is greater than zero before proceeding
+                direction = (end - start) / length
+                radius = (max(node['radius'], minRadius) + max(parent_node['radius'], minRadius)) / 2
+                cylinder = trimesh.creation.cylinder(radius=max(radius * scaling_factor, minRadius * scaling_factor), height=length, sections=16)
 
-            cylinder.apply_translation((start + end) / 2)
-            cylinder_vox = trimesh.voxel.creation.voxelize(cylinder, pitch=pitch)
-            cylinder_indices = cylinder_vox.sparse_indices.astype(float)
-            cylinder_indices += np.array([(start + end) / 2])
-            cylinder_indices = np.round(cylinder_indices).astype(int)
-            cylinder_indices = np.clip(cylinder_indices, [0, 0, 0], np.array(scaled_dims) - 1)
-            volume[cylinder_indices[:, 0], cylinder_indices[:, 1], cylinder_indices[:, 2]] = 255
+                try:
+                    cylinder.apply_transform(trimesh.geometry.align_vectors([0, 0, 1], direction))
+                except np.linalg.LinAlgError:
+                    # Alternative method to align the vectors
+                    axis = np.cross([0, 0, 1], direction)
+                    angle = np.arccos(np.dot([0, 0, 1], direction))
+                    cylinder.apply_transform(trimesh.transformations.rotation_matrix(angle, axis))
+
+                cylinder.apply_translation((start + end) / 2)
+                cylinder_vox = trimesh.voxel.creation.voxelize(cylinder, pitch=pitch)
+                cylinder_indices = cylinder_vox.sparse_indices.astype(float)
+                cylinder_indices += np.array([(start + end) / 2])
+                cylinder_indices = np.round(cylinder_indices).astype(int)
+                cylinder_indices = np.clip(cylinder_indices, [0, 0, 0], np.array(scaled_dims) - 1)
+                volume[cylinder_indices[:, 0], cylinder_indices[:, 1], cylinder_indices[:, 2]] = 255
 
     return volume
 

@@ -24,7 +24,7 @@ def read_swc(file_path):
 def create_mesh_from_swc(swc_data, minRadius=0.005):
     # Create an empty list to store all mesh objects
     meshes = []
-    
+
     # Process nodes
     for i, node in enumerate(swc_data):
         # Create a sphere for each node
@@ -40,30 +40,31 @@ def create_mesh_from_swc(swc_data, minRadius=0.005):
             start = np.array([node['x'], node['y'], node['z']])
             end = np.array([parent_node['x'], parent_node['y'], parent_node['z']])
             length = np.linalg.norm(end - start)
-            direction = (end - start) / length
-            radius = (max(node['radius'], minRadius) + max(parent_node['radius'], minRadius)) / 2
 
-            # Create the cylinder
-            cylinder = trimesh.creation.cylinder(radius=max(radius, minRadius), height=length, sections=16)
-            
-            try:
-                cylinder.apply_transform(trimesh.geometry.align_vectors([0, 0, 1], direction))
-            except np.linalg.LinAlgError:
-                # Alternative method to align the vectors
-                axis = np.cross([0, 0, 1], direction)
-                angle = np.arccos(np.dot([0, 0, 1], direction))
-                cylinder.apply_transform(trimesh.transformations.rotation_matrix(angle, axis))
+            if length > 0:  # Check if the length is greater than zero before proceeding
+                direction = (end - start) / length
+                radius = (max(node['radius'], minRadius) + max(parent_node['radius'], minRadius)) / 2
 
-            cylinder.apply_translation((start + end) / 2)
+                # Create the cylinder
+                cylinder = trimesh.creation.cylinder(radius=max(radius, minRadius), height=length, sections=16)
 
-            # Add the cylinder to the list of meshes
-            meshes.append(cylinder)
+                try:
+                    cylinder.apply_transform(trimesh.geometry.align_vectors([0, 0, 1], direction))
+                except np.linalg.LinAlgError:
+                    # Alternative method to align the vectors
+                    axis = np.cross([0, 0, 1], direction)
+                    angle = np.arccos(np.dot([0, 0, 1], direction))
+                    cylinder.apply_transform(trimesh.transformations.rotation_matrix(angle, axis))
+
+                cylinder.apply_translation((start + end) / 2)
+
+                # Add the cylinder to the list of meshes
+                meshes.append(cylinder)
 
     # Combine all the meshes into a single mesh object
     combined_mesh = trimesh.util.concatenate(meshes)
 
     return combined_mesh
-
 
 def convert_swc_to_obj(swc_file, obj_file):
     swc_data = read_swc(swc_file)
