@@ -15,7 +15,7 @@ def read_swc(file_path):
 
 def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
     pitch = 1.0
-    scaling_factor = 4  # The voxel size will now be 0.25x0.25x0.25 µm
+    scaling_factor = 4  # The voxel size will now be 0.25x0.25x0.25 microns
     # Scale the dims by the desired factor
     scaled_dims = (dims * scaling_factor).astype(int)
     volume = np.zeros(scaled_dims, dtype=np.uint8)
