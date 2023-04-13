@@ -21,15 +21,18 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
     volume = np.zeros(scaled_dims, dtype=np.uint8)
 
     for node in swc_data:
-        sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'] * scaling_factor, minRadius * scaling_factor))
-        sphere_vox = trimesh.voxel.creation.voxelize(sphere, pitch=pitch)
-        sphere_indices = sphere_vox.sparse_indices.astype(float)
-        sphere_indices += np.array([node['x'], node['y'], node['z']])
-        sphere_indices *= scaling_factor
-        sphere_indices = np.round(sphere_indices).astype(int)
-        sphere_indices = np.clip(sphere_indices, [0, 0, 0], np.array(scaled_dims) - 1)
-        volume[sphere_indices[:, 0], sphere_indices[:, 1], sphere_indices[:, 2]] = 255
-
+        # Only create a sphere for soma nodes (type == 1)
+        if node['type'] == 1:
+            sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'] * scaling_factor, minRadius * scaling_factor))
+            sphere_vox = trimesh.voxel.creation.voxelize(sphere, pitch=pitch)
+            sphere_indices = sphere_vox.sparse_indices.astype(float)
+            sphere_indices += np.array([node['x'], node['y'], node['z']])
+            sphere_indices *= scaling_factor
+            sphere_indices = np.round(sphere_indices).astype(int)
+            sphere_indices = np.clip(sphere_indices, [0, 0, 0], np.array(scaled_dims) - 1)
+            volume[sphere_indices[:, 0], sphere_indices[:, 1], sphere_indices[:, 2]] = 255
+            
+        # Always create cylinders for connections (neurites)
         if node['parent'] != -1:
             parent_node = swc_data[np.where(swc_data['id'] == node['parent'])[0][0]]
             start = np.array([node['x'], node['y'], node['z']]) * scaling_factor
