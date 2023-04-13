@@ -3,12 +3,12 @@ import sys, os
 import nrrd
 
 if (len(sys.argv) < 3):
-    print 'Error: missing arguments!'
-    print 'e.g. python labelGrow.py template.nrrd index.nrrd [intensity_threshold] [iterations] [radius]'
+    print('Error: missing arguments!')
+    print('e.g. python labelGrow.py template.nrrd index.nrrd [intensity_threshold] [iterations] [radius]')
 else:
-    print 'Loading template %s...'% (str(sys.argv[1]))
+    print('Loading template %s...'% (str(sys.argv[1])))
     data1, header1 = nrrd.read(str(sys.argv[1]))
-    print 'Processing %s...'% (str(sys.argv[2]))
+    print('Processing %s...'% (str(sys.argv[2])))
     data2, header2 = nrrd.read(str(sys.argv[2]))
     header1.pop("endian", None)
     header2.pop("endian", None)
@@ -21,17 +21,17 @@ else:
     bc = np.arange(1,256)
     if (len(sys.argv) > 3):
         t=np.uint16(sys.argv[3])
-    print 'Growing index for any template intensity above %s...'% str(t)
-    print 'Using a growth radius of %s...'% str(s)
+    print('Growing index for any template intensity above %s...'% str(t))
+    print('Using a growth radius of %s...'% str(s))
 
-    print np.histogram(data2, bins=b)
+    print(np.histogram(data2, bins=b))
     out2 = np.array(data2)
 
     i = 0
 
     if (len(sys.argv) > 4):
         reps=np.int32(sys.argv[4])
-    print 'Running for %s iteration(s)'% str(reps)
+    print('Running for %s iteration(s)'% str(reps))
 
     Iout = str(sys.argv[2]).replace(".nrrd","_old.nrrd")
     nrrd.write(Iout, data2, options=header2)
@@ -39,8 +39,8 @@ else:
     for rep in range(1,reps+1):
       data2 = np.array(out2)
       index1 = np.argwhere(np.multiply((data1>t),(data2==0)))
-      print "Added: " + str(i - np.size(index1))
-      print str(rep) + ' of ' + str(reps)
+      print("Added: " + str(i - np.size(index1)))
+      print(str(rep) + ' of ' + str(reps))
 
       if np.size(index1) != i :
         i = np.size(index1)
@@ -55,7 +55,7 @@ else:
                 if (subhist[0][m] > (np.sum(subhist[0])-subhist[0][m])):
                     out2[val[0],val[1],val[2]] = r
         if (np.mod(rep,50) == 0):
-          print "Saving result to " + str(sys.argv[2])
+          print("Saving result to " + str(sys.argv[2]))
           header2['encoding'] = 'gzip'
           if np.max(out2) > 256:
             header2['type'] = 'uint16'
@@ -63,13 +63,13 @@ else:
           else:
             header2['type'] = 'uint8'
             nrrd.write(str(sys.argv[2]), np.uint8(out2), options=header2)
-          print np.histogram(out2, bins=b)
+          print(np.histogram(out2, bins=b))
       else:
-          print "Finishing as no change"
+          print("Finishing as no change")
           break
 
-    print "Saving result to " + str(sys.argv[2])
-    print "Saving result to " + str(sys.argv[2])
+    print("Saving result to " + str(sys.argv[2]))
+    print("Saving result to " + str(sys.argv[2]))
     if np.max(out2) > 256:
       header2['encoding'] = 'gzip'
       header2['type'] = 'uint16'
@@ -78,6 +78,6 @@ else:
       header2['encoding'] = 'gzip'
       header2['type'] = 'uint8'
       nrrd.write(str(sys.argv[2]), np.uint8(out2), options=header2)
-    print np.histogram(out2, bins=b)
+    print(np.histogram(out2, bins=b))
 
-print 'done.'
+print('done.')

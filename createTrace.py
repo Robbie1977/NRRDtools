@@ -8,11 +8,11 @@ pt = 3
 bs = 5
 
 if (len(sys.argv) < 2):
-    print 'Error: missing arguments!'
-    print 'e.g. python createTrace.py imageIn.nrrd [ImageOut.nrrd]'
+    print('Error: missing arguments!')
+    print('e.g. python createTrace.py imageIn.nrrd [ImageOut.nrrd]')
 else:
     Iin = str(sys.argv[1])
-    print 'Processing %s...'% (Iin)
+    print('Processing %s...'% (Iin))
     data1, header1 = nrrd.read(Iin)
 
     sh = np.shape(data1)
@@ -24,7 +24,7 @@ else:
 
     data = np.zeros(sh, dtype=np.uint8)
     for z in range(0,sh[2]-1):
-        print 'processing slice ' + str(z) + ' of ' + str(sh[2]-1)
+        print('processing slice ' + str(z) + ' of ' + str(sh[2]-1))
         for y in range(0,sh[1]-1):
             x = 0
             if np.sum(data1[x:sh[0]-1,y,z])<th:
@@ -60,4 +60,4 @@ else:
     # data = ndimage.median_filter(data, 3)
 
     nrrd.write(Iout, data, options=header1)
-    print 'saved to ' + Iout
+    print('saved to ' + Iout)

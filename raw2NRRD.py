@@ -32,12 +32,12 @@ def convDirRaw2NRRD(folder='./', template='./template.nrrd'):
     if '.raw' in Ifile:
       Nfile = str(Ifile).replace('.raw','.nrrd')
       if not os.path.exists(Nfile):
-        print 'converting ' + Ifile + ' to ' + Nfile + '...'
+        print('converting ' + Ifile + ' to ' + Nfile + '...')
         convertRaw2NRRD(Ifile, template)
 
 if __name__ == "__main__":
   if (len(sys.argv) < 3):
-      print 'Error: missing arguments!'
-      print 'e.g. python raw2NRRD.py rawFileDir template.nrrd'
+      print('Error: missing arguments!')
+      print('e.g. python raw2NRRD.py rawFileDir template.nrrd')
   else:
       convDirRaw2NRRD(str(sys.argv[1]), str(sys.argv[2]))

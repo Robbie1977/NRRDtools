@@ -3,7 +3,7 @@ import sys, os
 import nrrd
 
 if (len(sys.argv) < 2):
-    print '0'
+    print('0')
 else:
     Iin = str(sys.argv[1])
 
@@ -14,4 +14,4 @@ else:
 
     mp = np.argmax(data1)
 
-    print '%s'% (mp)
+    print('%s'% (mp))

@@ -38,8 +38,8 @@ def olc(d1,d2):
     return r
 
 def compare(data1, data2, result=None):
-    if (data1.size <> data2.size):
-        print '\n\nError: Images must be the same size!!'
+    if (data1.size != data2.size):
+        print('\n\nError: Images must be the same size!!')
     else:
         results = []
         for i in np.unique(data1):
@@ -53,7 +53,7 @@ def compare(data1, data2, result=None):
                 r1 = opc(test1,test2)
                 r2 = olc(test1,test2)
                 results = results + [(i,k,r1,r2)]
-                print str(i), str(k), str(r1), str(r2)
+                print(str(i), str(k), str(r1), str(r2))
                 if not result == None:
                   with open(result, 'a') as csvfile:
                     spamwriter = csv.writer(csvfile)
@@ -63,12 +63,12 @@ def compare(data1, data2, result=None):
 
 if __name__ == "__main__":
   if (len(sys.argv) < 2):
-      print 'Error: missing arguments!'
-      print 'e.g. python compareIndex.py index1.nrrd index2.nrrd [results.csv]'
+      print('Error: missing arguments!')
+      print('e.g. python compareIndex.py index1.nrrd index2.nrrd [results.csv]')
   else:
-      print 'Loading image: %s...'% (str(sys.argv[1]))
+      print('Loading image: %s...'% (str(sys.argv[1])))
       data1, header1 = nrrd.read(str(sys.argv[1]))
-      print 'Loading image: %s...'% (str(sys.argv[2]))
+      print('Loading image: %s...'% (str(sys.argv[2])))
       data2, header2 = nrrd.read(str(sys.argv[2]))
       resultfile=None
       if (len(sys.argv) > 2):

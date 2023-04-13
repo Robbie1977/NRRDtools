@@ -3,11 +3,11 @@ import sys, os
 import nrrd
 
 if (len(sys.argv) < 4):
-    print 'Error: missing arguments!'
-    print 'e.g. python addPadding.py #AddedSlicesLowEnd #AddedSlicesHighEnd imageIn.nrrd [imageOut.nrrd]'
+    print('Error: missing arguments!')
+    print('e.g. python addPadding.py #AddedSlicesLowEnd #AddedSlicesHighEnd imageIn.nrrd [imageOut.nrrd]')
 else:
     Iin = str(sys.argv[3])
-    print 'Processing %s...'% (Iin)
+    print('Processing %s...'% (Iin))
     data1, header1 = nrrd.read(Iin)
 
     sh = np.shape(data1)
@@ -21,10 +21,10 @@ else:
     if (len(sys.argv) > 4):
       Iout = str(sys.argv[4])
       nrrd.write(Iout, data, options=header1)
-      print 'saved to ' + Iout
+      print('saved to ' + Iout)
     else:
       Iout = Iin.replace(".nrrd", "_" + str(sh[2]) + ".nrrd")
       nrrd.write(Iout, data1, options=header1)
-      print 'original saved to ' + Iout
+      print('original saved to ' + Iout)
       nrrd.write(Iin, data, options=header1)
-      print 'padded version saved to ' + Iin
+      print('padded version saved to ' + Iin)

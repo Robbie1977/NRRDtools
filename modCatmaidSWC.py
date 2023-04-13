@@ -5,8 +5,8 @@ import numpy as np
 
 
 if (len(sys.argv) < 1):
-    print 'Error: missing arguments!'
-    print 'e.g. python modSWC.py'
+    print('Error: missing arguments!')
+    print('e.g. python modSWC.py')
 else:
 
     lines = [line.strip() for line in open(str(sys.argv[1]))]
