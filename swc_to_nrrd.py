@@ -23,7 +23,7 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
     for node in swc_data:
         # Only create a sphere for soma nodes (type == 1)
         if node['type'] == 1:
-            sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'] * scaling_factor, minRadius * scaling_factor))
+            sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'], minRadius * scaling_factor))
             sphere_vox = trimesh.voxel.creation.voxelize(sphere, pitch=pitch)
             sphere_indices = sphere_vox.sparse_indices.astype(float)
             sphere_indices += np.array([node['x'], node['y'], node['z']])
