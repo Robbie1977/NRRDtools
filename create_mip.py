@@ -2,7 +2,7 @@ import argparse
 import numpy as np
 import nrrd
 from PIL import Image
-from .rotate_image_stack import rotate_image_stack
+from rotate_image_stack import rotate_image_stack
 
 
 def create_mip(nrrd_path, png_path, thumb=False):
