@@ -2,7 +2,7 @@ matplotlib==3.7.1
 mayavi==4.8.1
 numpy==1.24.2
 pandas==2.0.0
-Pillow==9.5.0
+Pillow==10.0.1
 pypng==0.20220715.0
 scipy==1.10.1
 trimesh==3.21.5
