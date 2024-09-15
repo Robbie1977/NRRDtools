@@ -52,7 +52,7 @@ def colorize_image_stack(nrrd_path, png_path, thumbnail=False, add_scale=True, m
     max_indices = np.clip(max_indices, 0, None)
 
     # Define color map using JET color scheme
-    jet_cmap = plt.cm.get_cmap('jet')
+    jet_cmap = plt.get_cmap('jet')
     colors = jet_cmap(np.linspace(0, 1, last_index - first_index + 1))
     colors = np.vstack(([0, 0, 0, 1], colors)) # add black at index 0
     cmap = ListedColormap(colors)
