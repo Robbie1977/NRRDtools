@@ -182,7 +182,7 @@ def create_thumbnail(template_file, signal_file, output_file, cache_template=Fal
         logger.warning(f"Could not remove template MIP file: {template_mip}. Error: {e}")
 
     try:
-        if os.path.exists(signal_colorized):
+        if not cache_template and os.path.exists(signal_colorized):
             os.remove(signal_colorized)
             logger.debug(f"Removed temporary file: {signal_colorized}")
     except Exception as e:
