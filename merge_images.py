@@ -34,6 +34,11 @@ def merge_images(input_path1, input_path2, output_path):
 
     # Make the first image semi-transparent
     img1.putalpha(40)
+
+    # Set signal alpha to max RGB
+    sig_arr = np.array(img2)
+    sig_arr[..., 3] = np.max(sig_arr[..., :3], axis=2)
+    img2 = Image.fromarray(sig_arr)
     
     # Merge the images
     result = Image.alpha_composite(img2, img1)
