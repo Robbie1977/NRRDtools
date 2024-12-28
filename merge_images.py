@@ -42,6 +42,8 @@ def merge_images(input_path1, input_path2, output_path):
     
     # Merge the images
     result = Image.alpha_composite(img2, img1)
+
+    result.putalpha(255)
     
     # Save the result image
     try:
