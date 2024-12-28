@@ -1,11 +1,25 @@
 import argparse
 import numpy as np
 from PIL import Image
+import os
 
 def merge_images(input_path1, input_path2, output_path):
+    # Check if input files exist
+    if not os.path.exists(input_path1):
+        raise FileNotFoundError(f"Background image not found: {input_path1}")
+    if not os.path.exists(input_path2):
+        raise FileNotFoundError(f"Signal image not found: {input_path2}")
+        
     # Open the input images
-    img1 = Image.open(input_path1).convert('RGBA')
-    img2 = Image.open(input_path2).convert('RGBA')
+    try:
+        img1 = Image.open(input_path1).convert('RGBA')
+    except Exception as e:
+        raise RuntimeError(f"Failed to open background image {input_path1}: {str(e)}")
+        
+    try:
+        img2 = Image.open(input_path2).convert('RGBA')
+    except Exception as e:
+        raise RuntimeError(f"Failed to open signal image {input_path2}: {str(e)}")
 
     # Allow for a 2 pixel colour bar on right:
     color_bar_width = 2
@@ -16,18 +30,23 @@ def merge_images(input_path1, input_path2, output_path):
     
     # Ensure both images have the same size
     if img1.size != img2.size:
-        print(f"Template size: {img1.size}")
-        print(f"Signal size: {img2.size}")
-        raise ValueError('Input images must have the same size')
+        raise ValueError(f'Input images must have the same size. Background: {img1.size}, Signal: {img2.size}')
 
     # Make the first image semi-transparent
     img1.putalpha(40)
-
+    
     # Merge the images
     result = Image.alpha_composite(img1, img2)
-
+    
     # Save the result image
-    result.save(output_path)
+    try:
+        result.save(output_path)
+        print(f"Successfully merged:")
+        print(f"  Background: {input_path1} ({img1.size})")
+        print(f"  Signal: {input_path2} ({img2.size})")
+        print(f"  Output: {output_path}")
+    except Exception as e:
+        raise RuntimeError(f"Failed to save merged image to {output_path}: {str(e)}")
 
 if __name__ == '__main__':
     # Parse command-line arguments
@@ -37,5 +56,9 @@ if __name__ == '__main__':
     parser.add_argument('output', type=str, help='path to the output image')
     args = parser.parse_args()
 
-    # Merge the images
-    merge_images(args.input1, args.input2, args.output)
+    try:
+        # Merge the images
+        merge_images(args.input1, args.input2, args.output)
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        exit(1)
