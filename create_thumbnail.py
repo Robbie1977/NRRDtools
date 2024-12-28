@@ -146,6 +146,13 @@ def create_thumbnail(template_file, signal_file, output_file, cache_template=Fal
             logger.debug(f"Removed temporary file: {template_mip}")
         sys.exit(1)
 
+    # Verify the signal file exists before merging
+    if not os.path.exists(signal_colorized):
+        logger.error(f"Signal file not found before merge: {signal_colorized}")
+        sys.exit(1)
+    else:
+        logger.info(f"Signal file exists before merge: {signal_colorized}")
+    
     # Merge the template and colorized signal images
     merge_command = [
         sys.executable, merge_images_path,
