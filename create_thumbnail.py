@@ -63,7 +63,7 @@ def run_subprocess(command, logger):
         logger.error(f"Error Output: {e.stderr}")
         return False
 
-def create_thumbnail(template_file, signal_file, output_file, cache_template=False, max_scale=False, logger=None):
+def create_thumbnail(template_file, signal_file, output_file, cache_template=False, max_scale=False, add_colorbar_padding=False, logger=None):
     """
     Create a thumbnail by processing template and signal NRRD files.
 
@@ -73,6 +73,7 @@ def create_thumbnail(template_file, signal_file, output_file, cache_template=Fal
         output_file (str): Path to the output thumbnail.png file.
         cache_template (bool): Whether to cache template MIPs.
         max_scale (bool): Whether to use max scale for colorization.
+        add_colorbar_padding (bool): Whether to add padding for colorbar alignment.
         logger (logging.Logger): Logger instance for logging messages.
     """
     if logger is None:
@@ -114,6 +115,8 @@ def create_thumbnail(template_file, signal_file, output_file, cache_template=Fal
         mip_command = [
             sys.executable, create_mip_path, template_file, template_mip
         ]
+        if add_colorbar_padding:
+            mip_command.append("--add_colorbar_padding")
         if not run_subprocess(mip_command, logger):
             logger.error("Failed to create template MIP.")
             sys.exit(1)
@@ -220,6 +223,11 @@ def main():
         action='store_true',
         help='If the colour scale should use the full stack rather than fit only data depth'
     )
+    parser.add_argument(
+        '--add_colorbar_padding',
+        action='store_true',
+        help='Add 2 pixels of padding to align with colorbar'
+    )
 
     # Parse arguments
     args = parser.parse_args()
@@ -231,6 +239,7 @@ def main():
         args.output_file,
         cache_template=args.cache,
         max_scale=args.max_scale,
+        add_colorbar_padding=args.add_colorbar_padding,
         logger=logger
     )
 
