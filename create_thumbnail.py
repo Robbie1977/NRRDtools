@@ -55,10 +55,9 @@ def execute_python_script(script_path, args, logger):
         script_name = os.path.splitext(os.path.basename(script_path))[0]
         module = __import__(script_name)
 
-        # For scripts like create_mip.py that use argparse directly
-        if hasattr(module, 'create_mip'):
-            # Extract args from command line style args
-            import argparse
+        # Handle different script types
+        if script_name == 'create_mip':
+            # Extract args for create_mip.py
             parser = argparse.ArgumentParser()
             parser.add_argument('nrrd_path', type=str)
             parser.add_argument('png_path', type=str)
@@ -66,12 +65,30 @@ def execute_python_script(script_path, args, logger):
             parser.add_argument('--add_colorbar_padding', action='store_true')
             parsed_args = parser.parse_args(args)
             
-            # Call the main function directly with parsed args
             module.create_mip(
                 parsed_args.nrrd_path, 
                 parsed_args.png_path,
                 parsed_args.thumb,
                 parsed_args.add_colorbar_padding
+            )
+            return True
+            
+        elif script_name == 'colorize_image_stack':
+            # Extract args for colorize_image_stack.py
+            parser = argparse.ArgumentParser()
+            parser.add_argument('--nrrd', type=str)
+            parser.add_argument('--png', type=str)
+            parser.add_argument('--thumb', action='store_true')
+            parser.add_argument('--scale', action='store_true')
+            parser.add_argument('--max', action='store_true')
+            parsed_args = parser.parse_args(args)
+            
+            module.colorize_image_stack(
+                parsed_args.nrrd,
+                parsed_args.png,
+                parsed_args.thumb,
+                parsed_args.scale,
+                parsed_args.max
             )
             return True
 
