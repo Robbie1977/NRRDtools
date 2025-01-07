@@ -2,7 +2,6 @@
 import argparse
 import os
 import random
-import subprocess
 import sys
 import logging
 
@@ -32,35 +31,50 @@ def setup_logging():
 
     return logger
 
-def run_subprocess(command, logger):
+def execute_python_script(script_path, args, logger):
     """
-    Run a subprocess command and handle errors.
-
+    Execute a Python script directly by importing and running it.
+    
     Parameters:
-        command (list): Command and arguments to execute.
-        logger (logging.Logger): Logger instance for logging messages.
-
+        script_path (str): Path to the Python script
+        args (list): List of arguments to pass to the script
+        logger (logging.Logger): Logger instance for logging messages
+        
     Returns:
-        bool: True if command succeeds, False otherwise.
+        bool: True if execution succeeds, False otherwise
     """
-    logger.debug(f"Executing command: {' '.join(command)}")
+    logger.debug(f"Executing script: {script_path} with args: {args}")
+    
     try:
-        result = subprocess.run(
-            command,
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
-        logger.debug(f"Command output: {result.stdout}")
-        if result.stderr:
-            logger.warning(f"Command stderr: {result.stderr}")
-        return True
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Command failed: {' '.join(command)}")
-        logger.error(f"Return code: {e.returncode}")
-        logger.error(f"Output: {e.output}")
-        logger.error(f"Error Output: {e.stderr}")
+        # Add script directory to Python path
+        script_dir = os.path.dirname(os.path.abspath(script_path))
+        if script_dir not in sys.path:
+            sys.path.append(script_dir)
+            
+        # Import the script as a module
+        script_name = os.path.splitext(os.path.basename(script_path))[0]
+        script_module = __import__(script_name)
+        
+        # Prepare sys.argv for the script
+        original_argv = sys.argv
+        sys.argv = [script_path] + args
+        
+        try:
+            # Execute the script's main function
+            if hasattr(script_module, 'main'):
+                script_module.main()
+            else:
+                logger.error(f"No main() function found in {script_path}")
+                return False
+                
+            return True
+            
+        finally:
+            # Restore original sys.argv
+            sys.argv = original_argv
+            
+    except Exception as e:
+        logger.error(f"Failed to execute {script_path}: {str(e)}")
         return False
 
 def create_thumbnail(template_file, signal_file, output_file, cache_template=False, max_scale=False, add_colorbar_padding=False, logger=None):
@@ -112,12 +126,10 @@ def create_thumbnail(template_file, signal_file, output_file, cache_template=Fal
     # Create the maximum intensity projection of the template
     if not cache_template or not os.path.exists(template_mip):
         logger.info(f"Creating MIP for template: {template_file} -> {template_mip}")
-        mip_command = [
-            sys.executable, create_mip_path, template_file, template_mip
-        ]
+        mip_args = [template_file, template_mip]
         if add_colorbar_padding:
-            mip_command.append("--add_colorbar_padding")
-        if not run_subprocess(mip_command, logger):
+            mip_args.append("--add_colorbar_padding")
+        if not execute_python_script(create_mip_path, mip_args, logger):
             logger.error("Failed to create template MIP.")
             sys.exit(1)
     else:
@@ -125,23 +137,16 @@ def create_thumbnail(template_file, signal_file, output_file, cache_template=Fal
 
     # Colorize the signal image
     signal_colorized = f"signal_colorized_{rand_num}.png"
+    colorize_args = [
+        "--nrrd", signal_file,
+        "--png", signal_colorized,
+        "--scale"
+    ]
     if max_scale:
         logger.info("Producing with max scale...")
-        colorize_command = [
-            sys.executable, colorize_image_stack_path,
-            "--nrrd", signal_file,
-            "--png", signal_colorized,
-            "--scale",
-            "--max"
-        ]
-    else:
-        colorize_command = [
-            sys.executable, colorize_image_stack_path,
-            "--nrrd", signal_file,
-            "--png", signal_colorized,
-            "--scale"
-        ]
-    if not run_subprocess(colorize_command, logger):
+        colorize_args.append("--max")
+    
+    if not execute_python_script(colorize_image_stack_path, colorize_args, logger):
         logger.error("Failed to colorize signal image.")
         # Clean up and exit
         if not cache_template and os.path.exists(template_mip):
@@ -149,47 +154,24 @@ def create_thumbnail(template_file, signal_file, output_file, cache_template=Fal
             logger.debug(f"Removed temporary file: {template_mip}")
         sys.exit(1)
 
-    # Verify the signal file exists before merging
-    if not os.path.exists(signal_colorized):
-        logger.error(f"Signal file not found before merge: {signal_colorized}")
-        sys.exit(1)
-    else:
-        logger.info(f"Signal file exists before merge: {signal_colorized}")
-    
-    # Merge the template and colorized signal images
-    merge_command = [
-        sys.executable, merge_images_path,
-        template_mip,
-        signal_colorized,
-        output_file
-    ]
-    if not run_subprocess(merge_command, logger):
+    # Execute merge images script
+    merge_args = [template_mip, signal_colorized, output_file]
+    if not execute_python_script(merge_images_path, merge_args, logger):
         logger.error("Failed to merge images.")
-        # Clean up and exit
-        if not cache_template and os.path.exists(template_mip):
-            os.remove(template_mip)
-            logger.debug(f"Removed temporary file: {template_mip}")
-        if os.path.exists(signal_colorized):
-            os.remove(signal_colorized)
-            logger.debug(f"Removed temporary file: {signal_colorized}")
         sys.exit(1)
-
-    logger.info(f"Successfully created thumbnail: {output_file}")
 
     # Clean up temporary files
     try:
         if not cache_template and os.path.exists(template_mip):
             os.remove(template_mip)
             logger.debug(f"Removed temporary file: {template_mip}")
-    except Exception as e:
-        logger.warning(f"Could not remove template MIP file: {template_mip}. Error: {e}")
-
-    try:
-        if not cache_template and os.path.exists(signal_colorized):
+        if os.path.exists(signal_colorized):
             os.remove(signal_colorized)
             logger.debug(f"Removed temporary file: {signal_colorized}")
     except Exception as e:
-        logger.warning(f"Could not remove signal colorized file: {signal_colorized}. Error: {e}")
+        logger.warning(f"Error cleaning up temporary files: {str(e)}")
+
+    logger.info(f"Successfully created thumbnail: {output_file}")
 
 def main():
     # Set up logging
