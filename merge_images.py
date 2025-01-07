@@ -34,7 +34,7 @@ def merge_images(input_path1, input_path2, output_path):
 
     # Make the first image semi-transparent
     img1.putalpha(40)
-
+    
     # Set signal alpha to max RGB
     sig_arr = np.array(img2)
     sig_arr[..., 3] = np.max(sig_arr[..., :3], axis=2)
@@ -42,18 +42,26 @@ def merge_images(input_path1, input_path2, output_path):
     
     # Merge the images
     result = Image.alpha_composite(img2, img1)
-
     result.putalpha(255)
     
     # Save the result image
     try:
         result.save(output_path)
+        
+        # Set file permissions to 777
+        os.chmod(output_path, 0o777)
+        
+        # Verify output size matches
+        output_img = Image.open(output_path)
+        if output_img.size != img2.size:
+            raise RuntimeError(f"Output image size {output_img.size} does not match input size {img2.size}")
+        
         print(f"Successfully merged:")
         print(f"  Background: {input_path1} ({img1.size})")
         print(f"  Signal: {input_path2} ({img2.size})")
-        print(f"  Output: {output_path}")
+        print(f"  Output: {output_path} ({output_img.size})")
     except Exception as e:
-        raise RuntimeError(f"Failed to save merged image to {output_path}: {str(e)}")
+        raise RuntimeError(f"Failed to save or verify merged image to {output_path}: {str(e)}")
 
 if __name__ == '__main__':
     # Parse command-line arguments
@@ -62,7 +70,7 @@ if __name__ == '__main__':
     parser.add_argument('input2', type=str, help='path to the signal image')
     parser.add_argument('output', type=str, help='path to the output image')
     args = parser.parse_args()
-
+    
     try:
         # Merge the images
         merge_images(args.input1, args.input2, args.output)
