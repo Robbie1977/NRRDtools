@@ -33,7 +33,7 @@ def setup_logging():
 
 def execute_python_script(script_path, args, logger):
     """
-    Execute a Python script directly by importing and running it.
+    Execute a Python script by directly calling its main function.
     
     Parameters:
         script_path (str): Path to the Python script
@@ -44,35 +44,46 @@ def execute_python_script(script_path, args, logger):
         bool: True if execution succeeds, False otherwise
     """
     logger.debug(f"Executing script: {script_path} with args: {args}")
-    
+
     try:
-        # Add script directory to Python path
+        # Add script directory to path if needed
         script_dir = os.path.dirname(os.path.abspath(script_path))
         if script_dir not in sys.path:
             sys.path.append(script_dir)
-            
-        # Import the script as a module
+
+        # Import the script module
         script_name = os.path.splitext(os.path.basename(script_path))[0]
-        script_module = __import__(script_name)
-        
-        # Prepare sys.argv for the script
-        original_argv = sys.argv
-        sys.argv = [script_path] + args
-        
-        try:
-            # Execute the script's main function
-            if hasattr(script_module, 'main'):
-                script_module.main()
-            else:
-                logger.error(f"No main() function found in {script_path}")
-                return False
-                
+        module = __import__(script_name)
+
+        # For scripts like create_mip.py that use argparse directly
+        if hasattr(module, 'create_mip'):
+            # Extract args from command line style args
+            import argparse
+            parser = argparse.ArgumentParser()
+            parser.add_argument('nrrd_path', type=str)
+            parser.add_argument('png_path', type=str)
+            parser.add_argument('--thumb', action='store_true')
+            parser.add_argument('--add_colorbar_padding', action='store_true')
+            parsed_args = parser.parse_args(args)
+            
+            # Call the main function directly with parsed args
+            module.create_mip(
+                parsed_args.nrrd_path, 
+                parsed_args.png_path,
+                parsed_args.thumb,
+                parsed_args.add_colorbar_padding
+            )
             return True
-            
-        finally:
-            # Restore original sys.argv
-            sys.argv = original_argv
-            
+
+        # For other scripts with main()
+        elif hasattr(module, 'main'):
+            sys.argv = [script_path] + args
+            module.main()
+            return True
+
+        logger.error(f"No suitable entry point found in {script_path}")
+        return False
+
     except Exception as e:
         logger.error(f"Failed to execute {script_path}: {str(e)}")
         return False
