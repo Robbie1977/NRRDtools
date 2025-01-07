@@ -92,6 +92,21 @@ def execute_python_script(script_path, args, logger):
             )
             return True
 
+        elif script_name == 'merge_images':
+            # Extract args for merge_images.py
+            parser = argparse.ArgumentParser()
+            parser.add_argument('input1', type=str)
+            parser.add_argument('input2', type=str)
+            parser.add_argument('output', type=str)
+            parsed_args = parser.parse_args(args)
+            
+            module.merge_images(
+                parsed_args.input1,
+                parsed_args.input2,
+                parsed_args.output
+            )
+            return True
+
         # For other scripts with main()
         elif hasattr(module, 'main'):
             sys.argv = [script_path] + args
