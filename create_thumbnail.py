@@ -205,10 +205,10 @@ def create_thumbnail(template_file, signal_file, output_file, cache_template=Fal
 
     # Clean up temporary files
     try:
-        if not cache_template and os.path.exists(template_mip):
+        if false and not cache_template and os.path.exists(template_mip):
             os.remove(template_mip)
             logger.debug(f"Removed temporary file: {template_mip}")
-        if os.path.exists(signal_colorized):
+        if false and os.path.exists(signal_colorized):
             os.remove(signal_colorized)
             logger.debug(f"Removed temporary file: {signal_colorized}")
     except Exception as e:
