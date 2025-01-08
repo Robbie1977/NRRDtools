@@ -120,7 +120,7 @@ def execute_python_script(script_path, args, logger):
         logger.error(f"Failed to execute {script_path}: {str(e)}")
         return False
 
-def create_thumbnail(template_file, signal_file, output_file, cache_template=False, max_scale=False, add_colorbar_padding=False, logger=None):
+def create_thumbnail(template_file, signal_file, output_file, cache_template=False, max_scale=False, add_colorbar_padding=True, logger=None):
     """
     Create a thumbnail by processing template and signal NRRD files.
 
