@@ -180,6 +180,7 @@ def create_thumbnail(template_file, signal_file, output_file, cache_template=Fal
 
     # Colorize the signal image
     signal_colorized = f"signal_colorized_{rand_num}.png"
+    logger.debug(f"Starting signal colorization: input={signal_file}, output={signal_colorized}")
     colorize_args = [
         "--nrrd", signal_file,
         "--png", signal_colorized,
@@ -189,13 +190,16 @@ def create_thumbnail(template_file, signal_file, output_file, cache_template=Fal
         logger.info("Producing with max scale...")
         colorize_args.append("--max")
     
+    logger.debug(f"Full colorize args: {colorize_args}")
     if not execute_python_script(colorize_image_stack_path, colorize_args, logger):
-        logger.error("Failed to colorize signal image.")
+        logger.error(f"Failed to colorize signal image: {signal_file}")
+        logger.error(f"Full arguments used: {colorize_args}")
         # Clean up and exit
         if not cache_template and os.path.exists(template_mip):
             os.remove(template_mip)
             logger.debug(f"Removed temporary file: {template_mip}")
         sys.exit(1)
+    logger.debug(f"Successfully colorized signal image: {signal_colorized}")
 
     # Execute merge images script
     merge_args = [template_mip, signal_colorized, output_file]
