@@ -168,9 +168,9 @@ def create_thumbnail(template_file, signal_file, output_file, cache_template=Fal
     # Determine the template MIP file name
     if cache_template:
         template_id = os.path.basename(os.path.dirname(template_file))
-        template_mip = f"template_mip_{template_id}.png"
+        template_mip = f"{WORKSPACE}/template_mip_{template_id}.png"
     else:
-        template_mip = f"template_mip_{rand_num}.png"
+        template_mip = f"{WORKSPACE}/template_mip_{rand_num}.png"
 
     # Create the maximum intensity projection of the template
     if not cache_template or not os.path.exists(template_mip):
