@@ -164,7 +164,9 @@ def create_thumbnail(template_file, signal_file, output_file, cache_template=Fal
 
     # Generate a random number for temporary file names
     rand_num = str(random.randint(1000, 9999))
-
+    
+    WORKSPACE = os.environ['WORKSPACE']
+    
     # Determine the template MIP file name
     if cache_template:
         template_id = os.path.basename(os.path.dirname(template_file))
