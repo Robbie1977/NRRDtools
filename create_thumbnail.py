@@ -34,7 +34,7 @@ def setup_logging():
 def execute_python_script(script_path, args, logger):
     """
     Execute a Python script by directly calling its main function.
-    
+    	
     Parameters:
         script_path (str): Path to the Python script
         args (list): List of arguments to pass to the script
@@ -48,12 +48,16 @@ def execute_python_script(script_path, args, logger):
     try:
         # Add script directory to path if needed
         script_dir = os.path.dirname(os.path.abspath(script_path))
+        logger.debug(f"Script directory: {script_dir}")
         if script_dir not in sys.path:
             sys.path.append(script_dir)
+            logger.debug(f"Added {script_dir} to sys.path")
 
         # Import the script module
         script_name = os.path.splitext(os.path.basename(script_path))[0]
+        logger.debug(f"Importing module: {script_name}")
         module = __import__(script_name)
+        logger.debug(f"Successfully imported {script_name}")
 
         # Handle different script types
         if script_name == 'create_mip':
@@ -118,6 +122,8 @@ def execute_python_script(script_path, args, logger):
 
     except Exception as e:
         logger.error(f"Failed to execute {script_path}: {str(e)}")
+        logger.error(f"Exception type: {type(e)}")
+        logger.error(f"Exception details:", exc_info=True)
         return False
 
 def create_thumbnail(template_file, signal_file, output_file, cache_template=False, max_scale=False, add_colorbar_padding=True, logger=None):
