@@ -32,9 +32,21 @@ def merge_images(input_path1, input_path2, output_path):
     if img1.size != img2.size:
         raise ValueError(f'Input images must have the same size. Background: {img1.size}, Signal: {img2.size}')
 
-    # Convert L image to RGBA with alpha of 40 for transparency
+    # Convert to RGBA and scale intensity values
     img1 = img1.convert('RGBA')
-    img1.putalpha(40)
+    img_arr = np.array(img1)
+    
+    # Get max intensity value
+    max_intensity = np.max(img_arr[..., :3])
+    
+    # Scale intensity values to 40% of 255, maintaining relative proportions
+    if max_intensity > 0:
+        scale_factor = (255 * 0.4) / max_intensity
+        img_arr[..., :3] = (img_arr[..., :3] * scale_factor).astype(np.uint8)
+    
+    # Set alpha channel to fully opaque
+    img_arr[..., 3] = 255
+    img1 = Image.fromarray(img_arr)
     
     # Set signal alpha to max RGB value
     sig_arr = np.array(img2)
