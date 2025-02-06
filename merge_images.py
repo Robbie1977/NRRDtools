@@ -44,8 +44,8 @@ def merge_images(input_path1, input_path2, output_path):
         scale_factor = (255 * 0.4) / max_intensity
         img_arr[..., :3] = (img_arr[..., :3] * scale_factor).astype(np.uint8)
     
-    # Set alpha channel to fully opaque
-    img_arr[..., 3] = 255
+    # Set alpha channel to 40/255
+    img_arr[..., 3] = 40
     img1 = Image.fromarray(img_arr)
     
     # Set signal alpha to max RGB value
