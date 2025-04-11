@@ -24,7 +24,7 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
         # Only create a sphere for soma nodes (type == 1)
         if node['type'] == 1:
             sphere = trimesh.creation.icosphere(subdivisions=2, radius=max(node['radius'], minRadius * scaling_factor))
-            sphere_vox = trimesh.voxel.creation.voxelize(sphere, pitch=pitch)
+            sphere_vox = trimesh.voxel.creation.voxelize(sphere, pitch=pitch, max_iter=20)
             sphere_indices = sphere_vox.sparse_indices.astype(float)
             sphere_indices += np.array([node['x'], node['y'], node['z']])
             sphere_indices *= scaling_factor
@@ -53,7 +53,7 @@ def create_volume_from_swc(swc_data, dims, voxel_size, minRadius=0.005):
                     cylinder.apply_transform(trimesh.transformations.rotation_matrix(angle, axis))
 
                 cylinder.apply_translation((start + end) / 2)
-                cylinder_vox = trimesh.voxel.creation.voxelize(cylinder, pitch=pitch)
+                cylinder_vox = trimesh.voxel.creation.voxelize(cylinder, pitch=pitch, max_iter=20)
                 cylinder_indices = cylinder_vox.sparse_indices.astype(float)
                 cylinder_indices += np.array([(start + end) / 2])
                 cylinder_indices = np.round(cylinder_indices).astype(int)
