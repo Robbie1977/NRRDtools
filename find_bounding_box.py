@@ -1,3 +1,6 @@
+import sys
+import os
+
 def find_bounding_box(file_path=None, file_content=None):
     """
     Find the bounding box (min and max XYZ coordinates) for an OBJ or SWC file
@@ -152,23 +155,33 @@ def find_bounding_box(file_path=None, file_content=None):
     return bounding_box
 
 
-# Example usage:
+def main():
+    """Main function to run the script from command line"""
+    # Check if file path is provided
+    if len(sys.argv) < 2:
+        print(f"Usage: python {os.path.basename(__file__)} <file_path>")
+        sys.exit(1)
+    
+    file_path = sys.argv[1]
+    
+    # Check if file exists
+    if not os.path.isfile(file_path):
+        print(f"Error: File not found: {file_path}")
+        sys.exit(1)
+    
+    try:
+        # Find bounding box
+        bb = find_bounding_box(file_path=file_path)
+        
+        # Print results in the required format
+        print("Bounding Box:")
+        print(f"Min: ({bb['min']['x']}, {bb['min']['y']}, {bb['min']['z']})")
+        print(f"Max: ({bb['max']['x']}, {bb['max']['y']}, {bb['max']['z']})")
+    
+    except ValueError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
+
 if __name__ == "__main__":
-    # Example with file path
-    # bb = find_bounding_box(file_path="path/to/your/model.obj")
-    
-    # Example with file content
-    obj_content = """
-    # Example OBJ file
-    v 1.0 2.0 3.0
-    v -1.5 0.5 2.0
-    v 0.0 -3.0 1.0
-    v 2.5 1.0 -2.0
-    f 1 2 3
-    f 1 3 4
-    """
-    
-    bb = find_bounding_box(file_content=obj_content)
-    print("Bounding Box:")
-    print(f"Min: ({bb['min']['x']}, {bb['min']['y']}, {bb['min']['z']})")
-    print(f"Max: ({bb['max']['x']}, {bb['max']['y']}, {bb['max']['z']})")
+    main()

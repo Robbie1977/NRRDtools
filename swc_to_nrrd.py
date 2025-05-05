@@ -7,7 +7,7 @@ import trimesh.voxel.creation
 import scipy.ndimage
 
 def read_swc(file_path):
-    swc_data = pd.read_csv(file_path, delim_whitespace=True, comment='#', header=None)
+    swc_data = pd.read_csv(file_path, sep='\s+', comment='#', header=None)
     swc_data = swc_data.replace(['NA', np.nan], -1)
     swc_data = swc_data.to_numpy()
     swc_data = np.core.records.fromarrays(swc_data.T, names='id, type, x, y, z, radius, parent', formats='i4, i4, f4, f4, f4, f4, i4')
