@@ -99,14 +99,25 @@ def obj_to_nrrd(input_file, output_file=None, extent=None, voxel_size=None, radi
     if voxel_size is None:
         voxel_size = (1.0, 1.0, 1.0)
     
-    scale_factor = np.array(voxel_size) / 1000.0  # Convert from microns to millimeters
+    print(f"Processing: Grid shape = {grid_shape}, Voxel size = {voxel_size}")
+    print(f"Vertex range: {np.min(vertices, axis=0)} to {np.max(vertices, axis=0)} microns")
+    
+    # Convert vertices from microns to voxel indices for boundary analysis
+    voxel_indices = np.round(np.array(vertices) / np.array(voxel_size)).astype(int)
+    out_of_bounds = (
+        (voxel_indices[:, 0] < 0) | (voxel_indices[:, 0] >= grid_shape[0]) |
+        (voxel_indices[:, 1] < 0) | (voxel_indices[:, 1] >= grid_shape[1]) |
+        (voxel_indices[:, 2] < 0) | (voxel_indices[:, 2] >= grid_shape[2])
+    )
+    if np.any(out_of_bounds):
+        print(f"Warning: {np.sum(out_of_bounds)} vertices are outside image bounds and will be clamped to boundaries")
     
     if radius is not None:
         chunks = np.array_split(vertices, num_workers)
         with Pool(num_workers) as pool:
             results = []
             progress_queue = multiprocessing.Manager().Queue()
-            for i, result in enumerate(pool.imap_unordered(process_chunk, [(chunk, radius, grid_shape, scale_factor, progress_queue) for chunk in chunks])):
+            for i, result in enumerate(pool.imap_unordered(process_chunk, [(chunk, radius, grid_shape, voxel_size, progress_queue) for chunk in chunks])):
                 results.append(result)
                 print_progress(i + 1, len(chunks))
             mesh = np.zeros(grid_shape, dtype=bool)
@@ -114,8 +125,15 @@ def obj_to_nrrd(input_file, output_file=None, extent=None, voxel_size=None, radi
                 mesh |= result
     else:
         mesh = np.zeros(grid_shape, dtype=bool)
-        scaled_vertices = np.round(vertices).astype(int) - 1
-        mesh[tuple(scaled_vertices.T)] = True
+        
+        # Clamp indices to valid bounds (fill up to boundary for out-of-bounds vertices)
+        clamped_indices = np.clip(voxel_indices, 0, np.array(grid_shape) - 1)
+        
+        # Set voxels for all vertices (clamped to boundaries)
+        if len(clamped_indices) > 0:
+            mesh[tuple(clamped_indices.T)] = True
+        
+        print(f"Processed {len(vertices)} vertices (clamped out-of-bounds to image boundaries)")
     
     # Flip the mesh along the X and Y axes to correct the origin
     mesh = np.flip(mesh, axis=(0, 1))
