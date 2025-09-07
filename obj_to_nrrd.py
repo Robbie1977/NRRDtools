@@ -60,7 +60,7 @@ def extract_template_properties(template_file):
         print("Using default extent and voxel size")
         return None, None, {}
 
-def obj_to_nrrd(input_file, output_file=None, extent=None, voxel_size=None, radius=None, num_workers=1, template_file=None):
+def obj_to_nrrd(input_file, output_file=None, extent=None, voxel_size=None, radius=None, num_workers=1, template_file=None, flip_axes=None):
     """
     Convert an OBJ file to a binary NRRD file with a specified voxel size and microns as the unit for each axis.
     :param input_file: str, path to the input OBJ file
@@ -70,6 +70,7 @@ def obj_to_nrrd(input_file, output_file=None, extent=None, voxel_size=None, radi
     :param radius: float (optional), the radius of the sphere of voxels to mark as True for each vector point.
     :param num_workers: int (optional), the number of worker processes to use for parallel processing. If not specified, uses a single process.
     :param template_file: str (optional), path to a template NRRD file to extract extent and voxel size from. Overrides extent and voxel_size parameters if provided.
+    :param flip_axes: tuple (optional), axes to flip for coordinate system correction (e.g., (0, 1) to flip X and Y axes). If not specified, no flipping is performed.
     """
     if output_file is None:
         output_file = os.path.splitext(input_file)[0] + '.nrrd'
@@ -135,8 +136,11 @@ def obj_to_nrrd(input_file, output_file=None, extent=None, voxel_size=None, radi
         
         print(f"Processed {len(vertices)} vertices (clamped out-of-bounds to image boundaries)")
     
-    # Flip the mesh along the X and Y axes to correct the origin
-    mesh = np.flip(mesh, axis=(0, 1))
+    # Apply axis flipping if specified
+    if flip_axes is not None:
+        print(f"Flipping mesh along axes: {flip_axes}")
+        mesh = np.flip(mesh, axis=flip_axes)
+    
     matrix = mesh.astype(np.uint8) * 255
     
     # Create header with template properties if available, otherwise use defaults
@@ -171,8 +175,9 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) < 2:
-        print("Usage: python obj_to_nrrd.py input.obj [output.nrrd] ['(X,Y,Z)'] [radius] ['(voxel_size_x, voxel_size_y, voxel_size_z)'] [template.nrrd]")
-        print("  OR: python obj_to_nrrd.py input.obj template.nrrd output.nrrd [radius]")
+        print("Usage: python obj_to_nrrd.py input.obj [output.nrrd] ['(X,Y,Z)'] [radius] ['(voxel_size_x, voxel_size_y, voxel_size_z)'] [template.nrrd] ['(flip_axis1,flip_axis2)']")
+        print("  OR: python obj_to_nrrd.py input.obj template.nrrd output.nrrd [radius] ['(flip_axis1,flip_axis2)']")
+        print("  flip_axes example: '(0,1)' to flip X and Y axes, '(1)' to flip only Y axis")
         sys.exit(1)
 
     input_file = sys.argv[1]
@@ -181,40 +186,65 @@ if __name__ == "__main__":
     radius = None
     voxel_size = None
     template_file = None
+    flip_axes = None
 
     # Check if second argument is a template file (ends with .nrrd and exists)
     if len(sys.argv) > 2 and sys.argv[2].endswith('.nrrd') and os.path.exists(sys.argv[2]):
-        # New format: input.obj template.nrrd output.nrrd [radius]
+        # New format: input.obj template.nrrd output.nrrd [radius] ['(flip_axis1,flip_axis2)']
         template_file = sys.argv[2]
         if len(sys.argv) > 3:
             output_file = sys.argv[3]
         if len(sys.argv) > 4:
             radius = float(sys.argv[4])
+        if len(sys.argv) > 5:
+            flip_axes_str = sys.argv[5]
+            if flip_axes_str.startswith('(') and flip_axes_str.endswith(')'):
+                flip_axes = tuple(map(int, flip_axes_str.strip("()").split(",")))
         print(f"Using template mode: template={template_file}, output={output_file}")
     else:
-        # Original format: input.obj [output.nrrd] ['(X,Y,Z)'] [radius] ['(voxel_size_x, voxel_size_y, voxel_size_z)'] [template.nrrd]
+        # Original format: input.obj [output.nrrd] ['(X,Y,Z)'] [radius] ['(voxel_size_x, voxel_size_y, voxel_size_z)'] [template.nrrd] ['(flip_axis1,flip_axis2)']
         if len(sys.argv) > 2:
-            # Check if it's a template file path at the end
-            if sys.argv[-1].endswith('.nrrd') and os.path.exists(sys.argv[-1]) and len(sys.argv) > 2:
-                template_file = sys.argv[-1]
-                # Remove template from processing other args
-                args_without_template = sys.argv[:-1]
-            else:
-                args_without_template = sys.argv
+            # Check if it's a template file path at the end (but not flip_axes)
+            template_arg_index = -1
+            flip_args_index = -1
+            
+            # Check for flip_axes as last argument
+            if sys.argv[-1].startswith('(') and sys.argv[-1].endswith(')') and not sys.argv[-1].endswith('.nrrd'):
+                flip_args_index = len(sys.argv) - 1
+                flip_axes_str = sys.argv[flip_args_index]
+                flip_axes = tuple(map(int, flip_axes_str.strip("()").split(",")))
+                
+            # Check for template file (could be second to last if flip_axes is last)
+            template_check_index = flip_args_index - 1 if flip_args_index != -1 else -1
+            if (sys.argv[template_check_index].endswith('.nrrd') and 
+                os.path.exists(sys.argv[template_check_index]) and 
+                len(sys.argv) > 2):
+                template_file = sys.argv[template_check_index]
+                template_arg_index = template_check_index
+            
+            # Remove template and flip_axes from processing other args
+            args_to_process = sys.argv[:]
+            if flip_args_index != -1:
+                args_to_process.pop(flip_args_index)
+            if template_arg_index != -1:
+                # Adjust index if flip_axes was removed first
+                if flip_args_index != -1 and template_arg_index > flip_args_index:
+                    template_arg_index -= 1
+                args_to_process.pop(template_arg_index)
             
             # Process remaining arguments in original order
-            if len(args_without_template) > 2:
-                output_file = args_without_template[2]
+            if len(args_to_process) > 2:
+                output_file = args_to_process[2]
 
-            if len(args_without_template) > 3:
-                extent = args_without_template[3]
+            if len(args_to_process) > 3:
+                extent = args_to_process[3]
                 extent = tuple(map(int, extent.strip("()").split(",")))
 
-            if len(args_without_template) > 4:
-                radius = float(args_without_template[4])
+            if len(args_to_process) > 4:
+                radius = float(args_to_process[4])
 
-            if len(args_without_template) > 5:
-                voxel_size = args_without_template[5]
+            if len(args_to_process) > 5:
+                voxel_size = args_to_process[5]
                 voxel_size = tuple(map(float, voxel_size.strip("()").split(",")))
 
-    obj_to_nrrd(input_file, output_file=output_file, extent=extent, voxel_size=voxel_size, radius=radius, num_workers=5, template_file=template_file)
+    obj_to_nrrd(input_file, output_file=output_file, extent=extent, voxel_size=voxel_size, radius=radius, num_workers=5, template_file=template_file, flip_axes=flip_axes)
