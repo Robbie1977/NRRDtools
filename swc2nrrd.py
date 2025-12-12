@@ -3,7 +3,7 @@ import argparse
 import numpy as np
 import nrrd
 import navis
-from nrrd_to_swc import convert_swc_to_nrrd
+from swc_to_nrrd import convert_swc_to_nrrd
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert SWC file to NRRD file using navis")
