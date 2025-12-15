@@ -6,3 +6,4 @@ Pillow==9.5.0
 pypng==0.20220715.0
 scipy==1.10.1
 trimesh==3.21.5
+vfb-connect
