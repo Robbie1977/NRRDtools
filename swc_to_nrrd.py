@@ -28,10 +28,11 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     print(f"Bounding box (voxels): {neuron.bbox}")
     
     # Voxelize at pitch=1 (now in voxel space)
+    bounds = np.array([[0, template_data.shape[0]], [0, template_data.shape[1]], [0, template_data.shape[2]]])
     voxel_neuron = navis.voxelize(
         neuron,
         pitch=1,
-        bounds=template_data.shape
+        bounds=bounds
     )
     
     # Get volume as numpy array
@@ -43,6 +44,7 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     
     if np.count_nonzero(volume) == 0:
         print("WARNING: No voxels were filled - check SWC coordinates vs template space")
+        return False
     
     # Build output header explicitly preserving spatial metadata
     output_header = {
@@ -72,6 +74,8 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     for key in ['space', 'space directions', 'space origin', 'sizes']:
         if key in verify_header:
             print(f"  {key}: {verify_header[key]}")
+
+    return True
 
 
 if __name__ == "__main__":
