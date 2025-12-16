@@ -3,6 +3,7 @@ import argparse
 import numpy as np
 import nrrd
 import navis
+import os
 
 def convert_swc_to_nrrd(swc_file, template_file, output_file):
     # Read the template to get dimensions and spatial info
@@ -68,13 +69,16 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     nrrd.write(output_file, volume, header=output_header)
     print(f"Saved: {output_file}")
     
+    # Set permissions
+    os.chmod(output_file, 0o777)
+    
     # Verify the output
     _, verify_header = nrrd.read(output_file)
     print(f"Verified output header:")
     for key in ['space', 'space directions', 'space origin', 'sizes']:
         if key in verify_header:
             print(f"  {key}: {verify_header[key]}")
-
+    
     return True
 
 
