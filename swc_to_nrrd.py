@@ -40,6 +40,9 @@ def convert_swc_to_nrrd(swc_file, template_file, output_file):
     volume = voxel_neuron.grid.astype(np.uint8)
     volume[volume > 0] = 255
     
+    # Ensure volume shape matches template shape
+    volume = volume[:template_data.shape[0], :template_data.shape[1], :template_data.shape[2]]
+    
     print(f"Output shape: {volume.shape}")
     print(f"Non-zero voxels: {np.count_nonzero(volume)}")
     
