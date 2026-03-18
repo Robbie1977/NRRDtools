@@ -36,6 +36,7 @@ from swc_to_nrrd import (
     strip_leading_whitespace,
     clean_derived_files,
 )
+from convert_swc_to_mesh import swc_to_obj
 
 
 def get_template_path(template_id: str) -> str:
@@ -102,6 +103,14 @@ def process_file(
             nrrd_path, template_data.shape, template_header=template_hdr,
         )
         if valid:
+            # NRRD is fine, but check if volume_man.obj is missing
+            obj_path = str(swc_path.parent / "volume_man.obj")
+            if not os.path.exists(obj_path):
+                print(f"  NRRD valid but mesh missing, generating {obj_path}")
+                try:
+                    swc_to_obj(str(swc_path), obj_path, method="navis", verbose=True)
+                except Exception as e:
+                    print(f"  Warning: mesh generation failed: {e}")
             return {"skipped": True, "reason": "already valid"}
         else:
             print(f"  NRRD invalid ({reason}), will regenerate")
@@ -120,6 +129,17 @@ def process_file(
 
     if result.get("success"):
         write_status(base_dir, STATUS_NRRD_OK)
+        # Generate volume_man.obj mesh from SWC
+        obj_path = str(swc_path.parent / "volume_man.obj")
+        if not os.path.exists(obj_path):
+            try:
+                swc_to_obj(str(swc_path), obj_path, method="navis", verbose=True)
+                result["mesh_generated"] = True
+            except Exception as e:
+                print(f"  Warning: mesh generation failed: {e}")
+                result["mesh_generated"] = False
+        else:
+            print(f"  Mesh already exists: {obj_path}")
         return {"success": True, **result}
 
     error_category = result.get("error_category") or "UNKNOWN"
