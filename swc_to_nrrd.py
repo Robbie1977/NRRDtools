@@ -140,6 +140,11 @@ def convert_swc_to_nrrd_with_status(swc_file, template_file, output_file):
     if "kinds" in template_header:
         output_header["kinds"] = template_header["kinds"]
 
+    # NRRD v5 requires "space" when "space directions" is present.
+    # ImageJ ignores space directions without it.
+    if "space directions" in output_header and "space" not in output_header:
+        output_header["space"] = "left-posterior-superior"
+
     # Write output
     nrrd.write(output_file, volume, header=output_header)
     print(f"Saved: {output_file}")
@@ -273,8 +278,29 @@ def is_valid_nrrd(nrrd_path, template_shape=None, template_header=None):
                           f"copied from template")
                     repaired = True
 
+            # Ensure "space" is present whenever "space directions" is
+            # (NRRD v5 requirement — ImageJ ignores directions without it)
+            if "space directions" in header and "space" not in header:
+                if "space" in template_header:
+                    header["space"] = template_header["space"]
+                else:
+                    header["space"] = "left-posterior-superior"
+                print(f"  Repaired: added missing 'space' field (required by ImageJ)")
+                repaired = True
+
             if repaired:
                 print(f"  Re-writing {nrrd_path} with repaired header")
+                nrrd.write(nrrd_path, data, header=header)
+                try:
+                    os.chmod(nrrd_path, 0o777)
+                except Exception:
+                    pass
+
+        # Also repair even without template_header
+        elif template_header is None:
+            if "space directions" in header and "space" not in header:
+                header["space"] = "left-posterior-superior"
+                print(f"  Repaired: added missing 'space' field")
                 nrrd.write(nrrd_path, data, header=header)
                 try:
                     os.chmod(nrrd_path, 0o777)

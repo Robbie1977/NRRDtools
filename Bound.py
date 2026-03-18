@@ -128,7 +128,14 @@ def bound_nrrd(input_path, output_path, pad=3):
         if "space" not in output_header:
             output_header["space"] = "left-posterior-superior"
 
+    # NRRD v5 requires "space" when "space directions" is present.
+    # ImageJ will ignore space directions entirely without it.
+    if "space directions" in output_header and "space" not in output_header:
+        output_header["space"] = "left-posterior-superior"
+        print("  Added missing 'space' field (required by ImageJ)")
+
     print("  Output header space directions: %s" % repr(output_header.get("space directions")))
+    print("  Output header space: %s" % repr(output_header.get("space")))
     print("Saving result to %s..." % output_path)
     try:
         nrrd.write(output_path, bounded, header=output_header)
