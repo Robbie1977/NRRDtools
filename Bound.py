@@ -104,27 +104,16 @@ def bound_nrrd(input_path, output_path, pad=3):
 
     bounded = add_boundary(data, pad=pad)
 
+    # Debug: show what keys pynrrd found in the source header
+    print("  Source header keys: %s" % sorted(header.keys()))
+    for k in ["space", "space directions", "space origin", "kinds"]:
+        if k in header:
+            print("  %s: %s" % (k, header[k]))
+
     # Build output header preserving ALL spatial metadata from the source.
-    # pynrrd auto-generates 'type', 'dimension', 'sizes' from the data array
-    # but we must explicitly preserve spatial fields that ImageJ/Woolz need.
-    output_header = {}
-
-    # Preserve encoding
-    if "encoding" in header:
-        output_header["encoding"] = header["encoding"]
-
-    # Preserve all spatial metadata -- critical for ImageJ NRRD reader
-    spatial_keys = [
-        "space",
-        "space directions",
-        "space origin",
-        "kinds",
-        "space units",
-        "measurement frame",
-    ]
-    for key in spatial_keys:
-        if key in header:
-            output_header[key] = header[key]
+    # We copy the ENTIRE source header so nothing is lost, then let pynrrd
+    # override type/dimension/sizes from the data array automatically.
+    output_header = dict(header)
 
     # ImageJ requires "space directions" -- if missing, synthesize from
     # "spacings" or fall back to identity so ImageJ can still open the file.
@@ -139,12 +128,23 @@ def bound_nrrd(input_path, output_path, pad=3):
         if "space" not in output_header:
             output_header["space"] = "left-posterior-superior"
 
+    print("  Output header space directions: %s" % repr(output_header.get("space directions")))
     print("Saving result to %s..." % output_path)
     try:
         nrrd.write(output_path, bounded, header=output_header)
     except Exception as e:
         print("Error writing %s: %s" % (output_path, e))
         return False
+
+    # Verify the written file actually has space directions
+    try:
+        _, verify_header = nrrd.read(output_path)
+        if "space directions" in verify_header:
+            print("  Verified: output has space directions")
+        else:
+            print("  WARNING: output is MISSING space directions! Keys: %s" % sorted(verify_header.keys()))
+    except Exception as e:
+        print("  WARNING: could not verify output: %s" % e)
 
     # Set permissions (best effort)
     try:
