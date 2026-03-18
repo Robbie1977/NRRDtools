@@ -28,23 +28,44 @@ from typing import Optional, Sequence, Tuple
 
 import nrrd
 
-from .pipeline_status import (
-    BOUNDING_FAILED,
-    OBJ_GENERATION_FAILED,
-    STATUS_COMPLETE,
-    STATUS_NRRD_FAILED,
-    STATUS_NRRD_OK,
-    STATUS_TIF_FAILED,
-    STATUS_TIF_OK,
-    STATUS_WLZ_FAILED,
-    STATUS_WLZ_OK,
-    STATUS_BOUNDED_FAILED,
-    STATUS_BOUNDED_OK,
-    report_error,
-    report_success,
-    write_status,
-)
-from .process_uploaded_swc import find_swc_files, process_file
+# Support running as a module (python -m nblast_pipeline.full_pipeline) and as a script
+# (python nblast_pipeline/full_pipeline.py).
+try:
+    from .pipeline_status import (
+        BOUNDING_FAILED,
+        OBJ_GENERATION_FAILED,
+        STATUS_COMPLETE,
+        STATUS_NRRD_FAILED,
+        STATUS_NRRD_OK,
+        STATUS_TIF_FAILED,
+        STATUS_TIF_OK,
+        STATUS_WLZ_FAILED,
+        STATUS_WLZ_OK,
+        STATUS_BOUNDED_FAILED,
+        STATUS_BOUNDED_OK,
+        report_error,
+        report_success,
+        write_status,
+    )
+    from .process_uploaded_swc import find_swc_files, process_file
+except (ImportError, SystemError):
+    from nblast_pipeline.pipeline_status import (
+        BOUNDING_FAILED,
+        OBJ_GENERATION_FAILED,
+        STATUS_COMPLETE,
+        STATUS_NRRD_FAILED,
+        STATUS_NRRD_OK,
+        STATUS_TIF_FAILED,
+        STATUS_TIF_OK,
+        STATUS_WLZ_FAILED,
+        STATUS_WLZ_OK,
+        STATUS_BOUNDED_FAILED,
+        STATUS_BOUNDED_OK,
+        report_error,
+        report_success,
+        write_status,
+    )
+    from nblast_pipeline.process_uploaded_swc import find_swc_files, process_file
 
 
 @dataclass
@@ -131,6 +152,7 @@ def convert_bounded_nrrd_to_tif(
     imagej_binary: str,
     macro_path: str,
     solr_url: Optional[str],
+    dry_run: bool = False,
 ) -> bool:
     """Run ImageJ macro to create a TIF from a bounded NRRD."""
 
@@ -141,6 +163,11 @@ def convert_bounded_nrrd_to_tif(
 
     if paths.wlz.exists() or paths.tif.exists():
         # Already produced.
+        write_status(paths.dir, STATUS_TIF_OK)
+        return True
+
+    if dry_run:
+        print(f"[DRY RUN] Would run ImageJ to convert {paths.bounded_nrrd} -> {paths.tif}")
         write_status(paths.dir, STATUS_TIF_OK)
         return True
 
@@ -179,10 +206,16 @@ def convert_tif_to_wlz(
     wlz_set_voxel: str,
     solr_url: Optional[str],
     cleanup_tif: bool = True,
+    dry_run: bool = False,
 ) -> bool:
     """Convert a TIF to WLZ using Woolz tools."""
 
     if paths.wlz.exists():
+        write_status(paths.dir, STATUS_WLZ_OK)
+        return True
+
+    if dry_run:
+        print(f"[DRY RUN] Would run Woolz conversion for {paths.tif} -> {paths.wlz}")
         write_status(paths.dir, STATUS_WLZ_OK)
         return True
 
@@ -330,10 +363,21 @@ def convert_tif_to_wlz(
     return True
 
 
-def generate_obj(paths: ConversionPaths, python_bin: str, maxproj_path: str, solr_url: Optional[str]) -> bool:
+def generate_obj(
+    paths: ConversionPaths,
+    python_bin: str,
+    maxproj_path: str,
+    solr_url: Optional[str],
+    dry_run: bool = False,
+) -> bool:
     """Generate an OBJ from a NRRD using maxProjVol.py."""
 
     if paths.obj.exists() or paths.man_obj.exists():
+        return True
+
+    if dry_run:
+        print(f"[DRY RUN] Would run maxProjVol to generate OBJ from {paths.nrrd}")
+        write_status(paths.dir, STATUS_OBJ_OK)
         return True
 
     if not paths.nrrd.exists():
@@ -373,13 +417,41 @@ def generate_obj(paths: ConversionPaths, python_bin: str, maxproj_path: str, sol
     return True
 
 
+def _check_tools(args: argparse.Namespace) -> bool:
+    """Validate required external tools are available."""
+    missing = []
+
+    def require(path: str, desc: str):
+        if not _ensure_executable(path):
+            missing.append(f"{desc} not found or not executable: {path}")
+
+    require(args.imagej, "ImageJ")
+    require(args.wlz_ext, "Woolz converter")
+    require(args.wlz_threshold, "Woolz threshold")
+    require(args.wlz_setvoxel, "Woolz set voxel size")
+    require(args.python, "Python")
+
+    if missing:
+        print("Tool check failed:")
+        for m in missing:
+            print("  ", m)
+        return False
+
+    return True
+
+
 def run_full_pipeline(args: argparse.Namespace) -> int:
+    if args.check_tools:
+        return 0 if _check_tools(args) else 1
+
     # Stage 1: SWC --> NRRD
     process_file_results = []
     swc_files = find_swc_files(args.base_path)
     for swc in swc_files:
         print(f"Processing SWC: {swc}")
-        result = process_file(swc, solr_url=args.solr_url, redo=args.redo)
+        result = process_file(
+            swc, solr_url=args.solr_url, redo=args.redo, dry_run=args.dry_run
+        )
         process_file_results.append(result)
 
     # Stage 2..4: run conversions for each upload folder
@@ -392,7 +464,13 @@ def run_full_pipeline(args: argparse.Namespace) -> int:
         if args.skip_tif:
             print(f"Skipping TIF/WLZ for {id_tag}")
         else:
-            if not convert_bounded_nrrd_to_tif(paths, args.imagej, args.imagej_macro, args.solr_url):
+            if not convert_bounded_nrrd_to_tif(
+                paths,
+                args.imagej,
+                args.imagej_macro,
+                args.solr_url,
+                dry_run=args.dry_run,
+            ):
                 continue
             if not convert_tif_to_wlz(
                 paths,
@@ -401,10 +479,17 @@ def run_full_pipeline(args: argparse.Namespace) -> int:
                 args.wlz_setvoxel,
                 args.solr_url,
                 cleanup_tif=args.cleanup_tif,
+                dry_run=args.dry_run,
             ):
                 continue
 
-        if not generate_obj(paths, args.python, args.maxproj, args.solr_url):
+        if not generate_obj(
+            paths,
+            args.python,
+            args.maxproj,
+            args.solr_url,
+            dry_run=args.dry_run,
+        ):
             continue
 
         # If we got here, we made it through all stages.
@@ -428,6 +513,8 @@ def main():
     parser.add_argument("--maxproj", default="maxProjVol.py", help="maxProjVol.py script path")
     parser.add_argument("--python", default="python", help="Python executable to run maxProjVol.py")
     parser.add_argument("--cleanup-tif", action="store_true", help="Remove intermediate TIF files after WLZ generation")
+    parser.add_argument("--dry-run", action="store_true", help="Print actions without executing conversions")
+    parser.add_argument("--check-tools", action="store_true", help="Check that required external tools exist and are executable")
     args = parser.parse_args()
     return run_full_pipeline(args)
 

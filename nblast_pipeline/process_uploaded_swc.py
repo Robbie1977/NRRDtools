@@ -39,8 +39,17 @@ def find_swc_files(base_path: str) -> list[str]:
     return sorted(glob.glob(pattern))
 
 
-def process_file(swc_path: str, solr_url: str | None = None, redo: bool = False) -> dict:
-    """Process a single SWC file and return the status dict."""
+def process_file(
+    swc_path: str,
+    solr_url: str | None = None,
+    redo: bool = False,
+    dry_run: bool = False,
+) -> dict:
+    """Process a single SWC file and return the status dict.
+
+    Args:
+        dry_run: If True, do not actually run conversions, just report what would run.
+    """
     swc_path = Path(swc_path)
     base_dir = str(swc_path.parent)
     image_id = swc_path.parents[1].name
@@ -49,6 +58,10 @@ def process_file(swc_path: str, solr_url: str | None = None, redo: bool = False)
 
     if not redo and os.path.exists(nrrd_path):
         return {"skipped": True, "reason": "exists"}
+
+    if dry_run:
+        print(f"[DRY RUN] Would convert {swc_path} -> {nrrd_path}")
+        return {"success": True, "dry_run": True}
 
     template_path = get_template_path(template_id)
 
