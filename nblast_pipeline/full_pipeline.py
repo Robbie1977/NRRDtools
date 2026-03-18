@@ -46,6 +46,8 @@ try:
         STATUS_COMPLETE,
         STATUS_NRRD_FAILED,
         STATUS_NRRD_OK,
+        STATUS_OBJ_FAILED,
+        STATUS_OBJ_OK,
         STATUS_TIF_FAILED,
         STATUS_TIF_OK,
         STATUS_WLZ_FAILED,
@@ -64,6 +66,8 @@ except (ImportError, SystemError):
         STATUS_COMPLETE,
         STATUS_NRRD_FAILED,
         STATUS_NRRD_OK,
+        STATUS_OBJ_FAILED,
+        STATUS_OBJ_OK,
         STATUS_TIF_FAILED,
         STATUS_TIF_OK,
         STATUS_WLZ_FAILED,
@@ -436,7 +440,7 @@ def _check_tools(args: argparse.Namespace) -> bool:
 
     require(args.python, "Python")
 
-    if not args.swc_only:
+    if not args.host_only:
         require(args.imagej, "ImageJ")
         require(args.wlz_ext, "Woolz converter")
         require(args.wlz_threshold, "Woolz threshold")
@@ -451,11 +455,17 @@ def _check_tools(args: argparse.Namespace) -> bool:
     return True
 
 
+def find_upload_dirs(base_path: str) -> list[Path]:
+    """Find all VFBu_*/VFB_*/ upload directories (both SWC and NRRD uploads)."""
+    pattern = os.path.join(base_path, "VFBu_*", "VFB_*", "")
+    return sorted(Path(d) for d in glob.glob(pattern))
+
+
 def run_full_pipeline(args: argparse.Namespace) -> int:
     if args.check_tools:
         return 0 if _check_tools(args) else 1
 
-    # Stage 1: SWC --> NRRD
+    # Stage 1: SWC --> NRRD (only for directories with SWC files)
     process_file_results = []
     swc_files = find_swc_files(args.base_path)
     for swc in swc_files:
@@ -465,11 +475,11 @@ def run_full_pipeline(args: argparse.Namespace) -> int:
         )
         process_file_results.append(result)
 
-    if args.swc_only:
+    if args.host_only:
         return 0
 
-    # Stage 2..4: run conversions for each upload folder
-    all_dirs = sorted({Path(swc).parent for swc in swc_files})
+    # Stage 2..4: run conversions for all upload directories (SWC and NRRD uploads)
+    all_dirs = find_upload_dirs(args.base_path)
 
     for d in all_dirs:
         paths = ConversionPaths(d)
@@ -519,7 +529,7 @@ def main():
     parser.add_argument("--solr-url", default=None, help="Solr URL for reporting status updates")
     parser.add_argument("--redo", action="store_true", help="Re-run SWC->NRRD conversion even if output exists")
     parser.add_argument("--skip-tif", action="store_true", help="Skip the bounded NRRD -> TIF/WLZ steps")
-    parser.add_argument("--swc-only", action="store_true", help="Only run SWC->NRRD conversion (skip all docker-dependent stages)")
+    parser.add_argument("--host-only", action="store_true", help="Only run host-side stages (SWC->NRRD); skip docker-dependent stages (TIF/WLZ/OBJ)")
     parser.add_argument("--imagej", default="ImageJ-linux64", help="ImageJ executable path")
     parser.add_argument("--imagej-macro", default="nrrd2tif.ijm", help="ImageJ macro file to run")
     parser.add_argument("--wlz-ext", default="/opt/MouseAtlas/bin/WlzExtFFConvert", help="Woolz converter executable")
