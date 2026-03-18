@@ -520,7 +520,11 @@ def main():
     parser.add_argument("--wlz-threshold", default="/opt/MouseAtlas/bin/WlzThreshold", help="Woolz threshold executable")
     parser.add_argument("--wlz-setvoxel", default="/opt/MouseAtlas/bin/WlzSetVoxelSize", help="Woolz set voxel size executable")
     parser.add_argument("--maxproj", default="maxProjVol.py", help="maxProjVol.py script path")
-    parser.add_argument("--python", default="python", help="Python executable to run maxProjVol.py")
+    parser.add_argument(
+        "--python",
+        default=sys.executable,
+        help="Python executable to run maxProjVol.py (defaults to current interpreter)",
+    )
     parser.add_argument("--cleanup-tif", action="store_true", help="Remove intermediate TIF files after WLZ generation")
     parser.add_argument("--dry-run", action="store_true", help="Print actions without executing conversions")
     parser.add_argument("--check-tools", action="store_true", help="Check that required external tools exist and are executable")
