@@ -87,6 +87,15 @@ def _file_ok(path: Path) -> bool:
         return False
 
 
+def _read_status_file(paths: ConversionPaths) -> str:
+    """Read the volume.status file if it exists, otherwise return empty string."""
+    status_file = paths.dir / "volume.status"
+    try:
+        return status_file.read_text().strip() if status_file.exists() else ""
+    except OSError:
+        return ""
+
+
 def verify_directory(paths: ConversionPaths) -> VerificationResult:
     """Check which pipeline outputs exist and determine the completion stage."""
     image_id = paths.image_id
@@ -97,6 +106,7 @@ def verify_directory(paths: ConversionPaths) -> VerificationResult:
     has_obj = _file_ok(paths.obj) or _file_ok(paths.man_obj)
     has_tif = _file_ok(paths.tif)
     has_bounded = _file_ok(paths.bounded_nrrd)
+    status = _read_status_file(paths)
 
     if has_wlz and has_obj:
         return VerificationResult(image_id, d, STAGE_COMPLETE, True, "All outputs present")
@@ -116,6 +126,11 @@ def verify_directory(paths: ConversionPaths) -> VerificationResult:
     if has_nrrd:
         return VerificationResult(image_id, d, STAGE_BOUNDING_FAILED, False,
                                   "NRRD exists but no downstream outputs found")
+
+    # No NRRD — check if this is a known SWC conversion failure (already reported)
+    if "NRRD_FAILED" in status:
+        return VerificationResult(image_id, d, STAGE_NRRD_FAILED, False,
+                                  f"SWC conversion failed (status: {status})")
 
     return VerificationResult(image_id, d, STAGE_NRRD_FAILED, False,
                               "No volume.nrrd found")
@@ -209,6 +224,8 @@ def main():
     results = verify_all(args.base_path, args.solr_url, dry_run=args.dry_run)
     print_summary(results)
 
+    # Only fail the build for processing errors, not for directories
+    # already cleaned up by the NRRD stage (they won't appear here)
     if any(not r.is_complete for r in results):
         return 1
     return 0

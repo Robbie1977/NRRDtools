@@ -5,6 +5,10 @@ This script is meant to replace the inline Jenkins Step 2 Python code.
 It scans for uploaded SWC files and converts them to NRRD, validates
 uploaded NRRD files, writes status markers and reports errors to Solr.
 
+For user-fixable errors (bad SWC coordinates, broken NRRD, etc.) the error
+is reported to Solr and the entire VFBu_ directory is deleted — the user
+must fix the source file and re-upload (which creates a new VFBu_ ID).
+
 Usage:
   process_uploaded_swc.py --base-path /IMAGE_PRIVATE
 """
@@ -19,8 +23,12 @@ from pathlib import Path
 from nblast_pipeline.pipeline_status import (
     STATUS_NRRD_FAILED,
     STATUS_NRRD_OK,
+    TEMPLATE_NOT_FOUND,
+    INVALID_NRRD,
+    is_user_fixable,
     write_status,
     report_error,
+    clean_upload_directory,
 )
 from swc_to_nrrd import (
     convert_swc_to_nrrd_with_status,
@@ -48,6 +56,19 @@ def find_upload_dirs(base_path: str) -> list[str]:
     return sorted(glob.glob(pattern))
 
 
+def _handle_user_error(
+    base_dir: str,
+    image_id: str,
+    error_category: str,
+    error_detail: str,
+    solr_url: str | None,
+) -> dict:
+    """Report a user-fixable error to Solr and clean up the VFBu_ directory."""
+    print(f"  User error ({error_category}): {error_detail}")
+    clean_upload_directory(base_dir, image_id, error_category, error_detail, solr_url)
+    return {"success": False, "error_category": error_category, "error_detail": error_detail, "cleaned": True}
+
+
 def process_file(
     swc_path: str,
     solr_url: str | None = None,
@@ -66,12 +87,11 @@ def process_file(
     if not os.path.exists(template_path):
         if dry_run:
             print(f"[DRY RUN] {swc_path}: template missing ({template_path})")
-            return {"success": False, "dry_run": True, "error_category": "TEMPLATE_NOT_FOUND"}
-        error_category = "TEMPLATE_NOT_FOUND"
-        error_detail = f"Template not found: {template_path}"
-        write_status(base_dir, f"{STATUS_NRRD_FAILED}:{error_category}")
-        report_error(image_id, error_category, error_detail, solr_url)
-        return {"success": False, "error_category": error_category, "error_detail": error_detail}
+            return {"success": False, "dry_run": True, "error_category": TEMPLATE_NOT_FOUND}
+        return _handle_user_error(
+            base_dir, image_id, TEMPLATE_NOT_FOUND,
+            f"Template not found: {template_path}", solr_url,
+        )
 
     # Validate existing NRRD if present
     if not redo and os.path.exists(nrrd_path):
@@ -101,7 +121,13 @@ def process_file(
         return {"success": True, **result}
 
     error_category = result.get("error_category") or "UNKNOWN"
-    error_detail = result.get("error_detail")
+    error_detail = result.get("error_detail") or "(no details)"
+
+    if is_user_fixable(error_category):
+        # User must fix and re-upload — delete everything
+        return _handle_user_error(base_dir, image_id, error_category, error_detail, solr_url)
+
+    # Processing error — keep files, might resolve on retry
     write_status(base_dir, f"{STATUS_NRRD_FAILED}:{error_category}")
     report_error(image_id, error_category, error_detail, solr_url)
     return {"success": False, **result}
@@ -129,14 +155,16 @@ def validate_uploaded_nrrd(
     if not os.path.exists(template_path):
         if dry_run:
             print(f"[DRY RUN] {nrrd_path}: template missing, cannot validate shape")
-            return {"success": True, "dry_run": True}
-        # No template to validate against — accept the NRRD as-is
-        valid, reason = is_valid_nrrd(str(nrrd_path))
-    else:
-        import nrrd as nrrd_mod
+            return {"success": False, "dry_run": True, "error_category": TEMPLATE_NOT_FOUND}
+        return _handle_user_error(
+            str(nrrd_dir), image_id, TEMPLATE_NOT_FOUND,
+            f"Template not found: {template_path}", solr_url,
+        )
 
-        template_data, _ = nrrd_mod.read(template_path)
-        valid, reason = is_valid_nrrd(str(nrrd_path), template_data.shape)
+    import nrrd as nrrd_mod
+
+    template_data, _ = nrrd_mod.read(template_path)
+    valid, reason = is_valid_nrrd(str(nrrd_path), template_data.shape)
 
     if valid:
         write_status(str(nrrd_dir), STATUS_NRRD_OK)
@@ -146,10 +174,9 @@ def validate_uploaded_nrrd(
         print(f"[DRY RUN] {nrrd_path}: invalid ({reason})")
         return {"success": False, "dry_run": True}
 
+    # Uploaded NRRD is broken — user must fix and re-upload
     error_detail = f"Uploaded NRRD invalid: {reason}"
-    write_status(str(nrrd_dir), f"{STATUS_NRRD_FAILED}:INVALID_NRRD")
-    report_error(image_id, "INVALID_NRRD", error_detail, solr_url)
-    return {"success": False, "error_category": "INVALID_NRRD", "error_detail": error_detail}
+    return _handle_user_error(str(nrrd_dir), image_id, INVALID_NRRD, error_detail, solr_url)
 
 
 def main():
@@ -184,7 +211,7 @@ def main():
 
     # Separate SWC uploads from NRRD-only uploads
     swc_dirs = set()
-    results = {"success": [], "failed": [], "skipped": []}
+    results = {"success": [], "failed": [], "skipped": [], "cleaned": []}
 
     # Stage 1: Process SWC files
     swc_files = find_swc_files(args.base_path)
@@ -192,7 +219,10 @@ def main():
         swc_dirs.add(str(Path(swc_path).parent))
         print(f"Processing SWC: {swc_path}")
         result = process_file(swc_path, solr_url=args.solr_url, redo=args.redo, dry_run=args.dry_run)
-        if result.get("skipped"):
+        if result.get("cleaned"):
+            print(f"  Cleaned up (user must re-upload)")
+            results["cleaned"].append(swc_path)
+        elif result.get("skipped"):
             print(f"  Skipped ({result.get('reason', 'already valid')})")
             results["skipped"].append(swc_path)
         elif result.get("success"):
@@ -211,7 +241,10 @@ def main():
             continue
         print(f"Validating uploaded NRRD: {nrrd_path}")
         result = validate_uploaded_nrrd(d, solr_url=args.solr_url, dry_run=args.dry_run)
-        if result.get("skipped"):
+        if result.get("cleaned"):
+            print(f"  Cleaned up (user must re-upload)")
+            results["cleaned"].append(nrrd_path)
+        elif result.get("skipped"):
             results["skipped"].append(nrrd_path)
         elif result.get("success"):
             print(f"  Valid")
@@ -221,17 +254,23 @@ def main():
             results["failed"].append(nrrd_path)
 
     # Summary
-    total = len(results["success"]) + len(results["failed"]) + len(results["skipped"])
+    total = len(results["success"]) + len(results["failed"]) + len(results["skipped"]) + len(results["cleaned"])
     print(f"\n{'=' * 60}")
     print("SUMMARY")
     print(f"{'=' * 60}")
     print(f"Total files: {total}")
     print(f"Skipped (already valid): {len(results['skipped'])}")
     print(f"Successfully processed: {len(results['success'])}")
-    print(f"Failed: {len(results['failed'])}")
+    print(f"Cleaned up (user must re-upload): {len(results['cleaned'])}")
+    print(f"Failed (processing error): {len(results['failed'])}")
+
+    if results["cleaned"]:
+        print("\nCleaned up (reported to Solr, directory deleted):")
+        for path in results["cleaned"]:
+            print(f"  {path}")
 
     if results["failed"]:
-        print("\nFailed files:")
+        print("\nFailed (kept for retry):")
         for path in results["failed"]:
             print(f"  {path}")
 
