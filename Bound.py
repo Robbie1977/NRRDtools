@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """Add boundary markers to an NRRD volume.
 
 This script adds a thin border of non-zero voxels around the bounding box
@@ -23,8 +23,6 @@ Example:
                       /IMAGE_PRIVATE/VFBu_xxx/VFB_yyy/volume_bounded.nrrd
 """
 
-from __future__ import annotations
-
 import os
 import sys
 
@@ -35,7 +33,7 @@ import nrrd
 BOUNDARY_VALUE = 1
 
 
-def add_boundary(data: np.ndarray, pad: int = 3) -> np.ndarray:
+def add_boundary(data, pad=3):
     """Add boundary markers around non-zero content in the volume.
 
     Finds the bounding box of all non-zero voxels, expands it by ``pad``
@@ -54,7 +52,7 @@ def add_boundary(data: np.ndarray, pad: int = 3) -> np.ndarray:
     # Find bounding box of non-zero content
     nonzero = np.argwhere(data > 0)
     if len(nonzero) == 0:
-        # Nothing to bound — return as-is
+        # Nothing to bound -- return as-is
         return result
 
     mins = nonzero.min(axis=0)
@@ -78,7 +76,7 @@ def add_boundary(data: np.ndarray, pad: int = 3) -> np.ndarray:
     return result
 
 
-def bound_nrrd(input_path: str, output_path: str, pad: int = 3) -> bool:
+def bound_nrrd(input_path, output_path, pad=3):
     """Read an NRRD, add boundary markers, and write the result.
 
     All spatial metadata (space, space directions, space origin, kinds, etc.)
@@ -92,16 +90,16 @@ def bound_nrrd(input_path: str, output_path: str, pad: int = 3) -> bool:
     Returns:
         True on success, False on failure.
     """
-    print(f"Adding boundary markers to {input_path}...")
+    print("Adding boundary markers to %s..." % input_path)
 
     try:
         data, header = nrrd.read(input_path)
     except Exception as e:
-        print(f"Error reading {input_path}: {e}")
+        print("Error reading %s: %s" % (input_path, e))
         return False
 
     if data.ndim != 3:
-        print(f"Error: Expected 3D volume, got {data.ndim}D")
+        print("Error: Expected 3D volume, got %dD" % data.ndim)
         return False
 
     bounded = add_boundary(data, pad=pad)
@@ -115,7 +113,7 @@ def bound_nrrd(input_path: str, output_path: str, pad: int = 3) -> bool:
     if "encoding" in header:
         output_header["encoding"] = header["encoding"]
 
-    # Preserve all spatial metadata — critical for ImageJ NRRD reader
+    # Preserve all spatial metadata -- critical for ImageJ NRRD reader
     spatial_keys = [
         "space",
         "space directions",
@@ -128,11 +126,11 @@ def bound_nrrd(input_path: str, output_path: str, pad: int = 3) -> bool:
         if key in header:
             output_header[key] = header[key]
 
-    print(f"Saving result to {output_path}...")
+    print("Saving result to %s..." % output_path)
     try:
         nrrd.write(output_path, bounded, header=output_header)
     except Exception as e:
-        print(f"Error writing {output_path}: {e}")
+        print("Error writing %s: %s" % (output_path, e))
         return False
 
     # Set permissions (best effort)
@@ -147,20 +145,20 @@ def bound_nrrd(input_path: str, output_path: str, pad: int = 3) -> bool:
 
 def main():
     if len(sys.argv) != 4:
-        print(f"Usage: {sys.argv[0]} <pad> <input.nrrd> <output.nrrd>")
+        print("Usage: %s <pad> <input.nrrd> <output.nrrd>" % sys.argv[0])
         sys.exit(1)
 
     try:
         pad = int(sys.argv[1])
     except ValueError:
-        print(f"Error: pad must be an integer, got '{sys.argv[1]}'")
+        print("Error: pad must be an integer, got '%s'" % sys.argv[1])
         sys.exit(1)
 
     input_path = sys.argv[2]
     output_path = sys.argv[3]
 
     if not os.path.exists(input_path):
-        print(f"Error: Input file not found: {input_path}")
+        print("Error: Input file not found: %s" % input_path)
         sys.exit(1)
 
     success = bound_nrrd(input_path, output_path, pad=pad)
