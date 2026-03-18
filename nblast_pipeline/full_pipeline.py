@@ -30,6 +30,15 @@ import nrrd
 
 # Support running as a module (python -m nblast_pipeline.full_pipeline) and as a script
 # (python nblast_pipeline/full_pipeline.py).
+import os
+import sys
+
+# Ensure the repository root directory is on sys.path so imports work even when
+# this file is executed directly from within nblast_pipeline/.
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
 try:
     from .pipeline_status import (
         BOUNDING_FAILED,
