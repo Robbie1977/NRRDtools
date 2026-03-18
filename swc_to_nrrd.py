@@ -144,8 +144,11 @@ def convert_swc_to_nrrd_with_status(swc_file, template_file, output_file):
     nrrd.write(output_file, volume, header=output_header)
     print(f"Saved: {output_file}")
 
-    # Set permissions
-    os.chmod(output_file, 0o777)
+    # Set permissions (best effort)
+    try:
+        os.chmod(output_file, 0o777)
+    except Exception:
+        pass
 
     # Verify the output
     _, verify_header = nrrd.read(output_file)
