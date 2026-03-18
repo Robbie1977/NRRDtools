@@ -12,5 +12,6 @@ Public API:
 from . import pipeline_status  # noqa: F401
 from . import process_uploaded_swc  # noqa: F401
 from . import full_pipeline  # noqa: F401
+from . import verify_pipeline  # noqa: F401
 
-__all__ = ["pipeline_status", "process_uploaded_swc", "full_pipeline"]
+__all__ = ["pipeline_status", "process_uploaded_swc", "full_pipeline", "verify_pipeline"]

@@ -10,6 +10,8 @@ This directory contains code used by the **NBLAST upload pipeline** (Jenkins) to
 
 - `pipeline_status.py` — Solr reporting + disk-based status markers (`volume.status`).
 - `process_uploaded_swc.py` — Jenkins Step 2 replacement: finds uploaded `volume.swc` files and converts them to `volume.nrrd`.
+- `full_pipeline.py` — Runs the full SWC→NRRD→TIF→WLZ→OBJ pipeline (requires all tools in the environment).
+- `verify_pipeline.py` — Post-docker verification: checks which outputs exist and updates Solr status.
 
 ## Usage
 
@@ -74,6 +76,26 @@ python nblast_pipeline/full_pipeline.py --base-path /IMAGE_PRIVATE --dry-run
 python nblast_pipeline/full_pipeline.py --check-tools
 ```
 
+### Verify pipeline outputs (post-docker)
+
+After the Docker-based stages (bounding, ImageJ, Woolz, OBJ) have run, verify
+which images completed and update Solr:
+
+```bash
+python nblast_pipeline/verify_pipeline.py --base-path /IMAGE_PRIVATE --solr-url http://solr.virtualflybrain.org/solr/ontology/
+```
+
+Dry run (inspect without writing status or updating Solr):
+
+```bash
+python nblast_pipeline/verify_pipeline.py --base-path /IMAGE_PRIVATE --dry-run
+```
+
+The script checks each `VFBu_*/VFB_*/` directory for expected output files
+(`volume.nrrd`, `volume.wlz`, `volume.obj`), writes `volume.status`, reports
+success or the specific failure stage to Solr, and prints a summary. Returns
+exit code 1 if any images failed.
+
 ### Option: run only SWC→NRRD stage (Step 2 equivalent)
 
 ```bash
@@ -90,8 +112,8 @@ python nblast_pipeline/process_uploaded_swc.py --base-path /IMAGE_PRIVATE
 
 Each uploaded image directory includes `volume.status`, which will contain values like:
 
-- `NRRD_OK`
-- `NRRD_FAILED:<CATEGORY>`
+- `NRRD_OK`, `TIF_OK`, `WLZ_OK`, `OBJ_OK`, `COMPLETE`
+- `NRRD_FAILED`, `BOUNDED_FAILED`, `TIF_FAILED`, `WLZ_FAILED`, `OBJ_FAILED`
 
 This allows downstream pipeline steps to skip or abort processing based on previous failures.
 

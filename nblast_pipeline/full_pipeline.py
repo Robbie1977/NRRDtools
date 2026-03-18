@@ -86,7 +86,7 @@ class ConversionPaths:
     @property
     def image_id(self) -> str:
         # /.../VFBu_<id>/VFB_<template>/
-        return self.dir.parents[1].name
+        return self.dir.parent.name
 
     @property
     def swc(self) -> Path:
@@ -434,11 +434,13 @@ def _check_tools(args: argparse.Namespace) -> bool:
         if not _ensure_executable(path):
             missing.append(f"{desc} not found or not executable: {path}")
 
-    require(args.imagej, "ImageJ")
-    require(args.wlz_ext, "Woolz converter")
-    require(args.wlz_threshold, "Woolz threshold")
-    require(args.wlz_setvoxel, "Woolz set voxel size")
     require(args.python, "Python")
+
+    if not args.swc_only:
+        require(args.imagej, "ImageJ")
+        require(args.wlz_ext, "Woolz converter")
+        require(args.wlz_threshold, "Woolz threshold")
+        require(args.wlz_setvoxel, "Woolz set voxel size")
 
     if missing:
         print("Tool check failed:")
@@ -462,6 +464,9 @@ def run_full_pipeline(args: argparse.Namespace) -> int:
             swc, solr_url=args.solr_url, redo=args.redo, dry_run=args.dry_run
         )
         process_file_results.append(result)
+
+    if args.swc_only:
+        return 0
 
     # Stage 2..4: run conversions for each upload folder
     all_dirs = sorted({Path(swc).parent for swc in swc_files})
@@ -514,6 +519,7 @@ def main():
     parser.add_argument("--solr-url", default=None, help="Solr URL for reporting status updates")
     parser.add_argument("--redo", action="store_true", help="Re-run SWC->NRRD conversion even if output exists")
     parser.add_argument("--skip-tif", action="store_true", help="Skip the bounded NRRD -> TIF/WLZ steps")
+    parser.add_argument("--swc-only", action="store_true", help="Only run SWC->NRRD conversion (skip all docker-dependent stages)")
     parser.add_argument("--imagej", default="ImageJ-linux64", help="ImageJ executable path")
     parser.add_argument("--imagej-macro", default="nrrd2tif.ijm", help="ImageJ macro file to run")
     parser.add_argument("--wlz-ext", default="/opt/MouseAtlas/bin/WlzExtFFConvert", help="Woolz converter executable")
