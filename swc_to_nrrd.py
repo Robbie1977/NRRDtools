@@ -205,8 +205,24 @@ def strip_leading_whitespace(swc_path):
             f.writelines(stripped)
 
 
-def is_valid_nrrd(nrrd_path, template_shape=None):
-    """Check if NRRD file exists and is valid (not empty/broken)."""
+def is_valid_nrrd(nrrd_path, template_shape=None, template_header=None):
+    """Check if NRRD file exists, is valid, and has correct spatial metadata.
+
+    Performs auto-repair of fixable header issues (missing space directions,
+    missing space origin, etc.) using the template header as reference.
+    This prevents downstream failures in ImageJ/Woolz which require these
+    fields.
+
+    Args:
+        nrrd_path: Path to the NRRD file to validate.
+        template_shape: Expected shape tuple, or None to skip shape check.
+        template_header: Full template NRRD header dict.  When provided the
+            function will fix missing/broken spatial metadata in the file
+            by copying from the template.
+
+    Returns:
+        (is_valid, reason) tuple.
+    """
     if not os.path.exists(nrrd_path):
         return False, "missing"
 
@@ -228,6 +244,42 @@ def is_valid_nrrd(nrrd_path, template_shape=None):
         # Check if shape matches template (if provided)
         if template_shape is not None and data.shape != template_shape:
             return False, f"shape mismatch: {data.shape} vs template {template_shape}"
+
+        # --- Auto-repair spatial metadata using template ---
+        if template_header is not None:
+            repaired = False
+            spatial_keys = [
+                "space",
+                "space directions",
+                "space origin",
+                "kinds",
+                "space units",
+            ]
+            for key in spatial_keys:
+                if key not in header and key in template_header:
+                    header[key] = template_header[key]
+                    print(f"  Repaired: copied missing '{key}' from template")
+                    repaired = True
+
+            # Check space directions match template (wrong voxel size is a
+            # common mistake when users manually create NRRD files)
+            if "space directions" in header and "space directions" in template_header:
+                src_dirs = np.array(header["space directions"])
+                tpl_dirs = np.array(template_header["space directions"])
+                if src_dirs.shape != tpl_dirs.shape:
+                    header["space directions"] = template_header["space directions"]
+                    print(f"  Repaired: space directions shape mismatch "
+                          f"{src_dirs.shape} vs template {tpl_dirs.shape}, "
+                          f"copied from template")
+                    repaired = True
+
+            if repaired:
+                print(f"  Re-writing {nrrd_path} with repaired header")
+                nrrd.write(nrrd_path, data, header=header)
+                try:
+                    os.chmod(nrrd_path, 0o777)
+                except Exception:
+                    pass
 
         return True, "valid"
 
@@ -272,13 +324,15 @@ def process_swc_file(swc_path, redo=False):
         if not os.path.exists(template_path):
             return str(swc_path), False, f"Template not found: {template_path}"
 
-        # Get template shape for validation
-        template_data, _ = nrrd.read(template_path)
+        # Get template shape and header for validation
+        template_data, template_hdr = nrrd.read(template_path)
         template_shape = template_data.shape
 
         # Check if NRRD needs to be created/replaced
         if not redo:
-            valid, reason = is_valid_nrrd(str(nrrd_path), template_shape)
+            valid, reason = is_valid_nrrd(
+                str(nrrd_path), template_shape, template_header=template_hdr,
+            )
             if valid:
                 print(f"  Skipping: NRRD already valid")
                 return str(swc_path), True, "already valid"
@@ -334,8 +388,10 @@ def main():
             template_path = get_template_path(template_id)
 
             if os.path.exists(template_path):
-                template_data, _ = nrrd.read(template_path)
-                valid, reason = is_valid_nrrd(str(nrrd_path), template_data.shape)
+                template_data, template_hdr = nrrd.read(template_path)
+                valid, reason = is_valid_nrrd(
+                    str(nrrd_path), template_data.shape, template_header=template_hdr,
+                )
             else:
                 valid, reason = False, "template missing"
 

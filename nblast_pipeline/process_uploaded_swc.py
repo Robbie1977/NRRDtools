@@ -97,8 +97,10 @@ def process_file(
     if not redo and os.path.exists(nrrd_path):
         import nrrd
 
-        template_data, _ = nrrd.read(template_path)
-        valid, reason = is_valid_nrrd(nrrd_path, template_data.shape)
+        template_data, template_hdr = nrrd.read(template_path)
+        valid, reason = is_valid_nrrd(
+            nrrd_path, template_data.shape, template_header=template_hdr,
+        )
         if valid:
             return {"skipped": True, "reason": "already valid"}
         else:
@@ -163,8 +165,10 @@ def validate_uploaded_nrrd(
 
     import nrrd as nrrd_mod
 
-    template_data, _ = nrrd_mod.read(template_path)
-    valid, reason = is_valid_nrrd(str(nrrd_path), template_data.shape)
+    template_data, template_hdr = nrrd_mod.read(template_path)
+    valid, reason = is_valid_nrrd(
+        str(nrrd_path), template_data.shape, template_header=template_hdr,
+    )
 
     if valid:
         write_status(str(nrrd_dir), STATUS_NRRD_OK)

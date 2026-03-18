@@ -126,6 +126,19 @@ def bound_nrrd(input_path, output_path, pad=3):
         if key in header:
             output_header[key] = header[key]
 
+    # ImageJ requires "space directions" -- if missing, synthesize from
+    # "spacings" or fall back to identity so ImageJ can still open the file.
+    if "space directions" not in output_header:
+        if "spacings" in header:
+            sp = header["spacings"]
+            output_header["space directions"] = np.diag(sp).tolist()
+            print("Warning: synthesized space directions from spacings: %s" % sp)
+        else:
+            output_header["space directions"] = np.identity(3).tolist()
+            print("Warning: no space directions in source, using identity matrix")
+        if "space" not in output_header:
+            output_header["space"] = "left-posterior-superior"
+
     print("Saving result to %s..." % output_path)
     try:
         nrrd.write(output_path, bounded, header=output_header)
