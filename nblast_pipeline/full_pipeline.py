@@ -58,7 +58,7 @@ try:
         report_success,
         write_status,
     )
-    from .process_uploaded_swc import find_swc_files, process_file
+    from .process_uploaded_swc import find_swc_files, find_upload_dirs, process_file
 except (ImportError, SystemError):
     from nblast_pipeline.pipeline_status import (
         BOUNDING_FAILED,
@@ -78,7 +78,7 @@ except (ImportError, SystemError):
         report_success,
         write_status,
     )
-    from nblast_pipeline.process_uploaded_swc import find_swc_files, process_file
+    from nblast_pipeline.process_uploaded_swc import find_swc_files, find_upload_dirs, process_file
 
 
 @dataclass
@@ -455,12 +455,6 @@ def _check_tools(args: argparse.Namespace) -> bool:
     return True
 
 
-def find_upload_dirs(base_path: str) -> list[Path]:
-    """Find all VFBu_*/VFB_*/ upload directories (both SWC and NRRD uploads)."""
-    pattern = os.path.join(base_path, "VFBu_*", "VFB_*", "")
-    return sorted(Path(d) for d in glob.glob(pattern))
-
-
 def run_full_pipeline(args: argparse.Namespace) -> int:
     if args.check_tools:
         return 0 if _check_tools(args) else 1
@@ -482,7 +476,7 @@ def run_full_pipeline(args: argparse.Namespace) -> int:
     all_dirs = find_upload_dirs(args.base_path)
 
     for d in all_dirs:
-        paths = ConversionPaths(d)
+        paths = ConversionPaths(Path(d))
         id_tag = paths.image_id
 
         if args.skip_tif:
